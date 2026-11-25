@@ -5,7 +5,7 @@
   "type": "module",
   "description": "8o.nz 站点矩阵：门户、实验室、工具站与边缘服务",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "build": "node scripts/build.mjs all",
