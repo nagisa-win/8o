@@ -93,6 +93,7 @@ body::before {
     linear-gradient(to bottom, var(--line) 1px, transparent 1px);
   background-size: 96px 96px;
   opacity: 0.28;
+  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 20%, transparent 78%);
   mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 20%, transparent 78%);
 }
 
@@ -147,6 +148,7 @@ canvas {
 /* 亮色下网格线更淡，避免整页发灰 */
 [data-theme="light"] body::before {
   opacity: 0.5;
+  -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 10%, transparent 62%);
   mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 10%, transparent 62%);
 }
 
@@ -195,6 +197,7 @@ canvas {
   background: linear-gradient(180deg, rgba(19, 26, 44, 0.86), rgba(9, 13, 23, 0.9));
   border: 1px solid var(--line);
   border-radius: var(--radius);
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
 }
 
@@ -312,5 +315,34 @@ canvas {
   [data-reveal] {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ==================== 老浏览器降级 ==================== */
+/* 目标：特性缺失时页面仍然可读，不出现透明底、无边框或文字压在背景上 */
+
+/* 1. 不支持 mask-image：整页网格底纹直接不做，避免铺满全屏的硬线条 */
+@supports not ((mask-image: linear-gradient(#000, #000)) or (-webkit-mask-image: linear-gradient(#000, #000))) {
+  body::before {
+    display: none;
+  }
+}
+
+/* 2. 不支持 color-mix()：用实色顶替，保证前景与背景对比度 */
+@supports not (color: color-mix(in srgb, #fff, #000)) {
+  .panel,
+  .card {
+    background: var(--bg-raised) !important;
+    border-color: var(--line) !important;
+  }
+
+  .btn {
+    background: var(--bg-raised) !important;
+    border-color: var(--line-strong) !important;
+  }
+
+  ::selection {
+    background: var(--line-strong);
+    color: var(--ink);
   }
 }

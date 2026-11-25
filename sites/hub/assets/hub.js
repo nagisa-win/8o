@@ -4,9 +4,20 @@
  * 所有网络请求都做超时与降级，接口挂了页面依然完整可用。
  */
 
+import { t, detectLang, saveLang } from "./i18n.js";
+
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/** 当前语言：zh | en，初始值来自 localStorage 或浏览器语言 */
+let LANG = detectLang();
+
+/** 页面数据的缓存，切换语言时按新语言重画 */
+const DATA = { sites: [], projects: [], feed: null, status: null };
+
+/** 按语言取字段，缺英文时回退中文 */
+const L = (obj, key) => (LANG === "en" ? obj[`${key}_en`] ?? obj[key] : obj[key]);
 
 /** 带超时的 fetch，失败返回 null，避免任何接口拖垮首屏 */
 async function safeJson(url, timeout = 3000) {
@@ -265,6 +276,69 @@ function initTheme() {
   });
 }
 
+/* ==================== 语言 ==================== */
+
+/** 把界面上的静态文案按当前语言刷一遍 */
+function applyI18n() {
+  const html = document.documentElement;
+  html.lang = LANG === "en" ? "en" : "zh-CN";
+
+  document.title = t(LANG, "meta.title");
+  const desc = $('meta[name="description"]');
+  if (desc) desc.setAttribute("content", t(LANG, "meta.desc"));
+
+  // 纯文本节点
+  $$("[data-i18n]").forEach((el) => {
+    el.textContent = t(LANG, el.dataset.i18n);
+  });
+
+  // 带内联标签的段落
+  $$("[data-i18n-html]").forEach((el) => {
+    el.innerHTML = t(LANG, el.dataset.i18nHtml);
+  });
+
+  // 输入框占位符
+  $$("[data-i18n-ph]").forEach((el) => {
+    el.setAttribute("placeholder", t(LANG, el.dataset.i18nPh));
+  });
+
+  const langBtn = $("[data-lang-toggle]");
+  if (langBtn) {
+    langBtn.textContent = LANG === "en" ? "中" : "EN";
+    langBtn.setAttribute("aria-label", t(LANG, "lang.toggle"));
+    langBtn.setAttribute("title", t(LANG, "lang.toggle"));
+  }
+
+  const paletteBtn = $("[data-palette-open]");
+  if (paletteBtn) paletteBtn.setAttribute("aria-label", t(LANG, "palette.open"));
+
+  const themeBtn = $("[data-theme-toggle]");
+  if (themeBtn) {
+    themeBtn.setAttribute("aria-label", t(LANG, document.documentElement.dataset.theme === "light" ? "theme.toDark" : "theme.toLight"));
+  }
+}
+
+/** 切换语言后需要重画的部分（列表都来自 JSON） */
+function renderAll() {
+  if (DATA.sites.length) renderSites(DATA.sites);
+  initProjects(DATA.projects);
+  initPalette({ sites: DATA.sites, projects: DATA.projects });
+  if (DATA.feed) renderFeed(DATA.feed);
+  if (DATA.status) applyStatus(DATA.status);
+}
+
+function initLang() {
+  applyI18n();
+  const btn = $("[data-lang-toggle]");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    LANG = LANG === "zh" ? "en" : "zh";
+    saveLang(LANG);
+    applyI18n();
+    renderAll();
+  });
+}
+
 /* ==================== 滚动显现 ==================== */
 
 function initReveal() {
@@ -297,7 +371,7 @@ function siteCard(site) {
   article.style.setProperty("--accent-local", ACCENTS[site.accent] || "var(--accent)");
   article.dataset.site = site.host;
 
-  const tags = (site.tags || []).map((t) => `<li>${t}</li>`).join("");
+  const tags = (L(site, "tags") || []).map((x) => `<li>${x}</li>`).join("");
   const status = site.status === "planned" ? "planned" : "";
 
   article.innerHTML = `
@@ -306,12 +380,12 @@ function siteCard(site) {
       <span class="site__host">${site.host}</span>
       <span class="site__kind">${site.kind || "site"}</span>
     </div>
-    <h3 class="site__title">${site.title}</h3>
-    <p class="site__desc">${site.desc}</p>
+    <h3 class="site__title">${L(site, "title")}</h3>
+    <p class="site__desc">${L(site, "desc")}</p>
     <ul class="site__tags">${tags}</ul>
     <div class="site__foot">
-      <span data-latency="${site.host}">${site.status === "planned" ? "计划中" : "probe…"}</span>
-      <span class="site__go">OPEN <span aria-hidden="true">→</span></span>
+      <span data-latency="${site.host}">${site.status === "planned" ? t(LANG, "site.planned") : t(LANG, "site.probe")}</span>
+      <span class="site__go">${t(LANG, "site.open")} <span aria-hidden="true">→</span></span>
     </div>
     <a class="site__link" href="${site.url}" aria-label="打开 ${site.title}（${site.host}）"></a>
   `;
@@ -345,7 +419,7 @@ function renderSites(sites) {
 
 /* ==================== 开源档案 ==================== */
 
-let projectState = { all: [], category: "全部" };
+let projectState = { all: [], category: null };
 
 function projectRow(p) {
   const li = document.createElement("article");
@@ -359,7 +433,7 @@ function projectRow(p) {
         <a href="${p.url}" target="_blank" rel="noreferrer">${p.repo}</a>
         ${p.live ? `<span class="project__live">LIVE</span>` : ""}
       </div>
-      <div class="project__desc">${p.desc || ""}</div>
+      <div class="project__desc">${L(p, "desc") || ""}</div>
     </div>
     <div class="project__side">
       <span>${p.language || "—"}</span>
@@ -377,12 +451,12 @@ function renderProjects() {
   if (!list) return;
 
   const filtered =
-    projectState.category === "全部"
+    projectState.category === null
       ? projectState.all
-      : projectState.all.filter((p) => (p.category || "其他") === projectState.category);
+      : projectState.all.filter((p) => L(p, "category") === projectState.category);
 
   if (!filtered.length) {
-    list.innerHTML = `<p class="projects__empty mono">NO ENTRY</p>`;
+    list.innerHTML = `<p class="projects__empty mono">${t(LANG, "empty.projects")}</p>`;
     return;
   }
 
@@ -395,7 +469,11 @@ function initProjects(projects) {
   projectState.all = projects || [];
   projectState.maxStars = Math.max(1, ...projectState.all.map((p) => p.stars || 0));
 
-  const cats = ["全部", ...new Set(projectState.all.map((p) => p.category || "其他"))];
+  const allLabel = LANG === "en" ? "All" : "全部";
+  const cats = [allLabel, ...new Set(projectState.all.map((p) => L(p, "category") || (LANG === "en" ? "Other" : "其他")))];
+
+  // null 表示「全部」；换语言后分类名变了，非空但匹配不上就回落到全部
+  if (projectState.category !== null && !cats.includes(projectState.category)) projectState.category = null;
   const bar = $("#project-filters");
   if (bar) {
     bar.replaceChildren(
@@ -404,9 +482,10 @@ function initProjects(projects) {
         b.className = "chip";
         b.type = "button";
         b.textContent = c;
-        b.setAttribute("aria-pressed", String(c === projectState.category));
+        const isAll = c === allLabel;
+        b.setAttribute("aria-pressed", String(isAll ? projectState.category === null : c === projectState.category));
         b.addEventListener("click", () => {
-          projectState.category = c;
+          projectState.category = isAll ? null : c;
           $$(".chip", bar).forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
           renderProjects();
         });
@@ -449,10 +528,10 @@ function renderFeed(feed) {
 
   if (feed?.updated?.length) {
     left.replaceChildren(
-      ...feed.updated.slice(0, 8).map((u) => row(u.repo, u.desc || u.language || "更新", u.url, ago(u.at)))
+      ...feed.updated.slice(0, 8).map((u) => row(u.repo, L(u, "desc") || u.language || "updated", u.url, ago(u.at)))
     );
   } else {
-    left.innerHTML = `<li class="feed__empty mono">standby</li>`;
+    left.innerHTML = `<li class="feed__empty mono">${t(LANG, "feed.standby")}</li>`;
   }
 
   if (feed?.releases?.length) {
@@ -460,7 +539,7 @@ function renderFeed(feed) {
       ...feed.releases.slice(0, 8).map((r) => row(r.repo, `${r.tag} ${r.name}`.trim(), r.url, ago(r.at)))
     );
   } else {
-    right.innerHTML = `<li class="feed__empty mono">no release yet</li>`;
+    right.innerHTML = `<li class="feed__empty mono">${t(LANG, "feed.norelease")}</li>`;
   }
 }
 
@@ -501,92 +580,240 @@ function applyStatus(status) {
 
 /* ==================== ⌘K 快速跳转 ==================== */
 
+/** ⌘K 面板的条目，切换语言时会被重算 */
+let paletteEntries = [];
+let paletteResults = [];
+let paletteActive = 0;
+let paletteBound = false;
+
+/** 按当前语言重建条目（站点名、固定链接都跟着语言走） */
+function buildPaletteEntries(sites, projects) {
+  paletteEntries = [
+    ...sites.map((x) => ({ kind: "SITE", label: L(x, "title"), meta: x.host, url: x.url })),
+    ...projects.map((x) => ({ kind: "REPO", label: x.repo, meta: x.language || "—", url: x.url })),
+    { kind: "LINK", label: "GitHub", meta: "nagisa-win", url: "https://github.com/nagisa-win" },
+    { kind: "LINK", label: "RyzenX", meta: "ryzenx.com", url: "https://ryzenx.com" },
+    { kind: "LINK", label: "Telegram", meta: "@IrisXe", url: "https://t.me/IrisXe" },
+  ];
+}
+
+function paintPalette() {
+  const list = $("#palette-list");
+  if (!list) return;
+  list.replaceChildren(
+    ...paletteResults.slice(0, 8).map((e, i) => {
+      const li = document.createElement("li");
+      li.className = "palette__item";
+      li.setAttribute("role", "option");
+      li.setAttribute("aria-selected", String(i === paletteActive));
+      li.innerHTML = `<span class="label">${e.kind}</span><span>${e.label}</span><kbd>${e.meta}</kbd>`;
+      li.addEventListener("pointerenter", () => {
+        paletteActive = i;
+        paintPalette();
+      });
+      li.addEventListener("click", () => {
+        location.href = e.url;
+      });
+      return li;
+    })
+  );
+}
+
+function filterPalette() {
+  const input = $("#palette-input");
+  const q = (input?.value || "").trim().toLowerCase();
+  paletteResults = q
+    ? paletteEntries.filter((e) => `${e.label} ${e.meta} ${e.kind}`.toLowerCase().includes(q))
+    : paletteEntries;
+  paletteActive = 0;
+  paintPalette();
+}
+
+function openPalette() {
+  const dialog = $("#palette");
+  const input = $("#palette-input");
+  if (!dialog || !input || dialog.open) return;
+  input.value = "";
+  filterPalette();
+  dialog.showModal();
+  input.focus();
+}
+
 function initPalette({ sites, projects }) {
   const dialog = $("#palette");
   const input = $("#palette-input");
-  const list = $("#palette-list");
-  if (!dialog || !input || !list) return;
+  if (!dialog || !input) return;
 
-  const entries = [
-    ...sites.map((s) => ({ kind: "SITE", label: s.title, meta: s.host, url: s.url })),
-    ...projects.map((p) => ({ kind: "REPO", label: p.repo, meta: p.language || "—", url: p.url })),
-    { kind: "LINK", label: "GitHub", meta: "nagisa-win", url: "https://github.com/nagisa-win" },
-    { kind: "LINK", label: "RyzenX 博客", meta: "ryzenx.com", url: "https://ryzenx.com" },
-    { kind: "LINK", label: "笔记站", meta: "v.8o.nz", url: "https://v.8o.nz" },
-    { kind: "LINK", label: "Telegram", meta: "@IrisXe", url: "https://t.me/IrisXe" },
-  ];
+  buildPaletteEntries(sites, projects);
 
-  let results = entries;
-  let active = 0;
-
-  function paint() {
-    list.replaceChildren(
-      ...results.slice(0, 8).map((e, i) => {
-        const li = document.createElement("li");
-        li.className = "palette__item";
-        li.setAttribute("role", "option");
-        li.setAttribute("aria-selected", String(i === active));
-        li.innerHTML = `<span class="label">${e.kind}</span><span>${e.label}</span><kbd>${e.meta}</kbd>`;
-        li.addEventListener("pointerenter", () => {
-          active = i;
-          paint();
-        });
-        li.addEventListener("click", () => {
-          location.href = e.url;
-        });
-        return li;
-      })
-    );
+  // 语言切换后重建条目即可，事件不重复绑定
+  if (paletteBound) {
+    filterPalette();
+    return;
   }
+  paletteBound = true;
 
-  function filter() {
-    const q = input.value.trim().toLowerCase();
-    results = q
-      ? entries.filter((e) => `${e.label} ${e.meta} ${e.kind}`.toLowerCase().includes(q))
-      : entries;
-    active = 0;
-    paint();
-  }
-
-  function open() {
-    if (dialog.open) return;
-    input.value = "";
-    filter();
-    dialog.showModal();
-    input.focus();
-  }
-
-  input.addEventListener("input", filter);
+  input.addEventListener("input", filterPalette);
 
   input.addEventListener("keydown", (e) => {
+    const step = Math.min(8, paletteResults.length || 1);
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      active = (active + 1) % Math.min(8, results.length || 1);
-      paint();
+      paletteActive = (paletteActive + 1) % step;
+      paintPalette();
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      active = (active - 1 + Math.min(8, results.length || 1)) % Math.min(8, results.length || 1);
-      paint();
-    } else if (e.key === "Enter" && results[active]) {
+      paletteActive = (paletteActive - 1 + step) % step;
+      paintPalette();
+    } else if (e.key === "Enter" && paletteResults[paletteActive]) {
       e.preventDefault();
-      location.href = results[active].url;
+      location.href = paletteResults[paletteActive].url;
     }
   });
 
   addEventListener("keydown", (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
       e.preventDefault();
-      open();
+      openPalette();
     }
   });
 
-  $$("[data-palette-open]").forEach((b) => b.addEventListener("click", open));
+  $$("[data-palette-open]").forEach((b) => b.addEventListener("click", openPalette));
+
+  filterPalette();
+}
+
+/* ==================== 交互特效 ==================== */
+/**
+ * 四类交互：指针柔光、点击水波、键盘脉冲、滚动进度。
+ * 全部走 transform/opacity，指针事件用 passive，reduced-motion 时整体跳过。
+ */
+function initEffects() {
+  if (reduced) return;
+
+  const hero = $(".hero");
+  const bar = $(".scroll-bar i");
+  const brand = $(".brand");
+  const signal = $("#signal");
+
+  /* ---------- 指针：hero 内柔光跟随 ---------- */
+  let rafId = 0;
+  let pending = null;
+
+  const paintSpot = () => {
+    rafId = 0;
+    if (!pending || !hero) return;
+    hero.style.setProperty("--spot-x", `${pending.x}px`);
+    hero.style.setProperty("--spot-y", `${pending.y}px`);
+  };
+
+  if (hero && matchMedia("(pointer: fine)").matches) {
+    hero.addEventListener(
+      "pointermove",
+      (e) => {
+        const r = hero.getBoundingClientRect();
+        pending = { x: e.clientX - r.left, y: e.clientY - r.top };
+        hero.dataset.pointer = "on";
+        // 一帧只画一次，指针再快也不会堆任务
+        if (!rafId) rafId = requestAnimationFrame(paintSpot);
+      },
+      { passive: true }
+    );
+
+    hero.addEventListener("pointerleave", () => {
+      hero.dataset.pointer = "off";
+    });
+  }
+
+  /* ---------- 点击：水波从落点扩散 ---------- */
+  const RIPPLE_TARGETS = ".btn, .site, .chip, .contact__link, .nav a, .kbd-btn, .theme-btn, .lang-btn";
+
+  document.addEventListener(
+    "pointerdown",
+    (e) => {
+      const host = e.target.closest(RIPPLE_TARGETS);
+      if (!host || !host.offsetParent) return;
+      const r = host.getBoundingClientRect();
+      const size = Math.max(r.width, r.height) * 1.6;
+      const dot = document.createElement("span");
+      dot.className = "ripple";
+      dot.style.width = dot.style.height = `${size}px`;
+      dot.style.left = `${e.clientX - r.left}px`;
+      dot.style.top = `${e.clientY - r.top}px`;
+
+      // 宿主没有定位上下文时临时补一个，水波才不会跑到页面上
+      const prevPosition = host.style.position;
+      const prevOverflow = host.style.overflow;
+      if (getComputedStyle(host).position === "static") host.style.position = "relative";
+      host.style.overflow = "hidden";
+      host.append(dot);
+
+      // 动画结束把临时样式还回去，避免长期裁掉阴影与聚焦描边
+      dot.addEventListener(
+        "animationend",
+        () => {
+          dot.remove();
+          host.style.position = prevPosition;
+          host.style.overflow = prevOverflow;
+        },
+        { once: true }
+      );
+    },
+    { passive: true }
+  );
+
+  /* ---------- 键盘：轻脉冲提示页面在响应 ---------- */
+  let kbTimer = 0;
+  addEventListener(
+    "keydown",
+    (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key.length !== 1 && !["Enter", " ", "Escape"].includes(e.key)) return;
+      if (e.target.closest("input, textarea, [contenteditable]")) return;
+
+      if (brand) brand.classList.add("kb-pulse");
+      if (signal) signal.classList.add("kb-pulse");
+      clearTimeout(kbTimer);
+      kbTimer = setTimeout(() => {
+        brand?.classList.remove("kb-pulse");
+        signal?.classList.remove("kb-pulse");
+      }, 220);
+    },
+    { passive: true }
+  );
+
+  /* ---------- 滚动：顶部进度 + hero 轻微视差 ---------- */
+  const glyph = $(".hero__glyph");
+  let scrollTick = 0;
+
+  const onScroll = () => {
+    if (scrollTick) return;
+    scrollTick = requestAnimationFrame(() => {
+      scrollTick = 0;
+      const max = document.documentElement.scrollHeight - innerHeight;
+      const ratio = max > 0 ? Math.min(1, scrollY / max) : 0;
+      document.documentElement.style.setProperty("--scroll-progress", ratio.toFixed(4));
+
+      // hero 淡出时的轻微位移，幅度控制在 24px 内
+      if (glyph && scrollY < innerHeight) {
+        glyph.style.transform = `translate3d(0, ${(scrollY * 0.06).toFixed(1)}px, 0)`;
+      }
+    });
+  };
+
+  if (bar) {
+    document.documentElement.style.setProperty("--scroll-progress", "0");
+  }
+  addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
 }
 
 /* ==================== 启动 ==================== */
 
 async function main() {
   initTheme();
+  initLang();
+  initEffects();
   if (document.documentElement.dataset.theme !== "light") initStars();
   initClock();
   initReveal();
@@ -600,6 +827,8 @@ async function main() {
 
   const sites = registry?.sites || [];
   const projectsList = projects?.projects || [];
+  DATA.sites = sites;
+  DATA.projects = projectsList;
 
   if (sites.length) renderSites(sites);
   initProjects(projectsList);
@@ -619,9 +848,11 @@ async function main() {
 
   // 状态与动态流是增强项，失败不影响页面
   const status = await safeJson("/api/status", 2500);
+  DATA.status = status;
   applyStatus(status);
 
   const feed = (await safeJson("data/feed.json")) || (await safeJson("/api/feed", 3000));
+  DATA.feed = feed;
   renderFeed(feed);
 
   const health = await safeJson("/api/health", 1500);

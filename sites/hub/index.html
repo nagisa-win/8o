@@ -51,7 +51,8 @@
   </head>
 
   <body>
-    <a class="skip" href="#sites">跳到站点目录</a>
+    <div class="scroll-bar" aria-hidden="true"><i></i></div>
+    <a class="skip" href="#sites" data-i18n="skip">跳到站点目录</a>
 
     <header class="topbar">
       <div class="topbar__inner wrap">
@@ -69,6 +70,8 @@
         </nav>
 
         <div class="topbar__meta">
+          <button class="lang-btn mono" type="button" data-lang-toggle aria-label="切换语言">EN</button>
+
           <button class="theme-btn" type="button" data-theme-toggle aria-label="切换主题">
             <svg class="theme-btn__sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <circle cx="12" cy="12" r="4" />
@@ -99,6 +102,7 @@
       <section class="hero" aria-labelledby="hero-title">
         <canvas class="hero__stars" id="stars" aria-hidden="true"></canvas>
         <div class="hero__glow" aria-hidden="true"></div>
+        <div class="hero__spot" aria-hidden="true"></div>
         <div class="hero__scan" aria-hidden="true"></div>
 
         <div class="hero__inner wrap">
@@ -110,14 +114,14 @@
               <span class="hero__suffix">.nz / observatory</span>
             </h1>
 
-            <p class="hero__lede">
+            <p class="hero__lede" data-i18n-html="hero.lede">
               一个域名下面的观测站。<strong>个人说明书</strong>、<strong>Web 实验室</strong>、工具站与实时状态，
               都从这里出发。所有站点自己写、自己部署、自己盯着。
             </p>
 
             <div class="hero__actions">
-              <a class="btn" href="https://www.8o.nz/"><span>进入个人说明书</span><span aria-hidden="true">→</span></a>
-              <a class="btn btn-ghost" href="https://lab.8o.nz/"><span>进入实验室</span><span aria-hidden="true">→</span></a>
+              <a class="btn" href="https://www.8o.nz/"><span data-i18n="hero.btn.profile">进入个人说明书</span><span aria-hidden="true">→</span></a>
+              <a class="btn btn-ghost" href="https://lab.8o.nz/"><span data-i18n="hero.btn.lab">进入实验室</span><span aria-hidden="true">→</span></a>
             </div>
 
             <dl class="hero__meta mono">
@@ -147,16 +151,16 @@
           </aside>
         </div>
 
-        <div class="hero__scroll label" aria-hidden="true">SCROLL ↓</div>
+        <div class="hero__scroll label" aria-hidden="true" data-i18n="hero.scroll">SCROLL ↓</div>
       </section>
 
       <!-- ============ 站点目录 ============ -->
       <section class="section" id="sites" aria-labelledby="sites-title">
         <div class="section__head wrap" data-reveal>
-          <p class="label">// 01 — SECTOR MAP</p>
-          <h2 id="sites-title">站点目录</h2>
-          <p class="section__sub">
-            每个子域是一个独立舱段，各自的技术栈写在卡片上。状态灯由 <code>status</code> 服务实时探测，不是装饰。
+          <p class="label" data-i18n="sec.sites.label">// 01 — SECTOR MAP</p>
+          <h2 id="sites-title" data-i18n="sec.sites.title">站点目录</h2>
+          <p class="section__sub" data-i18n="sec.sites.sub">
+            每个子域是一个独立舱段，各自的技术栈写在卡片上。状态灯由 status 服务实时探测，不是装饰。
           </p>
         </div>
 
@@ -175,9 +179,9 @@
       <!-- ============ 开源档案 ============ -->
       <section class="section" id="projects" aria-labelledby="projects-title">
         <div class="section__head wrap" data-reveal>
-          <p class="label">// 02 — ARCHIVE</p>
-          <h2 id="projects-title">开源档案</h2>
-          <p class="section__sub">
+          <p class="label" data-i18n="sec.projects.label">// 02 — ARCHIVE</p>
+          <h2 id="projects-title" data-i18n="sec.projects.title">开源档案</h2>
+          <p class="section__sub" data-i18n="sec.projects.sub">
             公开仓库里挑出来的部分。star 与更新时间由 Actions 每日同步，不手写。
           </p>
           <div class="chips" id="project-filters" role="group" aria-label="按类别筛选"></div>
@@ -191,20 +195,20 @@
       <!-- ============ 动态 ============ -->
       <section class="section" id="feed" aria-labelledby="feed-title">
         <div class="section__head wrap" data-reveal>
-          <p class="label">// 03 — SIGNAL FEED</p>
-          <h2 id="feed-title">最近动态</h2>
-          <p class="section__sub">最近更新的公开仓库与打过的 tag。数据由 Actions 每日汇总，静态分发，不依赖运行时接口。</p>
+          <p class="label" data-i18n="sec.feed.label">// 03 — SIGNAL FEED</p>
+          <h2 id="feed-title" data-i18n="sec.feed.title">最近动态</h2>
+          <p class="section__sub" data-i18n="sec.feed.sub">最近更新的公开仓库与打过的 tag。数据由 Actions 每日汇总，静态分发，不依赖运行时接口。</p>
         </div>
 
         <div class="feed wrap" data-reveal>
           <div class="feed__col">
-            <h3 class="feed__title label">REPOS UPDATED</h3>
+            <h3 class="feed__title label" data-i18n="feed.repos">REPOS UPDATED</h3>
             <ol class="feed__list" id="feed-commits">
               <li class="feed__empty mono">standby</li>
             </ol>
           </div>
           <div class="feed__col">
-            <h3 class="feed__title label">RELEASES</h3>
+            <h3 class="feed__title label" data-i18n="feed.releases">RELEASES</h3>
             <ol class="feed__list" id="feed-posts">
               <li class="feed__empty mono">standby</li>
             </ol>
@@ -216,9 +220,9 @@
       <section class="section section--contact" id="contact" aria-labelledby="contact-title">
         <div class="wrap contact" data-reveal>
           <div>
-            <p class="label">// 04 — OPEN CHANNEL</p>
-            <h2 id="contact-title">建立连接</h2>
-            <p class="section__sub">写代码、聊摩托、换技能包，都欢迎。</p>
+            <p class="label" data-i18n="sec.contact.label">// 04 — OPEN CHANNEL</p>
+            <h2 id="contact-title" data-i18n="sec.contact.title">建立连接</h2>
+            <p class="section__sub" data-i18n="sec.contact.sub">写代码、聊摩托、换技能包，都欢迎。</p>
           </div>
           <div class="contact__links">
             <a class="contact__link" href="https://github.com/nagisa-win">
@@ -226,9 +230,6 @@
             </a>
             <a class="contact__link" href="https://ryzenx.com">
               <span class="contact__k mono">BLOG</span><span class="contact__v">ryzenx.com</span>
-            </a>
-            <a class="contact__link" href="https://v.8o.nz">
-              <span class="contact__k mono">NOTES</span><span class="contact__v">v.8o.nz</span>
             </a>
             <a class="contact__link" href="https://t.me/IrisXe">
               <span class="contact__k mono">TELEGRAM</span><span class="contact__v">@IrisXe</span>
@@ -244,7 +245,7 @@
         <span class="mono footer__sep" aria-hidden="true">·</span>
         <span class="mono" id="footer-build">build dev</span>
         <span class="footer__spacer"></span>
-        <span class="mono footer__motto">CLEAN CODE, FAST PIPELINE, COLD COFFEE.</span>
+        <span class="mono footer__motto" data-i18n="footer.motto">CLEAN CODE, FAST PIPELINE, COLD COFFEE.</span>
       </div>
     </footer>
 
@@ -255,7 +256,7 @@
           class="palette__input mono"
           id="palette-input"
           type="search"
-          placeholder="跳到站点 / 项目 / 链接…"
+          placeholder="跳到站点 / 项目 / 链接…" data-i18n-ph="palette.placeholder"
           autocomplete="off"
           spellcheck="false"
         />

@@ -10,7 +10,9 @@
       "updated": "2026-11-06",
       "category": "Agent 工具",
       "url": "https://github.com/nagisa-win/skkill",
-      "live": "https://skills.8o.nz/"
+      "live": "https://skills.8o.nz/",
+      "desc_en": "A skill manager for every agent, using package.json as the version control",
+      "category_en": "Agent tooling"
     },
     {
       "repo": "fanzha-skill",
@@ -19,7 +21,9 @@
       "stars": 3,
       "updated": "2026-04-14",
       "category": "Agent 工具",
-      "url": "https://github.com/nagisa-win/fanzha-skill"
+      "url": "https://github.com/nagisa-win/fanzha-skill",
+      "desc_en": "An anti-fraud skill pack: scam signals and a decision flow agents can follow",
+      "category_en": "Agent tooling"
     },
     {
       "repo": "cli-tools",
@@ -28,7 +32,9 @@
       "stars": 3,
       "updated": "2026-06-24",
       "category": "Web 与工具",
-      "url": "https://github.com/nagisa-win/cli-tools"
+      "url": "https://github.com/nagisa-win/cli-tools",
+      "desc_en": "Small command-line scripts in bash and Python that survived daily use",
+      "category_en": "Web & tools"
     },
     {
       "repo": "mermaid-render",
@@ -38,7 +44,9 @@
       "updated": "2026-04-21",
       "category": "Web 与工具",
       "url": "https://github.com/nagisa-win/mermaid-render",
-      "live": "https://mermaid.8o.nz/"
+      "live": "https://mermaid.8o.nz/",
+      "desc_en": "Turn Mermaid source into diagrams and export PNG or JPG",
+      "category_en": "Web & tools"
     },
     {
       "repo": "advanced-js-calculator",
@@ -48,7 +56,9 @@
       "updated": "2024-06-27",
       "category": "Web 与工具",
       "url": "https://github.com/nagisa-win/advanced-js-calculator",
-      "live": "https://calc.8o.nz/"
+      "live": "https://calc.8o.nz/",
+      "desc_en": "A Jison expression calculator that shows the parsing steps",
+      "category_en": "Web & tools"
     },
     {
       "repo": "web-router",
@@ -57,7 +67,9 @@
       "stars": 0,
       "updated": "2025-06-17",
       "category": "Web 与工具",
-      "url": "https://github.com/nagisa-win/web-router"
+      "url": "https://github.com/nagisa-win/web-router",
+      "desc_en": "A tiny client-side router with no dependencies",
+      "category_en": "Web & tools"
     },
     {
       "repo": "gold-board",
@@ -66,7 +78,9 @@
       "stars": 1,
       "updated": "2026-11-25",
       "category": "端侧",
-      "url": "https://github.com/nagisa-win/gold-board"
+      "url": "https://github.com/nagisa-win/gold-board",
+      "desc_en": "A macOS floating widget: gold price, wake timer, trackpad haptics",
+      "category_en": "Devices"
     },
     {
       "repo": "mobile-photo-cleanup-kit",
@@ -75,7 +89,9 @@
       "stars": 0,
       "updated": "2026-11-17",
       "category": "端侧",
-      "url": "https://github.com/nagisa-win/mobile-photo-cleanup-kit"
+      "url": "https://github.com/nagisa-win/mobile-photo-cleanup-kit",
+      "desc_en": "Web-first photo dedupe and thumbnail cleanup for Android over ADB",
+      "category_en": "Devices"
     },
     {
       "repo": "better-coloros",
@@ -84,7 +100,9 @@
       "stars": 0,
       "updated": "2026-11-02",
       "category": "端侧",
-      "url": "https://github.com/nagisa-win/better-coloros"
+      "url": "https://github.com/nagisa-win/better-coloros",
+      "desc_en": "An LSPosed plugin collection for ColorOS: write the missing features yourself",
+      "category_en": "Devices"
     },
     {
       "repo": "oppo-camera-normalization",
@@ -93,7 +111,9 @@
       "stars": 0,
       "updated": "2026-10-27",
       "category": "端侧",
-      "url": "https://github.com/nagisa-win/oppo-camera-normalization"
+      "url": "https://github.com/nagisa-win/oppo-camera-normalization",
+      "desc_en": "Normalize the file names coming out of the OPPO camera",
+      "category_en": "Devices"
     },
     {
       "repo": "Rime-Pro-Dict",
@@ -102,7 +122,9 @@
       "stars": 0,
       "updated": "2026-06-01",
       "category": "输入与主题",
-      "url": "https://github.com/nagisa-win/Rime-Pro-Dict"
+      "url": "https://github.com/nagisa-win/Rime-Pro-Dict",
+      "desc_en": "Automatically generated professional dictionaries for the Rime IME",
+      "category_en": "Input & themes"
     },
     {
       "repo": "dsh-animal-island-theme",
@@ -111,7 +133,9 @@
       "stars": 0,
       "updated": "2026-11-06",
       "category": "输入与主题",
-      "url": "https://github.com/nagisa-win/dsh-animal-island-theme"
+      "url": "https://github.com/nagisa-win/dsh-animal-island-theme",
+      "desc_en": "An Animal Island style theme for DeepSeek Harness",
+      "category_en": "Input & themes"
     },
     {
       "repo": "userscript.js",
@@ -120,7 +144,9 @@
       "stars": 0,
       "updated": "2026-01-14",
       "category": "输入与主题",
-      "url": "https://github.com/nagisa-win/userscript.js"
+      "url": "https://github.com/nagisa-win/userscript.js",
+      "desc_en": "Browser userscripts, original or rewritten",
+      "category_en": "Input & themes"
     },
     {
       "repo": "NB-Rename",
@@ -129,7 +155,9 @@
       "stars": 0,
       "updated": "2025-06-26",
       "category": "Web 与工具",
-      "url": "https://github.com/nagisa-win/NB-Rename"
+      "url": "https://github.com/nagisa-win/NB-Rename",
+      "desc_en": "Cross-platform batch renaming, in the spirit of PowerRename",
+      "category_en": "Web & tools"
     },
     {
       "repo": "algo-ts",
@@ -138,7 +166,9 @@
       "stars": 0,
       "updated": "2024-11-10",
       "category": "Web 与工具",
-      "url": "https://github.com/nagisa-win/algo-ts"
+      "url": "https://github.com/nagisa-win/algo-ts",
+      "desc_en": "Algorithm exercises in TypeScript with a test harness",
+      "category_en": "Web & tools"
     },
     {
       "repo": "webhook",
@@ -147,7 +177,9 @@
       "stars": 0,
       "updated": "2025-12-05",
       "category": "基础设施",
-      "url": "https://github.com/nagisa-win/webhook"
+      "url": "https://github.com/nagisa-win/webhook",
+      "desc_en": "A webhook receiver and forwarder for personal use",
+      "category_en": "Infra"
     },
     {
       "repo": "node-proxy",
@@ -156,7 +188,9 @@
       "stars": 0,
       "updated": "2024-07-01",
       "category": "基础设施",
-      "url": "https://github.com/nagisa-win/node-proxy"
+      "url": "https://github.com/nagisa-win/node-proxy",
+      "desc_en": "A lightweight proxy for CORS and forwarding",
+      "category_en": "Infra"
     },
     {
       "repo": "openclaw-uninstaller",
@@ -165,7 +199,9 @@
       "stars": 0,
       "updated": "2026-03-11",
       "category": "基础设施",
-      "url": "https://github.com/nagisa-win/openclaw-uninstaller"
+      "url": "https://github.com/nagisa-win/openclaw-uninstaller",
+      "desc_en": "Remove OpenClaw from a system completely",
+      "category_en": "Infra"
     }
   ]
 }

@@ -7,6 +7,7 @@
 body {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
   min-height: 100svh;
 }
 
@@ -16,6 +17,7 @@ body {
   z-index: 10;
   border-bottom: 1px solid var(--line);
   background: color-mix(in srgb, var(--bg) 84%, transparent);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
 
@@ -321,5 +323,41 @@ body {
   .sidebar,
   .console {
     position: static;
+  }
+}
+
+/* 锚点跳转避开 sticky 顶栏 */
+[id] {
+  scroll-margin-top: 72px;
+}
+
+/* ---------- 窄屏：三栏折成单栏后，教程与 Playground 依次排开 ---------- */
+
+@media (max-width: 620px) {
+  .topbar__inner {
+    gap: var(--gap-2);
+  }
+
+  .brand,
+  .back {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .topbar .label {
+    display: none;
+  }
+
+  .sidebar ol {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sidebar {
+    max-height: 40vh;
+    overflow-y: auto;
+  }
+
+  #code {
+    min-height: 140px;
   }
 }

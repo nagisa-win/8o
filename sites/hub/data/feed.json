@@ -8,7 +8,8 @@
       "at": "2026-11-25",
       "url": "https://github.com/nagisa-win/gold-board",
       "language": "Swift",
-      "stars": 1
+      "stars": 1,
+      "desc_en": "A macOS floating widget: gold price, wake timer, trackpad haptics"
     },
     {
       "repo": "mobile-photo-cleanup-kit",
@@ -16,7 +17,8 @@
       "at": "2026-11-17",
       "url": "https://github.com/nagisa-win/mobile-photo-cleanup-kit",
       "language": "Python",
-      "stars": 0
+      "stars": 0,
+      "desc_en": "Web-first photo dedupe and thumbnail cleanup for Android over ADB"
     },
     {
       "repo": "dsh-animal-island-theme",
@@ -24,7 +26,8 @@
       "at": "2026-11-06",
       "url": "https://github.com/nagisa-win/dsh-animal-island-theme",
       "language": "CSS",
-      "stars": 0
+      "stars": 0,
+      "desc_en": "An Animal Island style theme for DeepSeek Harness"
     },
     {
       "repo": "skkill",
@@ -32,7 +35,8 @@
       "at": "2026-11-06",
       "url": "https://github.com/nagisa-win/skkill",
       "language": "TypeScript",
-      "stars": 2
+      "stars": 2,
+      "desc_en": "A skill manager for every agent, using package.json as the version control"
     },
     {
       "repo": "better-coloros",
@@ -40,7 +44,8 @@
       "at": "2026-11-02",
       "url": "https://github.com/nagisa-win/better-coloros",
       "language": "Kotlin",
-      "stars": 0
+      "stars": 0,
+      "desc_en": "An LSPosed plugin collection for ColorOS: write the missing features yourself"
     },
     {
       "repo": "oppo-camera-normalization",
@@ -48,7 +53,8 @@
       "at": "2026-10-27",
       "url": "https://github.com/nagisa-win/oppo-camera-normalization",
       "language": "Kotlin",
-      "stars": 0
+      "stars": 0,
+      "desc_en": "Normalize the file names coming out of the OPPO camera"
     },
     {
       "repo": "cli-tools",
@@ -56,7 +62,8 @@
       "at": "2026-06-24",
       "url": "https://github.com/nagisa-win/cli-tools",
       "language": "Shell",
-      "stars": 3
+      "stars": 3,
+      "desc_en": "Small command-line scripts in bash and Python that survived daily use"
     },
     {
       "repo": "Rime-Pro-Dict",
@@ -64,7 +71,8 @@
       "at": "2026-06-01",
       "url": "https://github.com/nagisa-win/Rime-Pro-Dict",
       "language": "Vue",
-      "stars": 0
+      "stars": 0,
+      "desc_en": "Automatically generated professional dictionaries for the Rime IME"
     },
     {
       "repo": "mermaid-render",
@@ -72,7 +80,8 @@
       "at": "2026-04-21",
       "url": "https://github.com/nagisa-win/mermaid-render",
       "language": "TypeScript",
-      "stars": 1
+      "stars": 1,
+      "desc_en": "Turn Mermaid source into diagrams and export PNG or JPG"
     },
     {
       "repo": "fanzha-skill",
@@ -80,7 +89,8 @@
       "at": "2026-04-14",
       "url": "https://github.com/nagisa-win/fanzha-skill",
       "language": "Shell",
-      "stars": 3
+      "stars": 3,
+      "desc_en": "An anti-fraud skill pack: scam signals and a decision flow agents can follow"
     }
   ],
   "releases": [

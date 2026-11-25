@@ -7,6 +7,7 @@
 body {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
   min-height: 100svh;
 }
 
@@ -16,6 +17,7 @@ body {
   z-index: 20;
   border-bottom: 1px solid var(--line);
   background: color-mix(in srgb, var(--bg) 84%, transparent);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
 
@@ -47,12 +49,15 @@ body {
 }
 
 .topnav a {
+  flex: 0 0 auto;
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.14em;
   color: var(--ink-dim);
   padding-block: 4px;
   border-bottom: 1px solid transparent;
+  /* 中文导航项在窄屏会被压成一字一行，禁止换行 */
+  white-space: nowrap;
   transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 
@@ -608,5 +613,36 @@ select:focus {
 
   .sec-grid {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* 锚点跳转避开 sticky 顶栏 */
+[id] {
+  scroll-margin-top: 72px;
+}
+
+/* ---------- 窄屏顶栏：品牌与返回固定，导航横向可滑 ---------- */
+
+@media (max-width: 620px) {
+  .topbar__inner {
+    gap: var(--gap-3);
+  }
+
+  .brand,
+  .back {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .topnav {
+    gap: var(--gap-3);
+    margin-inline-start: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .topnav::-webkit-scrollbar {
+    display: none;
   }
 }

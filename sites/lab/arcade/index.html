@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>小品舱 · lab.8o.nz</title>
-    <meta name="description" content="实验室小品舱：从旧作品迁过来的小游戏、视觉玩具与速查资料，全部纯前端，排行榜走 8o.nz 自己的边缘数据。" />
+    <meta name="description" content="实验室小品舱：小游戏、视觉玩具与可检索的速查资料，全部纯前端直接跑，排行榜与投票实时统计。" />
     <meta name="theme-color" content="#05070d" />
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/ui/8o.css" />
@@ -27,29 +27,29 @@
         <p class="label">// BAY-06 · ARCADE</p>
         <h1>小品舱</h1>
         <p class="lede">
-          以前散在别处的小玩意，剥掉平台运行时后搬到这里。排行榜与投票不再依赖平台数据，
-          走的是本站自己的边缘存储，数据留在自己域名下。
+          能动手玩的小玩意：小游戏、视觉玩具，还有几份可以随手查的手册。
+          排行榜与投票实时统计，数据留在自己域名下。
         </p>
 
-        <h2 class="arcade-title label">玩法 · 已接数据层</h2>
+        <h2 class="arcade-title label">玩法 · 有排行榜</h2>
         <div class="bays">
           <a class="bay" href="brake-master/">
-            <div class="bay__top mono"><span>GAME</span><span class="bay__state ok">KV 排行</span></div>
+            <div class="bay__top mono"><span>GAME</span><span class="bay__state ok">有排行</span></div>
             <h3>急刹挑战</h3>
             <p>车速冲过 100 后按住刹车，踩狠了会断踏板。记录从 100 掉到 0 的用时。</p>
           </a>
           <a class="bay" href="speed-keeper/">
-            <div class="bay__top mono"><span>GAME</span><span class="bay__state ok">KV 排行</span></div>
+            <div class="bay__top mono"><span>GAME</span><span class="bay__state ok">有排行</span></div>
             <h3>车速保持挑战</h3>
             <p>跟着每 10 秒刷新的限速牌把车速稳在区间内，超出 20% 即失败。</p>
           </a>
           <a class="bay" href="popo-ad-challenge/">
-            <div class="bay__top mono"><span>GAME</span><span class="bay__state ok">KV 排行</span></div>
+            <div class="bay__top mono"><span>GAME</span><span class="bay__state ok">有排行</span></div>
             <h3>开屏广告大挑战</h3>
             <p>15 关找关闭按钮，越往后越刁钻，记录通关数与用时。</p>
           </a>
           <a class="bay" href="cola-vote/">
-            <div class="bay__top mono"><span>VOTE</span><span class="bay__state ok">KV 投票</span></div>
+            <div class="bay__top mono"><span>VOTE</span><span class="bay__state ok">实时票数</span></div>
             <h3>可乐大投票</h3>
             <p>投票并看实时比例，一人一票记在自己的域名下。</p>
           </a>
@@ -104,13 +104,10 @@
           <a class="bay" href="https://cljs.8o.nz/">
             <div class="bay__top mono"><span>DOC</span><span class="bay__state ok">独立站</span></div>
             <h3>ClojureScript 自学站</h3>
-            <p>分八章教程，代码可直接运行——已经重做并搬去 cljs.8o.nz。</p>
+            <p>分八章教程，代码可直接运行——完整版在 cljs.8o.nz。</p>
           </a>
         </div>
 
-        <p class="note mono">
-          迁移方式：只复制静态文件、删除平台运行时引用、接上本地兼容层；页面自己的业务代码一行没改。
-        </p>
       </section>
     </main>
 

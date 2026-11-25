@@ -9,12 +9,20 @@
       "kind": "entry",
       "accent": "cyan",
       "tags": [
-        "Workers",
-        "Edge",
-        "Vanilla JS"
+        "边缘渲染",
+        "零依赖",
+        "暗亮双主题"
       ],
       "url": "https://8o.nz/",
-      "status": "live"
+      "status": "live",
+      "title_en": "Observatory",
+      "desc_en": "You are here. The entry point to every subdomain, project and live status, served from the Cloudflare edge.",
+      "tags_en": [
+        "Edge-rendered",
+        "Zero deps",
+        "Dark / Light"
+      ],
+      "kind_en": "ENTRY"
     },
     {
       "id": "profile",
@@ -25,27 +33,42 @@
       "accent": "rose",
       "tags": [
         "2077 UI",
-        "Vanilla",
+        "原生 JS",
         "GitHub Pages"
       ],
       "url": "https://www.8o.nz/",
-      "status": "live"
+      "status": "live",
+      "title_en": "Personal Dossier",
+      "desc_en": "A Cyberpunk 2077 style personal page: stat panels, mission log, braindance replays. One codebase builds the public and private variants.",
+      "tags_en": [
+        "2077 UI",
+        "Vanilla JS",
+        "GitHub Pages"
+      ],
+      "kind_en": "PROFILE"
     },
     {
       "id": "lab",
       "host": "lab.8o.nz",
       "title": "Web 实验室",
-      "desc": "五个舱段的 Web 实验室：浏览器内训练神经网络、安全工具箱、V8 快照本地解析、WebUSB 直连安卓跑 ADB、WebRTC 点对点传文件。",
+      "desc": "六个舱段的实验场：浏览器内训练神经网络、安全工具箱、V8 快照解析、WebUSB 直连安卓跑 ADB、WebRTC 传文件、小品舱。",
       "kind": "lab",
       "accent": "violet",
       "tags": [
         "手写反向传播",
         "WebUSB · ADB",
-        "WebRTC",
-        "Web Worker"
+        "WebRTC"
       ],
       "url": "https://lab.8o.nz/",
-      "status": "live"
+      "status": "live",
+      "title_en": "Web Lab",
+      "desc_en": "Six bays: train a neural net in the browser, a security toolbox, V8 heap snapshot analysis, WebUSB into real ADB on Android, WebRTC transfer, and an arcade.",
+      "tags_en": [
+        "Hand-written backprop",
+        "WebUSB · ADB",
+        "WebRTC"
+      ],
+      "kind_en": "LAB"
     },
     {
       "id": "mermaid",
@@ -60,7 +83,15 @@
         "Vite"
       ],
       "url": "https://mermaid.8o.nz/",
-      "status": "live"
+      "status": "live",
+      "title_en": "Mermaid Renderer",
+      "desc_en": "Monaco editor with live preview. Turn text into diagrams and export PNG or JPG, with drafts kept locally.",
+      "tags_en": [
+        "Monaco",
+        "Mermaid",
+        "Vite"
+      ],
+      "kind_en": "TOOL"
     },
     {
       "id": "calc",
@@ -71,11 +102,19 @@
       "accent": "amber",
       "tags": [
         "Jison",
-        "AST",
+        "LALR",
         "Parser"
       ],
       "url": "https://calc.8o.nz/",
-      "status": "live"
+      "status": "live",
+      "title_en": "Expression Bench",
+      "desc_en": "Take an expression apart: the real token stream, the grammar, the LALR table and the result. Hand-written Jison grammar.",
+      "tags_en": [
+        "Jison",
+        "LALR",
+        "Parser"
+      ],
+      "kind_en": "TOOL"
     },
     {
       "id": "skills",
@@ -90,7 +129,15 @@
         "Agents"
       ],
       "url": "https://skills.8o.nz/",
-      "status": "live"
+      "status": "live",
+      "title_en": "Skill Packs",
+      "desc_en": "A skill manager and registry for coding agents. package.json as the version control, one command to install globally.",
+      "tags_en": [
+        "CLI",
+        "npm",
+        "Agents"
+      ],
+      "kind_en": "TOOL"
     },
     {
       "id": "status",
@@ -105,7 +152,15 @@
         "Observability"
       ],
       "url": "https://status.8o.nz/",
-      "status": "live"
+      "status": "live",
+      "title_en": "Site Status",
+      "desc_en": "Checks every subdomain every 15 minutes: status code, latency and TLS. History is public.",
+      "tags_en": [
+        "Cron",
+        "KV",
+        "Observability"
+      ],
+      "kind_en": "SERVICE"
     },
     {
       "id": "cljs",
@@ -120,21 +175,38 @@
         "Playground"
       ],
       "url": "https://cljs.8o.nz/",
-      "status": "live"
+      "status": "live",
+      "title_en": "ClojureScript Course",
+      "desc_en": "An eight-chapter ClojureScript tutorial where every snippet runs in the page on a local Clojure interpreter. Code never leaves the browser.",
+      "tags_en": [
+        "ClojureScript",
+        "SCI",
+        "Playground"
+      ],
+      "kind_en": "LEARN"
     },
     {
-      "id": "notes",
+      "id": "router",
       "host": "v.8o.nz",
-      "title": "笔记与实验",
-      "desc": "原来的 v88to.me 迁到这里：docsify 驱动的笔记站，含 Web Router 等长期维护的条目。",
-      "kind": "notes",
+      "title": "今天吃什么",
+      "desc": "按星期几把你送去该去的地方：周四肯德基、周五麦当劳、周末推会员促销，另有十分之一概率随机挑一家或直接问 AI。灵感来自 v50to.me，附一篇讲路由思路的短文。",
+      "kind": "router",
       "accent": "violet",
       "tags": [
-        "docsify",
-        "GitHub Pages"
+        "跳转路由",
+        "决策树",
+        "docsify"
       ],
       "url": "https://v.8o.nz/",
-      "status": "live"
+      "status": "live",
+      "title_en": "Lunch Decider",
+      "desc_en": "Routes you somewhere based on the weekday: KFC on Thursday, McDonald's on Friday, membership promos on weekends, and one visit in ten picks at random or asks an AI. Inspired by v50to.me, with a short write-up on why a router is a fun way to kill decision fatigue.",
+      "tags_en": [
+        "Redirect router",
+        "Decision tree",
+        "docsify"
+      ],
+      "kind_en": "ROUTER"
     }
   ]
 }

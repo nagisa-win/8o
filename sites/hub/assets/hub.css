@@ -30,6 +30,7 @@
   z-index: 50;
   border-bottom: 1px solid var(--line);
   background: color-mix(in srgb, var(--bg) 78%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
   backdrop-filter: blur(14px) saturate(120%);
 }
 
@@ -139,6 +140,25 @@
   color: var(--ink-dim);
 }
 
+.lang-btn {
+  min-width: 32px;
+  height: 28px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink-dim);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.lang-btn:hover {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
 .theme-btn {
   display: inline-grid;
   place-items: center;
@@ -215,6 +235,7 @@
 
 .hero {
   position: relative;
+  min-height: 100vh;
   min-height: 100svh;
   display: grid;
   align-items: center;
@@ -856,8 +877,10 @@
   color: var(--ink-dim);
   font-size: 13px;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* 两行封顶：英文描述比中文长，单行省略会把句子截断 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .project__side {
@@ -952,8 +975,9 @@
   color: var(--ink-soft);
   font-size: 13px;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .feed__time {
@@ -1045,6 +1069,7 @@
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   background: color-mix(in srgb, var(--bg-panel) 92%, transparent);
+  -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
   color: var(--ink);
   box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.9), var(--glow-accent);
@@ -1052,6 +1077,7 @@
 
 .palette::backdrop {
   background: rgba(3, 5, 10, 0.68);
+  -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
 }
 
@@ -1154,5 +1180,206 @@
 @media (min-width: 1180px) {
   .hero__title {
     margin-inline-start: -0.06em;
+  }
+}
+
+/* ---------- 窄屏：顶栏只留必要元素，避免状态文字被挤成两行 ---------- */
+
+@media (max-width: 720px) {
+  /* 窄屏半透明顶栏会让下面的标题透出来，读感很差，直接换成实底 */
+  .topbar {
+    background: var(--bg);
+  }
+
+  .topbar__meta {
+    gap: var(--gap-2);
+    flex-wrap: nowrap;
+  }
+
+  .clock {
+    display: none;
+  }
+
+  /* 只留状态灯，文字在窄屏隐藏 */
+  #signal-text {
+    display: none;
+  }
+}
+
+@media (max-width: 460px) {
+  .kbd-btn .kbd {
+    display: none;
+  }
+
+  .brand__name {
+    display: none;
+  }
+}
+
+/* ---------- 移动端：档案改成上下两段，描述不再被挤成一列 ---------- */
+
+@media (max-width: 640px) {
+  .project {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--gap-2);
+    align-items: start;
+    padding: 12px 0;
+  }
+
+  .project:hover {
+    padding-inline: 0;
+  }
+
+  .project__desc {
+    max-width: none;
+  }
+
+  /* 语言 / star / 日期挪到名字下面一行，空间不够时自动换行 */
+  .project__side {
+    gap: var(--gap-3);
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+
+  .feed__item {
+    padding: 10px 0;
+  }
+}
+
+/* ---------- 不支持毛玻璃时：顶栏与面板换成不透明底 ---------- */
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .topbar {
+    background: var(--bg);
+    border-bottom-color: var(--line-strong);
+  }
+
+  .palette,
+  .palette::backdrop {
+    background: var(--bg-raised);
+  }
+}
+
+/* ---------- 不支持 color-mix() 时：所有半透明底改成实色 ---------- */
+
+@supports not (color: color-mix(in srgb, #fff, #000)) {
+  .topbar {
+    background: var(--bg);
+  }
+
+  .palette::backdrop {
+    background: rgba(3, 6, 12, 0.72);
+  }
+
+  .site {
+    border-color: var(--line);
+  }
+
+  .chip[aria-pressed="true"] {
+    background: var(--bg-raised);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .kbd,
+  .kbd-btn,
+  .lang-btn,
+  .theme-btn {
+    background: var(--bg-raised);
+  }
+
+  .project:hover,
+  .feed__item:hover {
+    background: var(--bg-raised);
+  }
+}
+
+/* ==================== 交互特效 ==================== */
+/* 原则：只动 transform / opacity，指针事件全部 passive，reduced-motion 下关闭 */
+
+/* 顶部滚动进度：2px，配色走 accent 到 violet */
+.scroll-bar {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 2px;
+  z-index: 60;
+  pointer-events: none;
+  background: transparent;
+}
+
+.scroll-bar i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform: scaleX(var(--scroll-progress, 0));
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--accent), var(--violet));
+  opacity: 0.85;
+}
+
+/* 鼠标柔光：只在 hero 范围内，避免整页叠一层颜色 */
+.hero__spot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 500ms var(--ease);
+  background: radial-gradient(
+    260px circle at var(--spot-x, 50%) var(--spot-y, 40%),
+    color-mix(in srgb, var(--accent) 9%, transparent),
+    transparent 68%
+  );
+}
+
+.hero[data-pointer="on"] .hero__spot {
+  opacity: 1;
+}
+
+/* 点击水波 */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 42%, transparent), transparent 70%);
+  animation: ripple-out 620ms var(--ease) forwards;
+}
+
+@keyframes ripple-out {
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+/* 键盘按下：品牌标一闪 + 遥测信号条跳动 */
+.brand.kb-pulse .brand__mark {
+  animation: kb-flash 220ms var(--ease);
+}
+
+@keyframes kb-flash {
+  50% {
+    filter: brightness(1.7);
+  }
+}
+
+.signal.kb-pulse .signal__dot {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--mint) 22%, transparent);
+}
+
+/* 键盘聚焦：只对键盘用户显示描边 */
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 65%, transparent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* 减弱动效：全部关掉 */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-bar,
+  .hero__spot,
+  .ripple {
+    display: none;
   }
 }
