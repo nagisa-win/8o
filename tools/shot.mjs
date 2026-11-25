@@ -81,6 +81,12 @@ await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-m
 await send("Page.navigate", { url }, sessionId);
 await sleep(1800);
 
+// 需要点一下再截图时，用 SHOT_EVAL 传入表达式
+if (process.env.SHOT_EVAL) {
+  await send("Runtime.evaluate", { expression: process.env.SHOT_EVAL, awaitPromise: true }, sessionId);
+  await sleep(Number(process.env.SHOT_WAIT || 700));
+}
+
 const { result } = await send(
   "Runtime.evaluate",
   { expression: "JSON.stringify({h: document.documentElement.scrollHeight, w: document.documentElement.scrollWidth})" },

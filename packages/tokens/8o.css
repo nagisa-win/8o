@@ -119,6 +119,51 @@ canvas {
   border-radius: var(--radius-sm);
 }
 
+/* ==================== 亮色主题 ==================== */
+/* 挂在 <html data-theme="light"> 上，默认暗色；切换结果由各站自己写 localStorage */
+
+[data-theme="light"] {
+  --bg: #f4f6fb;
+  --bg-raised: #ffffff;
+  --bg-panel: #ffffff;
+
+  --ink: #0b1220;
+  --ink-soft: #3b4a63;
+  --ink-dim: #6b7a93;
+
+  --line: rgba(18, 38, 74, 0.14);
+  --line-strong: rgba(18, 38, 74, 0.26);
+
+  --accent: #0a7f96;
+  --violet: #5b4bc4;
+  --mint: #0d8a58;
+  --amber: #9a6200;
+  --rose: #b81f47;
+  --steel: #5a6b82;
+
+  color-scheme: light;
+}
+
+/* 亮色下网格线更淡，避免整页发灰 */
+[data-theme="light"] body::before {
+  opacity: 0.5;
+  mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 10%, transparent 62%);
+}
+
+[data-theme="light"] .panel {
+  background: linear-gradient(180deg, #ffffff, #f7f9fe);
+  box-shadow: 0 1px 2px rgba(18, 38, 74, 0.06);
+}
+
+[data-theme="light"] .btn {
+  background: color-mix(in srgb, var(--btn-accent) 10%, #fff);
+}
+
+[data-theme="light"] ::selection {
+  background: color-mix(in srgb, var(--accent) 26%, transparent);
+  color: #04121a;
+}
+
 /* ---------- 基础文字工具 ---------- */
 
 .mono {

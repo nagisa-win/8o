@@ -36,7 +36,8 @@ const ACCENTS = {
 
 function initStars() {
   const canvas = $("#stars");
-  if (!canvas) return;
+  if (!canvas || canvas.dataset.inited === "1") return;
+  canvas.dataset.inited = "1";
 
   const ctx = canvas.getContext("2d", { alpha: true });
   let dpr = Math.min(devicePixelRatio || 1, 2);
@@ -236,6 +237,34 @@ async function probeLatency() {
   }
 }
 
+/* ==================== 主题 ==================== */
+
+const THEME_KEY = "8o-theme";
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  const btn = document.querySelector("[data-theme-toggle]");
+  if (btn) {
+    btn.setAttribute("aria-label", theme === "light" ? "切换到暗色主题" : "切换到亮色主题");
+    btn.dataset.theme = theme;
+  }
+}
+
+function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  applyTheme(saved === "light" ? "light" : "dark");
+
+  const btn = document.querySelector("[data-theme-toggle]");
+  if (!btn) return;
+  btn.addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    applyTheme(next);
+    localStorage.setItem(THEME_KEY, next);
+    // 星场在暗色下才画，切换回来要重新初始化一次
+    if (next === "dark") initStars();
+  });
+}
+
 /* ==================== 滚动显现 ==================== */
 
 function initReveal() {
@@ -409,8 +438,10 @@ function renderFeed(feed) {
     const li = document.createElement("li");
     li.className = "feed__item";
     li.innerHTML = `
-      <span class="feed__repo">${key}</span>
-      <span class="feed__text"><a href="${url}" target="_blank" rel="noreferrer">${text}</a></span>
+      <span class="feed__main">
+        <span class="feed__repo">${key}</span>
+        <span class="feed__text"><a href="${url}" target="_blank" rel="noreferrer">${text}</a></span>
+      </span>
       <span class="feed__time">${time}</span>
     `;
     return li;
@@ -555,7 +586,8 @@ function initPalette({ sites, projects }) {
 /* ==================== 启动 ==================== */
 
 async function main() {
-  initStars();
+  initTheme();
+  if (document.documentElement.dataset.theme !== "light") initStars();
   initClock();
   initReveal();
   probeLatency();
