@@ -208,6 +208,87 @@ async function apiProbe(env, url, origin, ip) {
   }
 }
 
+/* ==================== 记录接口（给实验室的小游戏用） ==================== */
+/**
+ * 极简"对象存储"：按 obj 分组存放 JSON 记录，供从 popo 迁移过来的作品复用。
+ * 只支持它们实际用到的能力：列全部 + 新建 + 按 id 更新；每条记录带 id 与 created_at。
+ */
+
+const REC_LIMIT = 400;      // 每个 obj 最多保留的记录条数
+const REC_MAX_BYTES = 2048; // 单条记录上限，防止被塞大对象
+
+function recKey(obj) {
+  return `rec:${obj}`;
+}
+
+const isPlainObj = (v) => v && typeof v === "object" && !Array.isArray(v);
+
+async function apiRecsList(env, url, origin) {
+  const obj = (url.searchParams.get("obj") || "").replace(/[^a-z0-9_-]/gi, "").slice(0, 32);
+  if (!obj) return json({ error: "obj required" }, { origin, status: 400 });
+  const limit = Math.min(Number(url.searchParams.get("limit") || 200), REC_LIMIT);
+
+  let items = [];
+  try {
+    items = (await env.CACHE.get(recKey(obj), "json")) || [];
+  } catch {
+    items = [];
+  }
+  return json({ obj, count: items.length, items: items.slice(0, limit) }, { origin, cache: "no-store" });
+}
+
+async function apiRecsCreate(env, request, origin, ip) {
+  const body = await request.json().catch(() => null);
+  if (!body || typeof body.obj !== "string" || !isPlainObj(body.data)) {
+    return json({ error: "body must be {obj, data}" }, { origin, status: 400 });
+  }
+  const obj = body.obj.replace(/[^a-z0-9_-]/gi, "").slice(0, 32);
+  const data = body.data;
+  if (JSON.stringify(data).length > REC_MAX_BYTES) {
+    return json({ error: "record too large" }, { origin, status: 413 });
+  }
+
+  const limit = await rateLimit(env, `rec:${ip}`, 120, 3600);
+  if (!limit.ok) return json({ error: "rate limited" }, { origin, status: 429 });
+
+  const record = {
+    id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
+    data,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+
+  let items = (await env.CACHE.get(recKey(obj), "json")) || [];
+  items.unshift(record);
+  if (items.length > REC_LIMIT) items = items.slice(0, REC_LIMIT);
+  await env.CACHE.put(recKey(obj), JSON.stringify(items));
+
+  return json(record, { origin });
+}
+
+async function apiRecsUpdate(env, request, origin, ip) {
+  const body = await request.json().catch(() => null);
+  if (!body || typeof body.obj !== "string" || typeof body.id !== "string" || !isPlainObj(body.patch)) {
+    return json({ error: "body must be {obj, id, patch}" }, { origin, status: 400 });
+  }
+  const obj = body.obj.replace(/[^a-z0-9_-]/gi, "").slice(0, 32);
+
+  const limit = await rateLimit(env, `rec:${ip}`, 120, 3600);
+  if (!limit.ok) return json({ error: "rate limited" }, { origin, status: 429 });
+
+  let items = (await env.CACHE.get(recKey(obj), "json")) || [];
+  const idx = items.findIndex((r) => r.id === body.id);
+  if (idx < 0) return json({ error: "record not found" }, { origin, status: 404 });
+
+  items[idx] = {
+    ...items[idx],
+    data: { ...items[idx].data, ...body.patch },
+    updated_at: new Date().toISOString(),
+  };
+  await env.CACHE.put(recKey(obj), JSON.stringify(items));
+  return json(items[idx], { origin });
+}
+
 /* ==================== 路由 ==================== */
 
 const ROUTES = {
@@ -218,6 +299,13 @@ const ROUTES = {
   "/dns": (env, url, origin) => apiDns(env, url, origin),
   "/cert": (env, url, origin) => apiCert(env, url, origin),
   "/probe": (env, url, origin, ip) => apiProbe(env, url, origin, ip),
+  "/recs": (env, url, origin) => apiRecsList(env, url, origin),
+};
+
+/** 需要写操作的路由单独登记，避免 GET 路由表被误用 */
+const WRITE_ROUTES = {
+  "/recs": (env, req, origin, ip) => apiRecsCreate(env, req, origin, ip),
+  "/recs/update": (env, req, origin, ip) => apiRecsUpdate(env, req, origin, ip),
 };
 
 export default {
@@ -234,10 +322,15 @@ export default {
     const path = url.pathname.replace(/^\/api(?=\/|$)/, "") || "/";
     const handler = ROUTES[path];
 
-    if (handler) {
-      if (request.method !== "GET") return json({ error: "method not allowed" }, { origin, status: 405 });
-      return handler(env, url, origin, ip);
+    if (handler && request.method === "GET") return handler(env, url, origin, ip);
+
+    const write = WRITE_ROUTES[path];
+    if (write) {
+      if (request.method !== "POST") return json({ error: "method not allowed" }, { origin, status: 405 });
+      return write(env, request, origin, ip);
     }
+
+    if (handler) return json({ error: "method not allowed" }, { origin, status: 405 });
 
     // api.8o.nz 根路径给出接口索引，方便别人直接看有什么
     if (url.hostname.startsWith("api.") && (path === "/" || path === "")) {
@@ -245,7 +338,7 @@ export default {
         {
           service: "8o-edge-api",
           docs: "https://8o.nz/",
-          endpoints: Object.keys(ROUTES).map((k) => `/api${k}`),
+          endpoints: [...Object.keys(ROUTES), ...Object.keys(WRITE_ROUTES).map((k) => `${k} (POST)`)].map((k) => `/api${k}`),
           limits: { probe: "20 req/h per IP, ports 22 80 443 3306 5432 6379 8080 8443 9999" },
         },
         { origin }

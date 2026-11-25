@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✦ Synthwave '86</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0020;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    font-family: 'Arial', sans-serif;
+  }
+  canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    display: block;
+  }
+  .overlay {
+    position: fixed;
+    bottom: 8%;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    text-align: center;
+    pointer-events: none;
+  }
+  .overlay h1 {
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: clamp(2.2rem, 10vw, 7rem);
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 2px #ff2a9d;
+    text-shadow:
+      0 0 20px #ff2a9d,
+      0 0 40px #ff2a9d88,
+      0 0 80px #ff2a9d44,
+      3px 3px 0 #00f0ff,
+      5px 5px 0 #00f0ff88,
+      7px 7px 0 #00f0ff44;
+    letter-spacing: 0.12em;
+    animation: neonPulse 2.5s ease-in-out infinite alternate;
+    transform: skewX(-5deg);
+  }
+  .overlay p {
+    font-size: clamp(0.5rem, 1.4vw, 1.1rem);
+    color: rgba(255, 42, 157, 0.4);
+    letter-spacing: 0.8em;
+    margin-top: 0.6rem;
+    font-family: monospace;
+  }
+  @keyframes neonPulse {
+    0%   { text-shadow: 0 0 20px #ff2a9d, 0 0 40px #ff2a9d88, 3px 3px 0 #00f0ff, 5px 5px 0 #00f0ff88; }
+    100% { text-shadow: 0 0 30px #ff6ec7, 0 0 60px #ff2a9d, 0 0 100px #ff2a9d66, 3px 3px 0 #00f0ff, 6px 6px 0 #00f0ff, 9px 9px 0 #00f0ff44; }
+  }
+  #fps {
+    position: fixed;
+    top: 14px; left: 14px;
+    z-index: 100;
+    font-family: monospace;
+    font-size: 0.6rem;
+    color: rgba(255,42,157,0.12);
+    pointer-events: none;
+  }
+</style>
+  <link rel="icon" href="/assets/favicon.svg">
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="overlay">
+  <h1>SYNTHWAVE</h1>
+  <p>✦ 霓 虹 深 处 的 永 恒 之 夜 ✦</p>
+</div>
+<div id="fps">-- FPS</div>
+<script>
+const c = document.getElementById('c');
+const ctx = c.getContext('2d');
+
+let W, H;
+function resize() {
+  W = c.width = window.innerWidth;
+  H = c.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// 鼠标
+const m = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5 };
+document.addEventListener('mousemove', e => { m.tx = e.clientX/W; m.ty = e.clientY/H; });
+document.addEventListener('touchmove', e => {
+  const t = e.touches[0];
+  m.tx = t.clientX/W; m.ty = t.clientY/H;
+}, { passive: true });
+
+// 地平线位置
+const HORIZON_RATIO = 0.52;
+
+// 星星
+const stars = Array.from({ length: 180 }, () => ({
+  x: Math.random(),
+  y: Math.random() * HORIZON_RATIO * 0.85,
+  r: Math.random() * 1.8 + 0.4,
+  s: Math.random() * 0.015 + 0.004,
+  p: Math.random() * Math.PI * 2
+}));
+
+// 流星
+class Meteor {
+  constructor() { this.reset(); }
+  reset() { this.active = false; this.cd = Math.random() * 400 + 150; }
+  fire() {
+    this.active = true;
+    this.x = Math.random() * W * 0.8 + W * 0.1;
+    this.y = Math.random() * H * 0.25;
+    this.len = Math.random() * 70 + 40;
+    this.spd = Math.random() * 10 + 8;
+    this.a = Math.PI / 4 + (Math.random() - 0.5) * 0.3;
+    this.op = 1;
+  }
+  tick() {
+    if (!this.active) { this.cd--; if (this.cd <= 0) this.fire(); return; }
+    this.x += Math.cos(this.a) * this.spd;
+    this.y += Math.sin(this.a) * this.spd;
+    this.op -= 0.006;
+    if (this.op <= 0 || this.x > W + 80 || this.y > H * 0.45) { this.active = false; this.cd = Math.random() * 500 + 200; }
+  }
+  draw() {
+    if (!this.active) return;
+    const g = ctx.createLinearGradient(this.x, this.y, this.x - this.len*Math.cos(this.a), this.y - this.len*Math.sin(this.a));
+    g.addColorStop(0, `rgba(255,255,255,${this.op})`);
+    g.addColorStop(0.4, `rgba(200,220,255,${this.op*0.5})`);
+    g.addColorStop(1, 'rgba(200,220,255,0)');
+    ctx.strokeStyle = g; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(this.x, this.y);
+    ctx.lineTo(this.x - this.len*Math.cos(this.a), this.y - this.len*Math.sin(this.a));
+    ctx.stroke();
+  }
+}
+const meteors = Array.from({ length: 4 }, () => new Meteor());
+
+// FPS
+const fpsEl = document.getElementById('fps');
+let fc = 0, lastFps = performance.now();
+
+// ========== 绘制 ==========
+function draw(t) {
+  // 鼠标平滑
+  m.x += (m.tx - m.x) * 0.04;
+  m.y += (m.ty - m.y) * 0.04;
+
+  // 透视参数（鼠标影响视点偏移）
+  const horizonY = H * HORIZON_RATIO;
+  const vpX = W/2 + (m.x - 0.5) * 120;    // 消失点 X
+  const vpY = horizonY + (m.y - 0.5) * 20; // 消失点 Y 微偏
+
+  ctx.clearRect(0, 0, W, H);
+
+  // ============================
+  // 1. 天空渐变
+  // ============================
+  const sky = ctx.createLinearGradient(0, 0, 0, horizonY);
+  sky.addColorStop(0.0, '#0a0020');
+  sky.addColorStop(0.15, '#140036');
+  sky.addColorStop(0.3, '#2d0050');
+  sky.addColorStop(0.45, '#6b0070');
+  sky.addColorStop(0.55, '#c4005a');
+  sky.addColorStop(0.7, '#ff3a22');
+  sky.addColorStop(0.85, '#ff8c00');
+  sky.addColorStop(1.0, '#ffcc44');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, horizonY);
+
+  // ============================
+  // 2. 星星
+  // ============================
+  for (const st of stars) {
+    const tw = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * 0.001 * st.s + st.p));
+    const a = tw * (1 - st.y * 0.6);
+    ctx.fillStyle = `rgba(255,255,255,${a})`;
+    ctx.beginPath();
+    ctx.arc(st.x * W, st.y * H + 10, st.r * tw, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // ============================
+  // 3. 流星
+  // ============================
+  for (const met of meteors) { met.tick(); met.draw(); }
+
+  // ============================
+  // 4. 太阳
+  // ============================
+  const sunX = W/2 + (m.x - 0.5) * 60;
+  const sunY = horizonY - 10;
+  const sunR = Math.min(W, H) * 0.14;
+
+  // 大光晕
+  for (let i = 6; i >= 1; i--) {
+    const r = sunR * (1 + i * 0.35);
+    const a = 0.05 / i;
+    const g = ctx.createRadialGradient(sunX, sunY, r*0.3, sunX, sunY, r);
+    g.addColorStop(0, `rgba(255,${200 - i*15},60,${a * 0.5})`);
+    g.addColorStop(0.6, `rgba(255,${160 - i*15},40,${a * 0.3})`);
+    g.addColorStop(1, 'rgba(255,100,20,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // 太阳本体
+  const sg = ctx.createRadialGradient(sunX - sunR*0.25, sunY - sunR*0.25, sunR*0.1, sunX, sunY, sunR);
+  sg.addColorStop(0, '#fff8e8');
+  sg.addColorStop(0.2, '#ffe066');
+  sg.addColorStop(0.45, '#ff9900');
+  sg.addColorStop(0.7, '#ff5500');
+  sg.addColorStop(1, '#cc2200');
+  ctx.fillStyle = sg;
+  ctx.beginPath();
+  ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 太阳高光
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.beginPath();
+  ctx.arc(sunX - sunR*0.22, sunY - sunR*0.25, sunR*0.3, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 太阳切片遮罩（经典 synthwave 横条纹）
+  // 在太阳区域画水平线遮罩
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(sunX, sunY, sunR * 1.02, 0, Math.PI * 2);
+  ctx.clip();
+
+  const sliceCount = 22;
+  const sliceHeight = (sunR * 2) / sliceCount;
+  const sliceTop = sunY - sunR;
+  for (let i = 0; i < sliceCount; i++) {
+    if (i % 2 === 1) {  // 每隔一条画遮罩
+      ctx.fillStyle = `rgba(10, 0, 32, ${0.3 + 0.3 * (1 - i/sliceCount)})`;
+      ctx.fillRect(sunX - sunR, sliceTop + i * sliceHeight, sunR * 2, sliceHeight + 0.5);
+    }
+  }
+  ctx.restore();
+
+  // ============================
+  // 5. 地平线光晕
+  // ============================
+  const hg = ctx.createLinearGradient(0, horizonY - 30, 0, horizonY + 60);
+  hg.addColorStop(0, 'rgba(200,40,100,0)');
+  hg.addColorStop(0.3, 'rgba(200,40,100,0.12)');
+  hg.addColorStop(0.5, 'rgba(255,80,40,0.20)');
+  hg.addColorStop(0.7, 'rgba(200,40,100,0.12)');
+  hg.addColorStop(1, 'rgba(100,0,80,0)');
+  ctx.fillStyle = hg;
+  ctx.fillRect(0, horizonY - 30, W, 90);
+
+  // ============================
+  // 6. 网格地面（透视）
+  // ============================
+  const groundTop = horizonY;
+  const groundBot = H * 1.4;
+  const gridHue = 310; // 紫色调
+
+  // 水平线数量
+  const hLines = 40;
+  // 每条水平线对应的深度 t：用平方使底部更密
+  for (let i = 0; i < hLines; i++) {
+    const t = i / hLines;
+    // 透视映射：底部密、顶部疏
+    const depth = t * t;
+    const y = groundTop + depth * (groundBot - groundTop);
+    if (y > H + 10) continue;
+
+    // 该水平线的宽度（透视收缩）
+    const halfWidth = (1 - depth) * W * 0.8 + W * 0.1;
+    const lx = vpX - halfWidth;
+    const rx = vpX + halfWidth;
+
+    // 透明度：近处亮远处暗
+    const alpha = 0.06 + 0.25 * (1 - depth);
+
+    // 主线条 - 粉紫色
+    ctx.strokeStyle = `rgba(255, 30, 160, ${alpha})`;
+    ctx.lineWidth = 1 + 2 * (1 - depth);
+    ctx.beginPath();
+    ctx.moveTo(lx, y);
+    ctx.lineTo(rx, y);
+    ctx.stroke();
+
+    // 发光线条
+    ctx.strokeStyle = `rgba(255, 30, 160, ${alpha * 0.25})`;
+    ctx.lineWidth = ctx.lineWidth + 3;
+    ctx.beginPath();
+    ctx.moveTo(lx, y);
+    ctx.lineTo(rx, y);
+    ctx.stroke();
+
+    // 水平扫描线
+    const scanY = groundTop + ((t * 997 % 1) ** 2) * (groundBot - groundTop);
+    if (Math.abs(y - scanY) < 2) {
+      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.5})`;
+      ctx.lineWidth = 2;
+      ctx.shadowColor = '#ff2a9d';
+      ctx.shadowBlur = 25;
+      ctx.beginPath();
+      ctx.moveTo(lx, y);
+      ctx.lineTo(rx, y);
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+  }
+
+  // 垂直线（从消失点辐射）
+  const vLines = 36;
+  const vAngleRange = 0.55 + 0.15 * (1 - m.y);
+
+  for (let i = 0; i < vLines; i++) {
+    const angle = -vAngleRange + (i / (vLines - 1)) * 2 * vAngleRange;
+    // 方向向量
+    const dx = Math.sin(angle);
+    const dy = Math.cos(angle);
+    if (dy < 0.01) continue;
+
+    // 从消失点出发延伸到地面底部
+    const tMax = (groundBot - vpY) / dy;
+    const x1 = vpX + dx * tMax * 0.2;
+    const y1 = vpY + dy * tMax * 0.2;
+    const x2 = vpX + dx * tMax;
+    const y2 = vpY + dy * tMax;
+
+    if (y2 < groundTop) continue;
+    if (x2 < -200 || x2 > W + 200) continue;
+
+    // 根据角度计算透明度（中间亮两边暗）
+    const centerFactor = 1 - Math.abs(angle) / vAngleRange;
+    const alpha = 0.05 + 0.18 * centerFactor * centerFactor;
+
+    // 青色线条
+    ctx.strokeStyle = `rgba(0, 230, 255, ${alpha})`;
+    ctx.lineWidth = 0.8 + 1.2 * centerFactor;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+
+    // 发光
+    ctx.strokeStyle = `rgba(0, 230, 255, ${alpha * 0.2})`;
+    ctx.lineWidth = ctx.lineWidth + 3;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+
+  // 地面半透明覆盖
+  ctx.fillStyle = 'rgba(10, 0, 32, 0.12)';
+  ctx.fillRect(0, groundTop, W, H - groundTop);
+
+  // 底部渐变
+  const bg = ctx.createLinearGradient(0, H * 0.8, 0, H);
+  bg.addColorStop(0, 'rgba(10,0,32,0)');
+  bg.addColorStop(1, 'rgba(10,0,32,0.5)');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, H * 0.8, W, H * 0.2);
+
+  // ---- 7. 泛光 ----
+  ctx.fillStyle = 'rgba(255, 42, 157, 0.015)';
+  ctx.fillRect(0, 0, W, H);
+}
+
+// ========== 动画 ==========
+function anim(t) {
+  draw(t);
+  fc++;
+  const now = performance.now();
+  if (now - lastFps >= 1000) {
+    fpsEl.textContent = `${fc} FPS`;
+    fc = 0;
+    lastFps = now;
+  }
+  requestAnimationFrame(anim);
+}
+anim(0);
+
+console.log('%c ╔══ SYNTHWAVE \'86 ══╗ ', 'font-size:30px; font-weight:bold; color:#ff2a9d; text-shadow:0 0 20px #ff2a9d, 0 0 40px #00f0ff;');
+console.log('%c 霓虹深处，永恒之夜 ', 'font-size:14px; color:#ff6ec7;');
+</script>
+</body>
+</html>

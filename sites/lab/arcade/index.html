@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>小品舱 · lab.8o.nz</title>
+    <meta name="description" content="实验室小品舱：从旧作品迁过来的小游戏、视觉玩具与速查资料，全部纯前端，排行榜走 8o.nz 自己的边缘数据。" />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/ui/8o.css" />
+    <link rel="stylesheet" href="/assets/lab.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="wrap topbar__inner">
+        <a class="brand mono" href="/"><span>8o</span> / LAB</a>
+        <nav class="topnav" aria-label="导航">
+          <a href="/#/">总览</a>
+          <a href="/arcade/" aria-current="page">小品舱</a>
+        </nav>
+        <a class="back mono" href="https://8o.nz/">← 观测站</a>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="landing">
+        <p class="label">// BAY-06 · ARCADE</p>
+        <h1>小品舱</h1>
+        <p class="lede">
+          以前散在别处的小玩意，剥掉平台运行时后搬到这里。排行榜与投票不再依赖平台数据，
+          走的是 <strong>api.8o.nz</strong> 的 KV，数据留在自己的域名下。
+        </p>
+
+        <h2 class="arcade-title label">玩法 · 已接数据层</h2>
+        <div class="bays">
+          <a class="bay" href="brake-master/">
+            <div class="bay__top mono"><span>GAME</span><span class="bay__state ok">KV 排行</span></div>
+            <h3>急刹挑战</h3>
+            <p>车速冲过 100 后按住刹车，踩狠了会断踏板。记录从 100 掉到 0 的用时。</p>
+          </a>
+          <a class="bay" href="speed-keeper/">
+            <div class="bay__top mono"><span>GAME</span><span class="bay__state ok">KV 排行</span></div>
+            <h3>车速保持挑战</h3>
+            <p>跟着每 10 秒刷新的限速牌把车速稳在区间内，超出 20% 即失败。</p>
+          </a>
+          <a class="bay" href="popo-ad-challenge/">
+            <div class="bay__top mono"><span>GAME</span><span class="bay__state ok">KV 排行</span></div>
+            <h3>开屏广告大挑战</h3>
+            <p>15 关找关闭按钮，越往后越刁钻，记录通关数与用时。</p>
+          </a>
+          <a class="bay" href="cola-vote/">
+            <div class="bay__top mono"><span>VOTE</span><span class="bay__state ok">KV 投票</span></div>
+            <h3>可乐大投票</h3>
+            <p>投票并看实时比例，一人一票记在自己的域名下。</p>
+          </a>
+        </div>
+
+        <h2 class="arcade-title label">视觉 · 点开就能玩</h2>
+        <div class="bays">
+          <a class="bay" href="flip-clock/">
+            <div class="bay__top mono"><span>TOY</span><span class="bay__state ok">交互</span></div>
+            <h3>翻页时钟</h3>
+            <p>按时分秒逐位翻页，点一下或按 T 切换亮暗，跟随系统减弱动效。</p>
+          </a>
+          <a class="bay" href="matrix-rain/">
+            <div class="bay__top mono"><span>TOY</span><span class="bay__state ok">交互</span></div>
+            <h3>矩阵雨</h3>
+            <p>绿色代码雨，鼠标划过会扰动字符流。</p>
+          </a>
+          <a class="bay" href="yanjunzhu-galaxy/">
+            <div class="bay__top mono"><span>TOY</span><span class="bay__state ok">交互</span></div>
+            <h3>星河幻境</h3>
+            <p>粒子星河，鼠标牵引，每颗粒子化作星辰。</p>
+          </a>
+          <a class="bay" href="synthwave-86/">
+            <div class="bay__top mono"><span>TOY</span><span class="bay__state ok">交互</span></div>
+            <h3>Synthwave 86</h3>
+            <p>霓虹网格与合成波氛围，致敬 86 年的视觉想象。</p>
+          </a>
+          <a class="bay" href="liang-calibrator/">
+            <div class="bay__top mono"><span>TOY</span><span class="bay__state ok">交互</span></div>
+            <h3>滑动变祖器</h3>
+            <p>拖滑杆看梁系强度变化，带实时图形反馈。</p>
+          </a>
+          <a class="bay" href="dodo-html/">
+            <div class="bay__top mono"><span>PAGE</span><span class="bay__state ok">交互</span></div>
+            <h3>山河如画</h3>
+            <p>山水茶道的诗意页面，带轻微交互与转场。</p>
+          </a>
+        </div>
+
+        <h2 class="arcade-title label">资料 · 可检索</h2>
+        <div class="bays">
+          <a class="bay" href="git-cheatsheet/">
+            <div class="bay__top mono"><span>DOC</span><span class="bay__state ok">可搜索</span></div>
+            <h3>Git 常用命令速查</h3>
+            <p>按命令或用途搜索，点一下直接复制。</p>
+          </a>
+          <a class="bay" href="autoid-handbook/">
+            <div class="bay__top mono"><span>DOC</span><span class="bay__state ok">可检索</span></div>
+            <h3>自动识别技术速查手册</h3>
+            <p>条码、RFID、NFC 的术语卡片，含编码标准与扫描接口对比。</p>
+          </a>
+          <a class="bay" href="cljs-learning-station/">
+            <div class="bay__top mono"><span>DOC</span><span class="bay__state ok">自学站</span></div>
+            <h3>ClojureScript 自学站</h3>
+            <p>分章节的 ClojureScript 学习路径与练习。</p>
+          </a>
+        </div>
+
+        <p class="note mono">
+          迁移方式：只复制静态文件、删除平台运行时引用、接上本地兼容层；页面自己的业务代码一行没改。
+        </p>
+      </section>
+    </main>
+
+    <footer class="footer wrap mono">
+      <span>lab.8o.nz</span><span>·</span><span>小品舱</span>
+    </footer>
+  </body>
+</html>

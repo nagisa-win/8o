@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>滑动变祖器</title>
+<style>
+html,body { margin:0; padding:0; }
+body { background:#e8e9e5; }
+#app { min-height:100svh; }
+.experience {
+  --strength: 0; --stage-progress: 0;
+  --ink: #171816; --muted: #70746f; --accent: #b52b24; --gold: #c19a49; --thumb-bg: #e8e9e5;
+  isolation: isolate; min-height: 100svh; color: var(--ink);
+  background: radial-gradient(circle at 50% 46%,#ffffffa6 0 18%,#0000 52%),#e8e9e5;
+  grid-template-rows: auto minmax(0,1fr) auto auto;
+  padding: 30px clamp(22px,4vw,62px) 20px;
+  transition: color .42s; display: grid; position: relative; overflow: hidden;
+  font-family: 'PingFang SC','Microsoft YaHei',sans-serif;
+}
+.experience:before {
+  z-index:-2; content:""; opacity: calc(var(--strength) * .94);
+  background: radial-gradient(circle at 50% 45%,#3b2c24 0,#1d1918 34%,#111 74%),#111;
+  transition: opacity .14s linear; position:absolute; inset:0;
+}
+.experience:after {
+  z-index:5; pointer-events:none; content:""; mix-blend-mode:soft-light; opacity:.28;
+  background-image: repeating-linear-gradient(0deg,#ffffff04 0 1px,#0000 1px 4px),radial-gradient(circle at 22% 18%,#ffffff14 0 1px,#0000 1.5px);
+  background-size:auto,7px 7px; position:absolute; inset:0;
+}
+.experience[data-stage="4"],.experience[data-stage="5"] { --ink:#f4f1e8; --muted:#b8b4a9; --thumb-bg:#1a1715; }
+.experience[data-stage="5"] { --accent:#c19a49; }
+.masthead { z-index:10; justify-content:space-between; align-items:flex-start; gap:32px; display:flex; position:relative; }
+.eyebrow { color:var(--muted); letter-spacing:.22em; margin:0 0 5px; font-family:SFMono-Regular,Consolas,monospace; font-size:10px; transition:color .36s; }
+.experience h1 { letter-spacing:-.09em; margin:0; font-family:'Songti SC',STSong,SimSun,serif; font-size:clamp(34px,4.5vw,64px); font-weight:800; line-height:.95; }
+.level-meter { text-align:right; border-top:1px solid; min-width:118px; padding-top:3px; font-family:SFMono-Regular,Consolas,monospace; display:grid; }
+.level-meter span { color:var(--muted); letter-spacing:.16em; font-size:10px; }
+.level-output { font-variant-numeric:tabular-nums; letter-spacing:-.04em; margin-top:4px; font-size:clamp(16px,2vw,23px); }
+.portrait-zone { z-index:1; flex-direction:column; justify-content:center; align-items:center; min-height:0; padding-top:4px; display:flex; position:relative; }
+.stage-ghost { z-index:-1; color:currentColor; letter-spacing:-.16em; text-align:center; white-space:nowrap; width:100%; opacity:calc(.035 + var(--strength) * .025); transform:translate(-50%,-50%) scale(calc(.95 + var(--strength) * .08)); transform-origin:50%; margin:0; font-family:'Songti SC',STSong,SimSun,serif; font-size:clamp(150px,27vw,420px); font-weight:900; line-height:.7; transition:opacity .18s; position:absolute; top:44%; left:50%; }
+.portrait-shell { aspect-ratio:1; filter:drop-shadow(0 28px 38px #1214121f); width:min(49vh,550px,76vw); max-width:100%; position:relative; }
+.portrait-shell:before { z-index:3; border:1px solid color-mix(in srgb, currentColor 16%, transparent); content:""; pointer-events:none; position:absolute; inset:0; }
+.portrait-shell:after { z-index:3; content:""; opacity:.42; pointer-events:none; background:linear-gradient(90deg,currentColor 0 12px,#0000 12px calc(100% - 12px),currentColor calc(100% - 12px)); height:1px; position:absolute; top:50%; left:-13px; right:-13px; }
+.portrait-canvas { z-index:1; object-fit:cover; background:radial-gradient(circle at 50% 38%,#f7f7f5,#cfd1cf 70%); width:100%; height:100%; display:block; position:relative; }
+.imperial-halo { z-index:0; opacity:0; transform:rotate(calc(var(--strength) * 28deg)) scale(.92); background:radial-gradient(circle,#0000 54%,#c19a4926 54.4% 55.4%,#0000 55.8%),conic-gradient(#0000,#c19a4938,#0000 18% 32%,#c19a492b,#0000 52% 74%,#c19a4933,#0000); border:1px solid #c19a498c; border-radius:50%; transition:opacity .5s,transform .7s; position:absolute; inset:-9%; }
+.experience[data-stage="5"] .imperial-halo { opacity:.8; transform:rotate(calc(var(--strength) * 28deg)) scale(1); }
+.scan-grid { z-index:2; pointer-events:none; mix-blend-mode:screen; opacity:calc(.15 - var(--strength) * .08); background:linear-gradient(90deg,#0000 49.88%,#ffffff26 50%,#0000 50.12%),linear-gradient(#0000 49.88%,#ffffff1c 50%,#0000 50.12%); position:absolute; inset:0; }
+.frame-corner { z-index:4; opacity:.72; border-color:currentColor; width:19px; height:19px; position:absolute; }
+.frame-corner--tl { border-top:2px solid; border-left:2px solid; top:-7px; left:-7px; }
+.frame-corner--tr { border-top:2px solid; border-right:2px solid; top:-7px; right:-7px; }
+.frame-corner--bl { border-bottom:2px solid; border-left:2px solid; bottom:-7px; left:-7px; }
+.frame-corner--br { border-bottom:2px solid; border-right:2px solid; bottom:-7px; right:-7px; }
+.load-state { z-index:6; color:#f4f1e8; letter-spacing:.08em; background:#171816e0; place-items:center; font-family:SFMono-Regular,Consolas,monospace; font-size:12px; display:grid; position:absolute; inset:0; }
+.load-state[hidden] { display:none; }
+.load-state.is-error { color:#fff1ef; background:#7e1e19eb; }
+.stage-readout { grid-template-columns:1fr auto 1fr; align-items:baseline; width:min(49vh,550px,76vw); margin-top:12px; display:grid; }
+.stage-readout>span { color:var(--muted); letter-spacing:.13em; text-transform:uppercase; font-family:SFMono-Regular,Consolas,monospace; font-size:9px; }
+.stage-index { text-align:right; }
+.stage-name { color:currentColor; letter-spacing:-.08em; text-align:center; min-width:3.5em; text-shadow:0 0 calc(var(--strength) * 24px) #c19a4975; margin:0; font-family:'Songti SC',STSong,SimSun,serif; font-size:clamp(38px,5.2vh,58px); font-weight:900; line-height:.9; }
+.experience[data-stage="5"] .stage-name { color:#d5b56e; }
+.control-panel { --rail-inset:13px; z-index:10; width:min(760px,100%); margin:6px auto 0; position:relative; }
+.range-wrap { height:48px; position:relative; }
+.tick-track { top:12px; right:var(--rail-inset); left:var(--rail-inset); pointer-events:none; justify-content:space-between; align-items:center; height:24px; display:flex; position:absolute; }
+.tick { opacity:.2; background:currentColor; justify-self:center; width:1px; height:7px; transition:height .12s,opacity .12s,background .12s; display:block; }
+.tick:nth-child(6n+1) { opacity:.5; height:18px; }
+.tick.is-active { background:var(--accent); opacity:.95; height:13px; }
+.tick.is-active:nth-child(6n+1) { height:24px; }
+.strength-slider { cursor:ew-resize; appearance:none; -webkit-appearance:none; touch-action:pan-y; background:0 0; width:100%; height:48px; margin:0; position:absolute; inset:0; }
+.strength-slider:disabled { cursor:wait; }
+.strength-slider::-webkit-slider-runnable-track { background:color-mix(in srgb, currentColor 25%, transparent); height:1px; }
+.strength-slider::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; background:radial-gradient(circle, var(--accent) 0 3px, transparent 3.5px), var(--thumb-bg); border:2px solid; border-radius:50%; width:26px; height:26px; margin-top:-13px; box-shadow:0 5px 18px #00000038; }
+.strength-slider::-moz-range-track { background:color-mix(in srgb, currentColor 25%, transparent); height:1px; }
+.strength-slider::-moz-range-thumb { background:var(--accent); border:2px solid; border-radius:50%; width:22px; height:22px; box-shadow:0 5px 18px #00000038; }
+.strength-slider:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
+.stage-markers { padding:0 var(--rail-inset); justify-content:space-between; margin:-2px 0 0; list-style:none; display:flex; }
+.stage-marker { width:0; color:var(--muted); letter-spacing:.06em; text-align:center; white-space:nowrap; font-size:11px; transition:color .14s,transform .14s; transform:translate(-50%); }
+.stage-marker.is-passed { color:color-mix(in srgb, var(--accent) 70%, currentColor); }
+.stage-marker.is-current { color:currentColor; font-weight:700; transform:translate(-50%,-2px); }
+.drag-hint { color:var(--muted); letter-spacing:.12em; text-align:center; margin:10px 0 0; font-size:10px; }
+.drag-hint span { margin:0 6px; display:inline-block; }
+.footer-note { z-index:10; border-top:1px solid color-mix(in srgb, currentColor 18%, transparent); color:var(--muted); letter-spacing:.12em; justify-content:space-between; margin-top:10px; padding-top:10px; font-family:SFMono-Regular,Consolas,monospace; font-size:8px; display:flex; position:relative; }
+@media (max-width:700px) {
+  .experience { grid-template-rows:auto minmax(0,1fr) auto; padding:20px 16px 16px; }
+  .eyebrow { max-width:190px; font-size:8px; line-height:1.4; }
+  .experience h1 { font-size:clamp(34px,11vw,48px); }
+  .level-meter { min-width:84px; }
+  .level-meter span { font-size:8px; }
+  .portrait-shell,.stage-readout { width:min(78vw,50vh,430px); }
+  .portrait-zone { justify-content:center; padding-top:8px; }
+  .stage-readout>span { font-size:8px; }
+  .stage-name { font-size:clamp(36px,10vw,48px); }
+  .control-panel { margin-top:8px; }
+  .stage-marker { letter-spacing:0; font-size:9px; }
+  .footer-note { display:none; }
+}
+</style>
+  <link rel="icon" href="/assets/favicon.svg">
+</head>
+<body>
+<main id="app">
+  <div class="experience" id="experience" data-stage="0" style="--strength:0;--stage-progress:0">
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">LIANG INTENSITY CALIBRATOR</p>
+        <h1>滑动变祖器</h1>
+      </div>
+      <div class="level-meter" aria-live="polite">
+        <span>梁系强度</span>
+        <output class="level-output" id="level-output" for="strength-slider">00 / 30</output>
+      </div>
+    </header>
+
+    <section class="portrait-zone" aria-labelledby="current-stage-label">
+      <p class="stage-ghost" id="stage-ghost" aria-hidden="true">小难梁</p>
+      <div class="portrait-shell">
+        <div class="imperial-halo" aria-hidden="true"></div>
+        <canvas id="portrait-canvas" class="portrait-canvas" role="img" aria-label="当前形态：小难梁"></canvas>
+        <div class="scan-grid" aria-hidden="true"></div>
+        <span class="frame-corner frame-corner--tl" aria-hidden="true"></span>
+        <span class="frame-corner frame-corner--tr" aria-hidden="true"></span>
+        <span class="frame-corner frame-corner--bl" aria-hidden="true"></span>
+        <span class="frame-corner frame-corner--br" aria-hidden="true"></span>
+        <div class="load-state" id="load-state" role="status">载入连续祖力…</div>
+      </div>
+      <div class="stage-readout">
+        <span id="current-stage-label">当前状态</span>
+        <p class="stage-name" id="stage-name" aria-live="polite">小难梁</p>
+        <span class="stage-index" id="stage-index">阶段 01 / 06</span>
+      </div>
+    </section>
+
+    <section class="control-panel" aria-label="梁系强度控制">
+      <div class="range-wrap">
+        <div class="tick-track" id="tick-track"></div>
+        <input id="strength-slider" class="strength-slider" type="range" min="0" max="30" step="0.01"
+               value="0" disabled aria-label="梁系强度" aria-valuetext="小难梁，0 级，共 30 级">
+      </div>
+      <ol class="stage-markers" id="stage-markers"></ol>
+      <p class="drag-hint">
+        <span aria-hidden="true">←</span>
+        <span> 拖动以增强梁系浓度 </span>
+        <span aria-hidden="true">→</span>
+      </p>
+    </section>
+
+    <footer class="footer-note">
+      <span>31 级连续进化</span>
+      <span>正脸识别协议：已启用</span>
+    </footer>
+  </div>
+</main>
+<script>
+(function () {
+  'use strict';
+
+  var STORE_DRAGGED = 'liang_calibrator_dragged';
+  var STAGES = ['小难梁', '牢梁', '梁子', '梁圣', '梁神', '梁祖'];
+  var VIDEO_WEBM = 'https://lichtspektrum.github.io/liang-intensity-calibrator/video/liang-evolution.webm';
+  var VIDEO_MP4 = 'https://lichtspektrum.github.io/liang-intensity-calibrator/video/liang-evolution.mp4';
+
+  function clamp(v) { return Math.min(30, Math.max(0, v)); }
+  function pad2(n) { return String(n).padStart(2, '0'); }
+
+  function derive(raw) {
+    var level = Math.round(clamp(raw));
+    var stageIndex = Math.floor(level / 6);
+    var isLast = stageIndex === STAGES.length - 1;
+    return {
+      level: level,
+      stage: STAGES[stageIndex],
+      stageIndex: stageIndex,
+      localProgress: isLast ? 0 : (level - stageIndex * 6) / 6,
+      strength: level / 30
+    };
+  }
+
+  var experience = document.getElementById('experience');
+  var levelOutput = document.getElementById('level-output');
+  var stageGhost = document.getElementById('stage-ghost');
+  var stageName = document.getElementById('stage-name');
+  var stageIndexEl = document.getElementById('stage-index');
+  var canvas = document.getElementById('portrait-canvas');
+  var loadState = document.getElementById('load-state');
+  var slider = document.getElementById('strength-slider');
+  var tickTrack = document.getElementById('tick-track');
+  var stageMarkers = document.getElementById('stage-markers');
+
+  var ticks = [];
+  for (var t = 0; t <= 30; t++) {
+    var tick = document.createElement('i');
+    tick.className = 'tick';
+    tick.dataset.level = String(t);
+    tick.setAttribute('aria-hidden', 'true');
+    tickTrack.appendChild(tick);
+    ticks.push(tick);
+  }
+
+  var markers = STAGES.map(function (name, i) {
+    var li = document.createElement('li');
+    li.className = 'stage-marker';
+    li.dataset.level = String(i * 6);
+    li.style.setProperty('--marker-index', String(i));
+    li.textContent = name;
+    stageMarkers.appendChild(li);
+    return li;
+  });
+
+  var video = document.createElement('video');
+  video.className = 'evolution-video';
+  video.preload = 'auto';
+  video.muted = true;
+  video.playsInline = true;
+  video.setAttribute('playsinline', '');
+  video.crossOrigin = 'anonymous';
+  video.tabIndex = -1;
+  video.setAttribute('aria-hidden', 'true');
+  video.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none;';
+
+  var s1 = document.createElement('source');
+  s1.src = VIDEO_WEBM;
+  s1.type = 'video/webm; codecs="vp9"';
+  var s2 = document.createElement('source');
+  s2.src = VIDEO_MP4;
+  s2.type = 'video/mp4; codecs="avc1.64001f"';
+  video.appendChild(s1);
+  video.appendChild(s2);
+  document.body.appendChild(video);
+
+  var ready = false;
+  var rafId = 0;
+  var targetTime = 0;
+
+  function draw() {
+    if (video.readyState < 2) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = Math.round(canvas.clientWidth * dpr);
+    var h = Math.round(canvas.clientHeight * dpr);
+    if (!w || !h) return;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w;
+      canvas.height = h;
+    }
+    var ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    var vw = video.videoWidth || canvas.width;
+    var vh = video.videoHeight || canvas.height;
+    var scale = Math.max(canvas.width / vw, canvas.height / vh);
+    var dw = vw * scale;
+    var dh = vh * scale;
+    ctx.drawImage(video, (canvas.width - dw) / 2, (canvas.height - dh) / 2, dw, dh);
+  }
+
+  function render(raw) {
+    if (!ready) return;
+    var duration = video.duration || 0;
+    if (!isFinite(duration) || duration <= 0) return;
+    targetTime = (clamp(raw) / 30) * duration;
+    cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(function () {
+      video.currentTime = Math.min(targetTime, Math.max(0, duration - 1 / 30));
+    });
+  }
+
+  function setStatus(opts) {
+    loadState.textContent = opts.text;
+    loadState.classList.toggle('is-error', !!opts.error);
+    if (opts.ready) {
+      loadState.setAttribute('hidden', '');
+    } else {
+      loadState.removeAttribute('hidden');
+    }
+    slider.disabled = !opts.ready;
+  }
+
+  video.addEventListener('seeked', function () {
+    draw();
+    if (typeof video.requestVideoFrameCallback === 'function') {
+      video.requestVideoFrameCallback(function () { draw(); });
+    }
+  });
+
+  video.addEventListener('loadeddata', function () {
+    ready = true;
+    draw();
+    setStatus({ ready: true, error: false, text: '连续祖力已就绪' });
+    render(Number(slider.value));
+  }, { once: true });
+
+  video.addEventListener('error', function () {
+    setStatus({ ready: false, error: true, text: '图像加载失败，请刷新重试' });
+  }, { once: true });
+
+  video.load();
+
+  var draggedSaved = false;
+  try {
+    draggedSaved = !!localStorage.getItem(STORE_DRAGGED);
+  } catch (e) { /* 隐私模式下 localStorage 不可用，忽略 */ }
+
+  function markDragged() {
+    if (draggedSaved) return;
+    draggedSaved = true;
+    try {
+      localStorage.setItem(STORE_DRAGGED, JSON.stringify({ dragged: true, firstDragAt: Date.now() }));
+    } catch (e) { /* 忽略写入失败 */ }
+  }
+
+  function update(raw) {
+    var info = derive(raw);
+    experience.dataset.stage = String(info.stageIndex);
+    experience.style.setProperty('--strength', String(info.strength));
+    experience.style.setProperty('--stage-progress', String(info.localProgress));
+    levelOutput.textContent = pad2(info.level) + ' / 30';
+    stageGhost.textContent = info.stage;
+    stageName.textContent = info.stage;
+    stageIndexEl.textContent = '阶段 ' + pad2(info.stageIndex + 1) + ' / 06';
+    canvas.setAttribute('aria-label', '当前形态：' + info.stage);
+    slider.setAttribute('aria-valuetext', info.stage + '，' + info.level + ' 级，共 30 级');
+    for (var i = 0; i < ticks.length; i++) {
+      ticks[i].classList.toggle('is-active', i <= info.level);
+    }
+    markers.forEach(function (li, i) {
+      li.classList.toggle('is-current', i === info.stageIndex);
+      li.classList.toggle('is-passed', i < info.stageIndex);
+    });
+  }
+
+  slider.addEventListener('input', function () {
+    var v = clamp(Number(slider.value));
+    update(v);
+    render(v);
+    markDragged();
+  });
+
+  window.addEventListener('resize', function () { draw(); });
+
+  update(Number(slider.value));
+})();
+</script>
+</body>
+</html>

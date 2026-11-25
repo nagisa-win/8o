@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✦ 矩阵雨</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0f;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    cursor: default;
+  }
+  canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+  }
+
+  /* ===== 覆盖层 ===== */
+  .overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%);
+  }
+
+  /* ===== 标题 ===== */
+  .title {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    text-align: center;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
+  .title h1 {
+    font-family: 'Arial Black', 'Impact', sans-serif;
+    font-size: clamp(3rem, 12vw, 9rem);
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 2px rgba(0, 255, 200, 0.5);
+    text-shadow:
+      0 0 30px rgba(0, 255, 200, 0.6),
+      0 0 60px rgba(0, 255, 200, 0.3),
+      0 0 100px rgba(0, 100, 255, 0.2);
+    letter-spacing: 0.2em;
+    animation: glitch 3s infinite;
+  }
+  .title p {
+    font-family: monospace;
+    font-size: clamp(0.6rem, 1.5vw, 1.2rem);
+    color: rgba(0, 255, 200, 0.3);
+    letter-spacing: 0.5em;
+    margin-top: 0.5rem;
+  }
+
+  @keyframes glitch {
+    0%, 90%, 100% { transform: translate(0); -webkit-text-stroke: 2px rgba(0, 255, 200, 0.5); }
+    92% { transform: translate(-3px, 2px); -webkit-text-stroke: 2px rgba(255, 0, 100, 0.7); }
+    94% { transform: translate(3px, -1px); -webkit-text-stroke: 2px rgba(0, 100, 255, 0.7); }
+    96% { transform: translate(-2px, -2px); -webkit-text-stroke: 2px rgba(0, 255, 200, 0.5); }
+    98% { transform: translate(2px, 1px); -webkit-text-stroke: 2px rgba(255, 255, 0, 0.6); }
+  }
+
+  /* ===== 底部信息 ===== */
+  .info {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    font-family: monospace;
+    font-size: 0.65rem;
+    color: rgba(0, 255, 200, 0.12);
+    letter-spacing: 0.3em;
+    pointer-events: none;
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 0.12; }
+    50% { opacity: 0.4; }
+  }
+
+  @media (max-width: 600px) {
+    .title h1 { -webkit-text-stroke: 1px rgba(0, 255, 200, 0.5); }
+  }
+</style>
+  <link rel="icon" href="/assets/favicon.svg">
+</head>
+<body>
+
+<canvas id="matrixCanvas"></canvas>
+<div class="overlay"></div>
+
+<div class="title">
+  <h1>Neo Matrix</h1>
+  <p>✦ CODE IS THE REALITY ✦</p>
+</div>
+
+<div class="info">✦ MOVE MOUSE TO DISTURB THE MATRIX ✦</div>
+
+<script>
+// ============================================================
+// 彩色矩阵雨
+// ============================================================
+const canvas = document.getElementById('matrixCanvas');
+const ctx = canvas.getContext('2d');
+
+let W, H;
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ---- 字符集 ----
+const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<>/{}[]|&^%$#@!~';
+
+// ---- 列配置 ----
+const FONT_SIZE = 14;
+const COL_WIDTH = FONT_SIZE * 1.5;
+
+// ---- 鼠标 ----
+const mouse = { x: W/2, y: H/2, radius: 80 };
+
+document.addEventListener('mousemove', e => {
+  mouse.x = e.clientX;
+  mouse.y = e.clientY;
+});
+document.addEventListener('touchmove', e => {
+  const t = e.touches[0];
+  mouse.x = t.clientX;
+  mouse.y = t.clientY;
+}, { passive: true });
+
+// ---- 雨滴 ----
+class Drop {
+  constructor(x) {
+    this.x = x;
+    this.y = Math.random() * H * -1 - FONT_SIZE;
+    this.speed = Math.random() * 8 + 4;
+    this.length = Math.floor(Math.random() * 20 + 8);
+    this.chars = [];
+    this.speeds = [];
+    for (let i = 0; i < this.length; i++) {
+      this.chars.push(chars[Math.floor(Math.random() * chars.length)]);
+      this.speeds.push(Math.random() * 2 + 0.5);
+    }
+    this.brightness = Math.random() * 0.4 + 0.3;
+    // 随机颜色方向：青/绿/紫/粉
+    const t = Math.random();
+    if (t < 0.4) this.hue = 120 + Math.random() * 40;     // 绿
+    else if (t < 0.65) this.hue = 170 + Math.random() * 30; // 青
+    else if (t < 0.85) this.hue = 270 + Math.random() * 30; // 紫
+    else this.hue = 320 + Math.random() * 30;               // 粉
+  }
+
+  update() {
+    this.y += this.speed;
+    // 每隔一阵随机换字符
+    if (Math.random() < 0.03) {
+      const idx = Math.floor(Math.random() * this.length);
+      this.chars[idx] = chars[Math.floor(Math.random() * chars.length)];
+    }
+    // 鼠标扰动
+    const dx = this.x - mouse.x;
+    const dy = this.y - mouse.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist < mouse.radius) {
+      const force = (mouse.radius - dist) / mouse.radius;
+      this.x += (dx / dist || 0) * force * 5;
+      this.speed += force * 15;
+    }
+    // 重置
+    if (this.y > H + this.length * FONT_SIZE) {
+      this.y = -this.length * FONT_SIZE - Math.random() * H * 0.3;
+      this.x = Math.floor(Math.random() * (W / COL_WIDTH)) * COL_WIDTH + COL_WIDTH / 2;
+      this.speed = Math.random() * 8 + 4;
+    }
+  }
+
+  draw() {
+    for (let i = 0; i < this.length; i++) {
+      const y = this.y - i * FONT_SIZE;
+      if (y < 0 || y > H) continue;
+
+      const distFromHead = i / this.length;
+      const alpha = (1 - distFromHead) * this.brightness;
+
+      // 头部最亮，带白色光晕
+      if (i < 2) {
+        ctx.fillStyle = `hsla(${this.hue}, 100%, 90%, ${alpha * 0.9})`;
+        ctx.shadowColor = `hsl(${this.hue}, 100%, 70%)`;
+        ctx.shadowBlur = 15;
+      } else {
+        ctx.fillStyle = `hsla(${this.hue}, 80%, ${40 + 30 * (1 - distFromHead)}%, ${alpha * 0.7})`;
+        ctx.shadowBlur = 0;
+      }
+
+      ctx.font = `${FONT_SIZE}px monospace`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(this.chars[i], this.x, y);
+    }
+    ctx.shadowBlur = 0;
+  }
+}
+
+// ---- 初始化雨滴 ----
+const colCount = Math.ceil(W / COL_WIDTH);
+const drops = [];
+for (let i = 0; i < colCount * 1.5; i++) {
+  drops.push(new Drop(Math.floor(Math.random() * colCount) * COL_WIDTH + COL_WIDTH / 2));
+}
+
+// ---- 帧率控制 ----
+let lastTime = 0;
+const INTERVAL = 40; // ~25fps 矩阵雨不需要60fps
+
+// ---- 动画循环 ----
+function animate(time) {
+  if (time - lastTime < INTERVAL) {
+    requestAnimationFrame(animate);
+    return;
+  }
+  lastTime = time;
+
+  // 半透明覆盖产生拖尾效果
+  ctx.fillStyle = 'rgba(10, 10, 15, 0.12)';
+  ctx.fillRect(0, 0, W, H);
+
+  for (const d of drops) {
+    d.update();
+    d.draw();
+  }
+
+  requestAnimationFrame(animate);
+}
+
+animate(0);
+
+// ---- 窗口变化 ----
+window.addEventListener('resize', () => {
+  resize();
+  // 补充/删除雨滴
+  const newColCount = Math.ceil(W / COL_WIDTH);
+  while (drops.length < newColCount * 1.5) {
+    drops.push(new Drop(Math.floor(Math.random() * newColCount) * COL_WIDTH + COL_WIDTH / 2));
+  }
+});
+
+// ---- 控制台彩蛋 ----
+console.log('%c ╔══ MATRIX RAIN ══╗ ', 'font-size:28px; font-weight:bold; color:#0f0; text-shadow:0 0 20px #0f0;');
+console.log('%c The Matrix has you... ', 'font-size:14px; color:#0f8;');
+</script>
+</body>
+</html>

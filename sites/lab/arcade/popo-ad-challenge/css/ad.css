@@ -1,0 +1,90 @@
+/* ---------- 广告落地页 ---------- */
+.ad-screen { position: absolute; inset: 0; z-index: 80; overflow: hidden; background: #000; animation: adIn 0.5s var(--ease-out) both; }
+@keyframes adIn { from { opacity: 0; transform: translateY(6%); } to { opacity: 1; transform: none; } }
+.ad-screen.out { animation: adOut 0.3s ease both; }
+@keyframes adOut { to { opacity: 0; transform: scale(0.96); } }
+.ad-screen .sp-creative { animation-duration: 18s; }
+.ad-top {
+  position: absolute;
+  top: calc(var(--safe-t) + 12px);
+  left: 12px;
+  right: 12px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ad-chip { height: 26px; padding: 0 10px; border-radius: 999px; display: inline-flex; align-items: center; font-size: 11px; color: rgba(255, 255, 255, 0.85); background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.ad-chip b { margin-left: 4px; color: var(--yellow); font-weight: 700; }
+.ad-top .close-btn { position: static; margin-left: auto; width: 30px; height: 30px; opacity: 0; transform: scale(0.5); transition: opacity 0.3s ease, transform 0.4s var(--ease-spring); animation: none; }
+.ad-top .close-btn.show { opacity: 1; transform: none; }
+
+.ad-headline { position: absolute; left: 22px; right: 22px; bottom: calc(var(--safe-b) + 214px); z-index: 4; color: var(--ink); animation: riseIn 0.7s 0.3s var(--ease-out) both; }
+.ad-headline h2 { margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.ad-headline h2 span { display: inline-block; max-width: 100%; white-space: nowrap; font-size: clamp(22px, 8.2vw, 34px); line-height: 1.1; font-weight: 900; letter-spacing: -0.5px; padding: 2px 10px; border-radius: 10px; }
+.ad-headline h2 .t1 { color: var(--ink); background: rgba(255, 255, 255, 0.82); }
+.ad-headline h2 .t2 { color: var(--lime); background: var(--ink); }
+.ad-headline p { display: inline-block; margin: 10px 0 0; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: rgba(255, 255, 255, 0.55); }
+
+.ad-card {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: calc(var(--safe-b) + 14px);
+  z-index: 5;
+  padding: 14px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--ink);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  animation: cardUp 0.7s 0.45s var(--ease-spring) both;
+}
+@keyframes cardUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+.ad-app { display: flex; align-items: center; gap: 12px; }
+.ad-app-ico { width: 52px; height: 52px; flex: 0 0 auto; border-radius: 15px; display: grid; place-items: center; background: var(--ink); }
+.ad-app-ico img { width: 34px; }
+.ad-app-meta { flex: 1; min-width: 0; }
+.ad-app-meta b { display: block; font-size: 16px; font-weight: 800; }
+.ad-app-meta span { display: block; margin-top: 2px; font-size: 12px; color: #656664; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ad-stars { margin-top: 4px; font-size: 11px; color: #94bf58; letter-spacing: 1px; }
+.ad-stars small { color: #90918e; letter-spacing: 0; margin-left: 4px; }
+.ad-tags { display: flex; gap: 6px; margin: 12px 0; }
+.ad-tags span { padding: 3px 8px; border-radius: 8px; font-size: 11px; background: #f1f2f0; color: #3e403c; }
+.ad-go { display: flex; align-items: center; justify-content: center; width: 100%; height: 48px; border: 0; border-radius: 14px; font-size: 15px; font-weight: 700; color: var(--lime); background: var(--ink); text-decoration: none; cursor: pointer; position: relative; overflow: hidden; }
+.ad-go::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(184, 237, 110, 0.35) 50%, transparent 70%); animation: sheen 2.2s ease-in-out infinite; }
+.ad-go:active { transform: scale(0.98); }
+
+/* ---------- 结算 / 排行榜 ---------- */
+.sheet { position: absolute; inset: 0; z-index: 90; display: flex; align-items: flex-end; justify-content: center; background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); animation: fadeIn 0.25s ease both; }
+.sheet.out { animation: fadeOut 0.25s ease both; }
+.sheet-card {
+  position: relative;
+  width: 100%;
+  max-height: 92%;
+  overflow-y: auto;
+  padding: 10px 18px calc(var(--safe-b) + 18px);
+  border-radius: 28px 28px 0 0;
+  background: var(--ink-1);
+  box-shadow: inset 0 1px 0 rgba(218, 252, 169, 0.16), 0 -20px 60px rgba(0, 0, 0, 0.5);
+  animation: sheetUp 0.55s var(--ease-out) both;
+}
+.sheet.out .sheet-card { animation: sheetDown 0.25s ease-in both; }
+@keyframes sheetDown { to { transform: translateY(100%); } }
+.sheet-grip { width: 36px; height: 4px; margin: 0 auto 16px; border-radius: 99px; background: rgba(255, 255, 255, 0.18); }
+.result-hero { position: relative; text-align: center; padding: 4px 0 16px; }
+.result-hero img { width: 74px; animation: popIn 0.6s 0.15s var(--ease-spring) both; }
+.result-kicker { margin-top: 10px; font-size: 11px; font-weight: 700; letter-spacing: 3px; color: var(--lime); }
+.result-kicker.bad { color: #ff7a9a; }
+.result-title { margin: 6px 0 4px; font-size: 24px; font-weight: 800; letter-spacing: -0.4px; }
+.result-desc { font-size: 12.5px; color: var(--t3); }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.stat { padding: 14px 12px; border-radius: 18px; background: var(--ink-2); box-shadow: inset 0 0 0 1px var(--line); animation: riseIn 0.5s var(--ease-out) both; }
+.stat:nth-child(2) { animation-delay: 0.08s; }
+.stat .k { font-size: 11px; color: var(--t3); }
+.stat .v { margin-top: 6px; font-size: 30px; line-height: 1; font-weight: 900; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.stat .v small { margin-left: 3px; font-size: 13px; font-weight: 600; color: var(--t3); letter-spacing: 0; }
+.stat.good .v { color: var(--lime); }
+.stat.warn .v { color: var(--yellow); }
+.sheet-note { margin-bottom: 14px; padding: 11px 13px; border-radius: 14px; font-size: 12px; line-height: 1.6; color: var(--t2); background: rgba(255, 255, 255, 0.04); }
+.sheet-actions { display: grid; gap: 10px; }
+.sheet-actions .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }

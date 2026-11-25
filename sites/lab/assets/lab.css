@@ -164,7 +164,8 @@ a.bay:hover {
   color: var(--ink-dim);
 }
 
-.bay h2 {
+.bay h2,
+.bay h3 {
   margin: 0;
   font-size: 19px;
   font-weight: 600;
@@ -193,6 +194,14 @@ a.bay:hover {
   font-size: 10px;
   letter-spacing: 0.06em;
   color: var(--ink-dim);
+}
+
+/* ---------- 小品舱 ---------- */
+
+.arcade-title {
+  margin: var(--gap-7) 0 var(--gap-4);
+  color: var(--accent);
+  opacity: 0.85;
 }
 
 /* ---------- 模块通用外壳 ---------- */

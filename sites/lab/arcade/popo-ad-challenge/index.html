@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="theme-color" content="#0a0f02" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="format-detection" content="telephone=no" />
+<title>开屏广告大挑战</title>
+<!-- build:begin -->
+<meta name="build" content="4dbce238" />
+<script type="importmap">
+{"imports": {
+    "/js/ads.js": "/js/ads.js?v=4dbce238",
+    "/js/levels/index.js": "/js/levels/index.js?v=4dbce238",
+    "/js/levels/l-bubble.js": "/js/levels/l-bubble.js?v=4dbce238",
+    "/js/levels/l-captcha.js": "/js/levels/l-captcha.js?v=4dbce238",
+    "/js/levels/l-compass.js": "/js/levels/l-compass.js?v=4dbce238",
+    "/js/levels/l-disc.js": "/js/levels/l-disc.js?v=4dbce238",
+    "/js/levels/l-fake-close.js": "/js/levels/l-fake-close.js?v=4dbce238",
+    "/js/levels/l-gps-compass.js": "/js/levels/l-gps-compass.js?v=4dbce238",
+    "/js/levels/l-gps.js": "/js/levels/l-gps.js?v=4dbce238",
+    "/js/levels/l-hold.js": "/js/levels/l-hold.js?v=4dbce238",
+    "/js/levels/l-mic.js": "/js/levels/l-mic.js?v=4dbce238",
+    "/js/levels/l-pinch.js": "/js/levels/l-pinch.js?v=4dbce238",
+    "/js/levels/l-rhythm.js": "/js/levels/l-rhythm.js?v=4dbce238",
+    "/js/levels/l-shake.js": "/js/levels/l-shake.js?v=4dbce238",
+    "/js/levels/l-silent.js": "/js/levels/l-silent.js?v=4dbce238",
+    "/js/levels/l-sswipe.js": "/js/levels/l-sswipe.js?v=4dbce238",
+    "/js/levels/l-swipe.js": "/js/levels/l-swipe.js?v=4dbce238",
+    "/js/levels/l-tilt.js": "/js/levels/l-tilt.js?v=4dbce238",
+    "/js/levels/l-timing.js": "/js/levels/l-timing.js?v=4dbce238",
+    "/js/levels/l-traffic.js": "/js/levels/l-traffic.js?v=4dbce238",
+    "/js/levels/shared.js": "/js/levels/shared.js?v=4dbce238",
+    "/js/main.js": "/js/main.js?v=4dbce238",
+    "/js/pop.js": "/js/pop.js?v=4dbce238",
+    "/js/sensors.js": "/js/sensors.js?v=4dbce238",
+    "/js/ui/home.js": "/js/ui/home.js?v=4dbce238",
+    "/js/ui/mascot.js": "/js/ui/mascot.js?v=4dbce238",
+    "/js/ui/overlays.js": "/js/ui/overlays.js?v=4dbce238",
+    "/js/ui/result.js": "/js/ui/result.js?v=4dbce238",
+    "/js/utils.js": "/js/utils.js?v=4dbce238"
+}}
+</script>
+<!-- build:end -->
+<link rel="icon" href="assets/popo-icon.svg" type="image/svg+xml" />
+<link rel="preload" as="image" href="images/ad-1.jpg" />
+<link rel="stylesheet" href="css/base.css?v=4dbce238" />
+<link rel="stylesheet" href="css/splash.css?v=4dbce238" />
+<link rel="stylesheet" href="css/chrome.css?v=4dbce238" />
+<link rel="stylesheet" href="css/widgets.css?v=4dbce238" />
+<link rel="stylesheet" href="css/home.css?v=4dbce238" />
+<link rel="stylesheet" href="css/overlays.css?v=4dbce238" />
+<link rel="stylesheet" href="css/ad.css?v=4dbce238" />
+<link rel="stylesheet" href="css/board.css?v=4dbce238" />
+  <script src="/assets/popo-shim.js"></script>
+</head>
+<body>
+  <div id="app">
+    <header id="hud" class="hud is-hidden">
+      <div class="hud-level">
+        <span class="hud-badge num"><span id="hud-level">1</span><small id="hud-total">/18</small></span>
+        <span id="hud-name" class="hud-name"></span>
+      </div>
+      <div class="hud-stats">
+        <span id="hud-cleared-wrap" class="hud-stat"><i></i>通关 <b id="hud-cleared" class="num">0</b></span>
+        <span id="hud-ad-wrap" class="hud-stat ad"><i></i>广告 <b id="hud-ad" class="num">0.00s</b></span>
+      </div>
+      <div class="hud-progress"><i id="hud-progress"></i></div>
+    </header>
+
+    <main id="stage" class="stage"></main>
+
+    <div id="brandbar" class="brandbar is-hidden">
+      <img src="assets/popo-logo-white.png" alt="POPO" />
+      <span class="brandbar-sep"></span>
+      <span class="brandbar-txt">开屏广告大挑战</span>
+    </div>
+
+    <footer id="tipbar" class="tipbar is-hidden">
+      <span class="tip-label">过关方法</span>
+      <span id="tip-text" class="tip-text"></span>
+    </footer>
+
+    <div id="ui-layer" class="ui-layer"></div>
+  </div>
+
+  <script type="module" src="js/main.js?v=4dbce238"></script>
+</body>
+</html>

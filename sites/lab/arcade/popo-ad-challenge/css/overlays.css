@@ -1,0 +1,96 @@
+/* ---------- 关卡转场 ---------- */
+.titlecard {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  background: var(--lime);
+  color: var(--ink);
+  clip-path: circle(0% at 50% 50%);
+  animation: wipeIn 0.55s var(--ease-out) forwards;
+}
+.titlecard.out { animation: wipeOut 0.45s cubic-bezier(0.7, 0, 0.84, 0) forwards; }
+@keyframes wipeIn { to { clip-path: circle(75% at 50% 50%); } }
+@keyframes wipeOut { from { clip-path: circle(75% at 50% 50%); } to { clip-path: circle(0% at 50% 50%); } }
+.tc-inner { text-align: center; padding: 0 30px; }
+.tc-kicker { font-size: 12px; font-weight: 700; letter-spacing: 4px; opacity: 0.6; animation: riseIn 0.5s 0.15s var(--ease-out) both; }
+.tc-no {
+  margin: 4px 0 2px;
+  font-size: 112px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -6px;
+  color: transparent;
+  -webkit-text-stroke: 2.5px var(--ink);
+  animation: noIn 0.65s 0.1s var(--ease-spring) both;
+}
+@keyframes noIn { from { opacity: 0; transform: scale(1.6); } to { opacity: 1; transform: none; } }
+.tc-name { font-size: 26px; font-weight: 800; letter-spacing: -0.4px; animation: riseIn 0.5s 0.25s var(--ease-out) both; }
+.tc-sub { margin-top: 8px; display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: rgba(10, 15, 2, 0.1); animation: riseIn 0.5s 0.32s var(--ease-out) both; }
+.tc-mascot { position: absolute; right: 22px; bottom: 26px; width: 64px; animation: mascotPeek 0.7s 0.35s var(--ease-spring) both; }
+@keyframes mascotPeek { from { opacity: 0; transform: translateY(40px) rotate(20deg); } to { opacity: 1; transform: none; } }
+
+/* ---------- 通关 ---------- */
+.clear-fx { position: absolute; inset: 0; z-index: 50; display: grid; place-items: center; pointer-events: none; }
+.clear-fx::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 46%, rgba(184, 237, 110, 0.55), rgba(10, 15, 2, 0.8) 70%); animation: fadeIn 0.2s ease both; }
+.clear-stamp {
+  position: relative;
+  width: 148px;
+  height: 148px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--lime);
+  color: var(--ink);
+  box-shadow: 0 0 0 10px rgba(184, 237, 110, 0.25), 0 0 80px rgba(184, 237, 110, 0.7);
+  animation: stamp 0.6s var(--ease-spring) both;
+}
+.clear-stamp svg { width: 46px; height: 46px; }
+.clear-stamp b { margin-top: 2px; font-size: 20px; font-weight: 900; letter-spacing: 2px; }
+.clear-plus { position: absolute; top: -8px; right: -10px; padding: 4px 9px; border-radius: 999px; background: var(--ink); color: var(--lime); font-size: 13px; font-weight: 800; animation: popIn 0.5s 0.25s var(--ease-spring) both; }
+@keyframes stamp { 0% { opacity: 0; transform: scale(2.2) rotate(-20deg); } 100% { opacity: 1; transform: none; } }
+.clear-fx.out { animation: fadeOut 0.25s ease both; }
+
+/* ---------- 失败 ---------- */
+.fail-flash { position: absolute; inset: 0; z-index: 55; pointer-events: none; box-shadow: inset 0 0 120px 30px rgba(255, 0, 64, 0.75); animation: failFlash 0.7s ease both; }
+@keyframes failFlash { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+
+.jump {
+  position: absolute;
+  inset: 0;
+  z-index: 75;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(0, 0, 0, 0.45);
+  animation: fadeIn 0.2s ease both;
+}
+.jump-sheet {
+  width: 100%;
+  padding: 22px 22px calc(var(--safe-b) + 26px);
+  border-radius: 26px 26px 0 0;
+  background: #fff;
+  color: var(--ink);
+  text-align: center;
+  animation: sheetUp 0.45s var(--ease-out) both;
+}
+@keyframes sheetUp { from { transform: translateY(100%); } to { transform: none; } }
+.jump-ico { width: 64px; height: 64px; margin: 0 auto 12px; border-radius: 18px; display: grid; place-items: center; background: var(--lime); }
+.jump-ico img { width: 40px; }
+.jump-title { font-size: 17px; font-weight: 700; }
+.jump-sub { margin-top: 6px; font-size: 12px; color: #656664; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.jump-sub i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #dfe0de; border-top-color: var(--ink); animation: spin 0.7s linear infinite; }
+.jump-bar { height: 4px; margin-top: 16px; border-radius: 99px; background: #f1f2f0; overflow: hidden; }
+.jump-bar b { display: block; height: 100%; width: 0; background: var(--lime-lo); animation: jumpBar 0.9s ease-in forwards; }
+@keyframes jumpBar { to { width: 100%; } }
+
+/* ---------- 桌面跳过 & 权限 ---------- */
+.overlay-card { position: absolute; inset: 0; z-index: 20; display: grid; place-items: center; padding: 24px; text-align: center; background: rgba(6, 9, 2, 0.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); animation: fadeIn 0.25s ease both; }
+.overlay-card > div { animation: riseIn 0.5s 0.05s var(--ease-out) both; max-width: 300px; }
+.oc-ico { width: 72px; height: 72px; margin: 0 auto 16px; border-radius: 24px; display: grid; place-items: center; font-size: 32px; background: linear-gradient(140deg, rgba(184, 237, 110, 0.28), rgba(102, 214, 255, 0.18)); box-shadow: inset 0 0 0 1px var(--line); animation: float 3s ease-in-out infinite; }
+.overlay-card h3 { margin: 0 0 8px; font-size: 19px; font-weight: 700; }
+.overlay-card p { margin: 0 0 20px; font-size: 13px; line-height: 1.65; color: var(--t2); }
+.overlay-card .btn { width: 100%; }
+.oc-warn { min-height: 18px; margin-top: 12px; font-size: 12px; color: var(--yellow); }

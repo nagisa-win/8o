@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自动识别技术速查手册</title>
+<style>
+:root{
+  --bg:#0a0e1a; --bg2:#0f1526; --panel:#131a2e; --panel2:#1a2340;
+  --line:#243154; --text:#e8edf7; --muted:#8b97b5; --faint:#5a658a;
+  --cyan:#2ee6c8; --blue:#4d8bff; --violet:#9d7bff; --pink:#ff7bb0;
+  --amber:#ffb84d; --green:#4de39a; --red:#ff6b6b;
+  --shadow:0 10px 40px rgba(0,0,0,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg); color:var(--text); line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:""; position:fixed; inset:0; z-index:-2;
+  background:
+    radial-gradient(1200px 600px at 15% -5%, rgba(77,139,255,.18), transparent 60%),
+    radial-gradient(1000px 500px at 90% 0%, rgba(46,230,200,.12), transparent 55%),
+    radial-gradient(900px 600px at 50% 110%, rgba(157,123,255,.14), transparent 60%);
+}
+body::after{
+  content:""; position:fixed; inset:0; z-index:-1; opacity:.5;
+  background-image:
+    linear-gradient(rgba(36,49,84,.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36,49,84,.35) 1px, transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(circle at 50% 30%, #000 10%, transparent 75%);
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+/* hero */
+.hero{padding:70px 0 40px;text-align:center;position:relative}
+.badge{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--cyan);
+  border:1px solid rgba(46,230,200,.3);background:rgba(46,230,200,.07);
+  padding:6px 14px;border-radius:999px;letter-spacing:.5px}
+.badge .dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.hero h1{font-size:clamp(32px,6vw,56px);font-weight:800;margin:22px 0 14px;letter-spacing:-1px;
+  background:linear-gradient(120deg,#fff 20%,var(--cyan) 55%,var(--blue) 90%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);font-size:17px;max-width:620px;margin:0 auto}
+.stats{display:flex;gap:30px;justify-content:center;flex-wrap:wrap;margin-top:34px}
+.stat b{display:block;font-size:30px;font-weight:800;color:var(--text)}
+.stat span{color:var(--faint);font-size:13px}
+
+/* controls */
+.controls{position:sticky;top:0;z-index:50;padding:16px 0;
+  background:linear-gradient(180deg,var(--bg) 60%,rgba(10,14,26,.6));
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.search{position:relative;max-width:520px;margin:0 auto 14px}
+.search input{width:100%;padding:13px 18px 13px 46px;border-radius:12px;
+  border:1px solid var(--line);background:var(--panel);color:var(--text);font-size:15px;outline:none;
+  transition:.2s}
+.search input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(46,230,200,.12)}
+.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);stroke:var(--faint)}
+.chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
+.chip{padding:7px 15px;border-radius:999px;border:1px solid var(--line);background:var(--panel);
+  color:var(--muted);font-size:13.5px;cursor:pointer;transition:.18s;user-select:none;white-space:nowrap}
+.chip:hover{border-color:var(--faint);color:var(--text)}
+.chip.on{background:linear-gradient(120deg,var(--blue),var(--cyan));color:#06121f;
+  border-color:transparent;font-weight:600;box-shadow:0 4px 16px rgba(77,139,255,.35)}
+
+/* sections */
+section{padding:40px 0}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:22px}
+.sec-head h2{font-size:22px;font-weight:700}
+.sec-head .line{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+.sec-head .count{color:var(--faint);font-size:13px}
+
+/* card grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{position:relative;background:linear-gradient(160deg,var(--panel),var(--bg2));
+  border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px;overflow:hidden;
+  transition:transform .2s,border-color .2s,box-shadow .2s}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,var(--blue));opacity:.9}
+.card:hover{transform:translateY(-4px);border-color:var(--c,var(--blue));box-shadow:var(--shadow)}
+.card .abbr{font-size:19px;font-weight:800;letter-spacing:.3px;color:var(--text)}
+.card .en{font-size:12.5px;color:var(--c,var(--blue));margin-top:3px;font-weight:600;word-break:break-word}
+.card .cn{font-size:14px;color:var(--muted);margin-top:9px}
+.card .tag{position:absolute;top:14px;right:14px;font-size:10.5px;color:var(--faint);
+  border:1px solid var(--line);padding:2px 8px;border-radius:6px}
+
+/* compare blocks */
+.cmp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.panel{background:linear-gradient(160deg,var(--panel),var(--bg2));border:1px solid var(--line);
+  border-radius:16px;padding:22px}
+.panel h3{font-size:15px;color:var(--cyan);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.panel h3 .ic{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
+  background:rgba(46,230,200,.12);font-size:15px}
+.rank{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0}
+.rank .pill{background:var(--panel2);border:1px solid var(--line);padding:5px 12px;border-radius:8px;
+  font-size:13px;font-weight:600}
+.rank .gt{color:var(--amber);font-weight:700}
+.kv{display:flex;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.kv:last-child{border:none}
+.kv b{color:var(--text);min-width:90px}
+.kv span{color:var(--muted)}
+.vs-row{display:flex;gap:14px;flex-wrap:wrap}
+.vs-col{flex:1;min-width:140px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px}
+.vs-col h4{font-size:14px;margin-bottom:8px;color:var(--text)}
+.vs-col ul{list-style:none;font-size:13px;color:var(--muted)}
+.vs-col li{padding:3px 0 3px 18px;position:relative}
+.vs-col li::before{content:"";position:absolute;left:2px;top:11px;width:6px;height:6px;border-radius:50%;background:var(--c,var(--blue))}
+
+/* formula */
+.formula{text-align:center;padding:30px}
+.formula .eq{font-size:30px;font-family:"Cambria Math","Times New Roman",serif;margin:14px 0;color:var(--text)}
+.formula .eq i{color:var(--cyan)}
+.formula .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px}
+.formula .frac .num{border-bottom:2px solid var(--muted);padding:0 8px}
+.formula .frac .den{padding:0 8px}
+.formula .note{color:var(--faint);font-size:13.5px;max-width:520px;margin:10px auto 0}
+
+/* footer */
+footer{text-align:center;padding:50px 0 60px;color:var(--faint);font-size:13px;border-top:1px solid var(--line);margin-top:40px}
+footer .bubble{font-size:15px;color:var(--muted);margin-bottom:6px}
+.hidden{display:none!important}
+.empty{text-align:center;color:var(--faint);padding:40px;font-size:15px}
+
+/* generator */
+.gen{background:linear-gradient(160deg,var(--panel),var(--bg2));border:1px solid var(--line);
+  border-radius:20px;padding:24px;box-shadow:var(--shadow)}
+.gtypes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.gtype{padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);
+  color:var(--muted);font-size:13px;cursor:pointer;transition:.16s;user-select:none;white-space:nowrap}
+.gtype small{display:block;font-size:10px;color:var(--faint);margin-top:2px;font-weight:400}
+.gtype:hover{border-color:var(--faint);color:var(--text)}
+.gtype.on{background:linear-gradient(120deg,var(--violet),var(--pink));color:#fff;border-color:transparent;
+  font-weight:600;box-shadow:0 4px 16px rgba(157,123,255,.35)}
+.gtype.on small{color:rgba(255,255,255,.8)}
+.gen-body{display:grid;grid-template-columns:1fr 1.1fr;gap:26px;align-items:start}
+.gin label{display:block;font-size:13px;color:var(--muted);margin-bottom:8px}
+.gin-wrap{display:flex;gap:8px}
+.gin input{flex:1;min-width:0;padding:13px 16px;border-radius:12px;border:1px solid var(--line);
+  background:var(--bg2);color:var(--text);font-size:15px;outline:none;transition:.2s;font-family:inherit}
+.gin input:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(157,123,255,.14)}
+.gin .ex{padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);
+  color:var(--muted);font-size:13px;cursor:pointer;white-space:nowrap;transition:.16s}
+.gin .ex:hover{color:var(--text);border-color:var(--faint)}
+.hint{font-size:12.5px;color:var(--faint);margin-top:9px;line-height:1.5}
+.err{color:var(--red);font-size:13px;min-height:18px;margin-top:10px}
+.paper{background:#fff;border-radius:14px;min-height:190px;display:grid;place-items:center;
+  padding:18px;overflow:auto}
+.paper canvas{max-width:100%;height:auto;image-rendering:crisp-edges}
+.paper .ph{color:#9aa4b2;font-size:14px;text-align:center}
+.gen-actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.btn{flex:1;min-width:130px;padding:12px 16px;border-radius:12px;border:1px solid var(--line);
+  background:var(--panel2);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;
+  transition:.16s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{border-color:var(--faint);transform:translateY(-1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn.primary{background:linear-gradient(120deg,var(--blue),var(--cyan));color:#06121f;border-color:transparent}
+.btn.primary:hover{box-shadow:0 6px 18px rgba(77,139,255,.35)}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);
+  background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:11px 20px;
+  border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:200;box-shadow:var(--shadow)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:760px){.gen-body{grid-template-columns:1fr;gap:18px}}
+@media(max-width:600px){
+  .hero{padding:48px 0 30px}
+  .stats{gap:22px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .card{padding:15px 14px}
+  .gen{padding:18px 15px}
+  .gin-wrap{flex-direction:column}
+  .gin .ex{padding:11px}
+}
+</style>
+  <link rel="icon" href="/assets/favicon.svg">
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <span class="badge"><span class="dot"></span>AUTO-ID · 自动识别技术</span>
+    <h1>条码 · RFID · NFC 速查手册</h1>
+    <p>把一张密密麻麻的学习笔记，整理成可检索、可对比的术语卡片，并内置真实可用的条码生成器。</p>
+    <div class="stats">
+      <div class="stat"><b id="stTerms">0</b><span>术语卡片</span></div>
+      <div class="stat"><b id="stCats">0</b><span>知识分类</span></div>
+      <div class="stat"><b>13</b><span>可生成码制</span></div>
+    </div>
+  </div>
+</header>
+
+<section class="wrap">
+  <div class="sec-head"><h2>条码生成器</h2><div class="line"></div><span class="count">选码制 · 输内容 · 出图片</span></div>
+  <div class="gen">
+    <div class="gtypes" id="gtypes"></div>
+    <div class="gen-body">
+      <div>
+        <div class="gin">
+          <label id="ginLabel">输入内容</label>
+          <div class="gin-wrap">
+            <input id="ginInput" type="text" autocomplete="off" placeholder="输入要编码的内容">
+            <button class="ex" id="ginEx">填示例</button>
+          </div>
+          <div class="hint" id="ginHint"></div>
+          <div class="err" id="ginErr"></div>
+        </div>
+        <div class="gen-actions">
+          <button class="btn primary" id="btnDl">下载图片</button>
+          <button class="btn" id="btnCopy">复制图片</button>
+        </div>
+      </div>
+      <div class="paper" id="paper">
+        <canvas id="gcanvas" style="display:none"></canvas>
+        <div class="ph" id="gph">在左侧输入内容，这里会实时生成条码</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="controls">
+  <div class="wrap">
+    <div class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="text" placeholder="搜索缩写 / 英文 / 中文，例如 RFID、耦合、EPC …">
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+</div>
+
+<main class="wrap" id="cards"></main>
+
+<section class="wrap">
+  <div class="sec-head"><h2>对比速记</h2><div class="line"></div><span class="count">考点归纳</span></div>
+  <div class="cmp-grid">
+    <div class="panel">
+      <h3><span class="ic">📊</span>一维条码的两大编码方式</h3>
+      <div class="kv"><b>宽度调节码</b><span>25 码、交叉 25 码、ITF-14、39 码、Coda-bar</span></div>
+      <div class="kv"><b>模块组配码</b><span>EAN-13/8、UPC-A/E、128 码</span></div>
+    </div>
+    <div class="panel">
+      <h3><span class="ic">⚡</span>二维码性能排序</h3>
+      <div style="font-size:13px;color:var(--faint);margin-bottom:6px">识读速度</div>
+      <div class="rank"><span class="pill">QR Code</span><span class="gt">&gt;</span><span class="pill">PDF417</span></div>
+      <div style="font-size:13px;color:var(--faint);margin:10px 0 6px">数据容量</div>
+      <div class="rank"><span class="pill">QR Code</span><span class="gt">&gt;</span><span class="pill">Code25/39</span><span class="gt">&gt;</span><span class="pill">MaxiCode</span></div>
+      <div style="font-size:13px;color:var(--faint);margin:10px 0 6px">数据密度</div>
+      <div class="rank"><span class="pill">QR Code</span><span class="gt">&gt;</span><span class="pill">Code25/39</span></div>
+    </div>
+    <div class="panel">
+      <h3><span class="ic">🧩</span>常见二维码一览</h3>
+      <div class="kv"><b>QR Code</b><span>矩阵式，识读快、容量大，日常扫码首选</span></div>
+      <div class="kv"><b>PDF417</b><span>多行堆叠式，容量大，用于证件、物流单</span></div>
+      <div class="kv"><b>Data Matrix</b><span>矩阵式，面积小、密度高，工业零件打标</span></div>
+      <div class="kv"><b>Aztec</b><span>中心定位、无需静空区，交通票务/登机牌</span></div>
+      <div class="kv"><b>MaxiCode</b><span>固定尺寸、蜂窝状，快递自动分拣</span></div>
+    </div>
+    <div class="panel">
+      <h3><span class="ic">🔌</span>扫描枪接口：RS-232 vs PS/2</h3>
+      <div class="vs-row">
+        <div class="vs-col" style="--c:var(--violet)"><h4>RS-232</h4><ul>
+          <li>接口复杂</li><li>不可直接输入</li><li>可用于解码汉字</li></ul></div>
+        <div class="vs-col" style="--c:var(--green)"><h4>PS/2</h4><ul>
+          <li>接口简单</li><li>可直接输入</li><li>不可解码汉字</li></ul></div>
+      </div>
+    </div>
+    <div class="panel formula">
+      <h3 style="justify-content:center"><span class="ic">📐</span>扫描景深（瑞利长度）</h3>
+      <div class="eq">2<i>Z</i><sub>0</sub> =
+        <span class="frac"><span class="num">2&pi;<i>W</i><sub>0</sub><sup>2</sup></span><span class="den">&lambda;</span></span>
+      </div>
+      <div class="note"><i>W</i>₀ 为光束束腰半径，&lambda; 为波长。束腰越大、波长越短，景深越长，可识读的距离范围越宽。</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="bubble">🫧 泡泡出品 · 把笔记变成作品</div>
+  <div>自动识别技术速查手册 · 内容整理自学习笔记，供复习参考</div>
+</footer>
+
+<script src="JsBarcode.all.min.js"></script>
+<script src="qrgen.js"></script>
+<script src="bwip-js.min.js"></script>
+<script>
+const DATA=[
+ {g:"标准与组织",c:"var(--cyan)",items:[
+   {a:"AID",en:"Automatic Identification",cn:"自动识别（技术总称）"},
+   {a:"GS1",en:"Global Standard",cn:"全球统一标识系统/组织"},
+   {a:"UCC",en:"Uniform Code Council",cn:"美国统一代码委员会"},
+   {a:"EAN",en:"European Article Numbering",cn:"欧洲（国际）物品编码协会"},
+   {a:"ANCC",en:"Article Numbering Center of China",cn:"中国物品编码中心"},
+ ]},
+ {g:"商品与贸易编码",c:"var(--blue)",items:[
+   {a:"UPC",en:"Universal Product Code",cn:"通用产品代码"},
+   {a:"GTIN",en:"Global Trade Item Number",cn:"全球贸易项目代码"},
+   {a:"SSCC",en:"Serial Shipping Container Code",cn:"系列货运包装箱代码"},
+   {a:"AI",en:"Application Identifier",cn:"应用标识符"},
+   {a:"GLN",en:"Global Location Number",cn:"全球位置码"},
+   {a:"GSRN",en:"Global Service Relation Number",cn:"全球服务关系代码"},
+   {a:"ISBN",en:"International Standard Book Number",cn:"国际标准书号"},
+ ]},
+ {g:"条码符号",c:"var(--violet)",items:[
+   {a:"PDF417",en:"Portable Data File 417",cn:"便携数据文件，多行堆叠式二维码"},
+   {a:"QR Code",en:"Quick Response Code",cn:"快速响应码，识读快、容量大"},
+   {a:"Data Matrix",en:"Data Matrix",cn:"矩阵式二维码，面积小、密度高"},
+   {a:"Aztec",en:"Aztec Code",cn:"中心定位，无需静空区，多用于票务"},
+   {a:"MaxiCode",en:"Maxi Code",cn:"固定尺寸，蜂窝状，用于快递分拣"},
+   {a:"BPS",en:"Bar-code Positioning System",cn:"条码定位系统"},
+ ]},
+ {g:"RFID 基础",c:"var(--amber)",items:[
+   {a:"RFID",en:"Radio Frequency Identification",cn:"射频识别"},
+   {a:"Tag",en:"Transponder",cn:"电子标签 / 应答器"},
+   {a:"EAS",en:"Electronic Article Surveillance",cn:"电子商品防盗"},
+   {a:"AFI",en:"Application Field Identifier",cn:"应用族标识"},
+   {a:"DSFID",en:"Data Saved Format Identifier",cn:"数据存储格式标识"},
+   {a:"RSSI",en:"Received Signal Strength Indicator",cn:"接收信号强度指示"},
+   {a:"EPC",en:"Electronic Product Code",cn:"产品电子代码"},
+ ]},
+ {g:"RFID 协议与耦合",c:"var(--pink)",items:[
+   {a:"RTF",en:"Reader Talks First",cn:"读写器先发言"},
+   {a:"TTF",en:"Tag Talks First",cn:"标签先发言"},
+   {a:"Closed-Coupled",en:"Closed Coupled",cn:"密耦合（最近距离）"},
+   {a:"Proximity",en:"Proximity",cn:"近耦合"},
+   {a:"Vicinity",en:"Vicinity",cn:"远耦合"},
+ ]},
+ {g:"NFC 与近场技术",c:"var(--green)",items:[
+   {a:"NFC",en:"Near Field Communication",cn:"近场通信"},
+   {a:"HCE",en:"Host-based Card Emulation",cn:"基于主机的卡模拟"},
+   {a:"WCT",en:"Wireless Charge Technology",cn:"无线充电技术"},
+ ]},
+ {g:"EPC 编码体系",c:"var(--cyan)",items:[
+   {a:"S(GTIN/GLN)",en:"Serialized",cn:"序列化的 GTIN / GLN"},
+   {a:"GRAI",en:"Global Returnable Asset Identifier",cn:"全球可回收资产标识"},
+   {a:"GIAI",en:"Global Individual Asset Identifier",cn:"全球单个资产标识"},
+   {a:"GDTI",en:"Global Document Type Identifier",cn:"全球文档类型标识"},
+   {a:"GID",en:"General Identifier",cn:"通用标识符"},
+ ]},
+];
+
+const cardsEl=document.getElementById('cards');
+const chipsEl=document.getElementById('chips');
+let active="全部", query="";
+
+const allItems=DATA.flatMap(s=>s.items.map(i=>({...i,g:s.g,c:s.c})));
+document.getElementById('stTerms').textContent=allItems.length;
+document.getElementById('stCats').textContent=DATA.length;
+
+const cats=["全部",...DATA.map(s=>s.g)];
+cats.forEach(cat=>{
+  const b=document.createElement('button');
+  b.className="chip"+(cat==="全部"?" on":"");
+  b.textContent=cat;
+  b.onclick=()=>{active=cat;[...chipsEl.children].forEach(c=>c.classList.remove('on'));b.classList.add('on');render();};
+  chipsEl.appendChild(b);
+});
+
+function render(){
+  const q=query.trim().toLowerCase();
+  cardsEl.innerHTML="";
+  let total=0;
+  DATA.forEach(sec=>{
+    if(active!=="全部" && active!==sec.g) return;
+    const items=sec.items.filter(it=>!q||
+      (it.a+it.en+it.cn+sec.g).toLowerCase().includes(q));
+    if(!items.length) return;
+    total+=items.length;
+    const h=document.createElement('div');
+    h.className="sec-head";
+    h.innerHTML=`<h2>${sec.g}</h2><div class="line"></div><span class="count">${items.length} 条</span>`;
+    const sc=document.createElement('section');sc.style.padding="24px 0";
+    const g=document.createElement('div');g.className="grid";
+    items.forEach(it=>{
+      const d=document.createElement('div');d.className="card";d.style.setProperty('--c',sec.c);
+      d.innerHTML=`<span class="tag">${sec.g}</span>
+        <div class="abbr">${it.a}</div>
+        <div class="en">${it.en}</div>
+        <div class="cn">${it.cn}</div>`;
+      g.appendChild(d);
+    });
+    sc.appendChild(h);sc.appendChild(g);cardsEl.appendChild(sc);
+  });
+  if(!total) cardsEl.innerHTML='<div class="empty">没有匹配的术语，换个关键词试试 🔍</div>';
+}
+document.getElementById('q').addEventListener('input',e=>{query=e.target.value;render();});
+render();
+
+/* ---------- 条码生成器 ---------- */
+const GTYPES=[
+  {id:"CODE128",label:"Code 128",kind:"bar",hint:"支持任意 ASCII 字符（字母、数字、符号），是最常用的通用一维码。",ex:"AUTO-ID-2024"},
+  {id:"CODE39", label:"Code 39", kind:"bar",hint:"支持数字、大写字母及 - . $ / + % 空格，属宽度调节码。",ex:"CODE39"},
+  {id:"EAN13",  label:"EAN-13",  kind:"bar",hint:"12 位数字（自动补校验位），商品常用，属模块组配码。",ex:"690123456789"},
+  {id:"EAN8",   label:"EAN-8",   kind:"bar",hint:"7 位数字（自动补校验位），用于小包装商品。",ex:"9638507"},
+  {id:"UPC",    label:"UPC-A",   kind:"bar",hint:"11 位数字（自动补校验位），北美通用产品代码。",ex:"01234567890"},
+  {id:"ITF",    label:"交叉 25 码",kind:"bar",hint:"交叉二五码，仅数字且位数须为偶数，属宽度调节码。",ex:"1234567890"},
+  {id:"ITF14",  label:"ITF-14",  kind:"bar",hint:"13 位数字（自动补校验位），用于物流包装箱。",ex:"1234567890123"},
+  {id:"codabar",label:"Codabar", kind:"bar",hint:"数字与 - $ : / . +，以 A-D 作起止符，用于血库、图书。",ex:"A20240101B"},
+  {id:"MSI",    label:"MSI",     kind:"bar",hint:"仅数字，常用于仓储货架标签。",ex:"1234567"},
+  {id:"QR",     label:"QR Code", kind:"qr", hint:"快速响应码，可编码网址、文本、任意字符，容量大、识读快。",ex:"https://autoid-handbook.popo.baidu-int.com"},
+  {id:"pdf417", label:"PDF417",  kind:"bwip",hint:"多行堆叠式二维码（便携数据文件），容量大，常用于证件、物流单。",ex:"PDF417 便携数据文件 2024"},
+  {id:"datamatrix",label:"Data Matrix",kind:"bwip",hint:"矩阵式二维码，面积小、密度高，适合电子元件、工业零件打标。",ex:"DataMatrix-2024"},
+  {id:"azteccode",label:"Aztec",kind:"bwip",hint:"中心定位的矩阵式二维码，无需静空区，常用于交通票务、登机牌。",ex:"AZTEC-TICKET-888"},
+];
+let gCur=GTYPES[0], gReady=false;
+const gtypesEl=document.getElementById('gtypes');
+const ginInput=document.getElementById('ginInput');
+const ginLabel=document.getElementById('ginLabel');
+const ginHint=document.getElementById('ginHint');
+const ginErr=document.getElementById('ginErr');
+const canvas=document.getElementById('gcanvas');
+const gph=document.getElementById('gph');
+const btnDl=document.getElementById('btnDl');
+const btnCopy=document.getElementById('btnCopy');
+
+GTYPES.forEach(t=>{
+  const b=document.createElement('button');
+  b.className="gtype"+(t===gCur?" on":"");
+  b.innerHTML=`${t.label}<small>${t.kind==='bar'?'一维码':'二维码'}</small>`;
+  b.onclick=()=>{gCur=t;[...gtypesEl.children].forEach(c=>c.classList.remove('on'));b.classList.add('on');syncType();};
+  gtypesEl.appendChild(b);
+});
+
+function syncType(){
+  ginLabel.textContent=`输入内容 · ${gCur.label}`;
+  ginHint.textContent=gCur.hint;
+  ginInput.placeholder=`例如：${gCur.ex}`;
+  draw();
+}
+function setReady(v){gReady=v;btnDl.disabled=!v;btnCopy.disabled=!v;}
+function showPlaceholder(msg){
+  canvas.style.display="none";gph.style.display="block";
+  gph.textContent=msg||"在左侧输入内容，这里会实时生成条码";setReady(false);
+}
+function fail(msg){ginErr.textContent=msg;showPlaceholder("无法生成，请检查输入");}
+
+function draw(){
+  ginErr.textContent="";
+  const val=ginInput.value.trim();
+  if(!val){showPlaceholder();return;}
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(gCur.kind==='qr'){
+    try{
+      const qr=qrcode(0,'M');qr.addData(val);qr.make();
+      const url=qr.createDataURL(7,4);
+      const img=new Image();
+      img.onload=()=>{
+        canvas.width=img.width;canvas.height=img.height;
+        const c=canvas.getContext('2d');c.fillStyle="#fff";c.fillRect(0,0,canvas.width,canvas.height);
+        c.drawImage(img,0,0);
+        canvas.style.display="block";gph.style.display="none";setReady(true);
+      };
+      img.src=url;
+    }catch(e){fail("内容过长，超出二维码容量上限");}
+  }else if(gCur.kind==='bwip'){
+    try{
+      bwipjs.toCanvas(canvas,{
+        bcid:gCur.id,text:val,scale:3,
+        padding:12,backgroundcolor:"FFFFFF",barcolor:"0A0E1A",
+        includetext:false
+      });
+      canvas.style.display="block";gph.style.display="none";setReady(true);
+    }catch(e){fail("输入不符合 "+gCur.label+" 的编码要求");}
+  }else{
+    try{
+      let ok=true;
+      JsBarcode(canvas,val,{
+        format:gCur.id,displayValue:true,width:2,height:95,margin:16,
+        fontSize:16,font:"monospace",background:"#ffffff",lineColor:"#0a0e1a",
+        valid:(v)=>{ok=v;}
+      });
+      if(!ok){fail("输入不符合 "+gCur.label+" 的格式要求");return;}
+      canvas.style.display="block";gph.style.display="none";setReady(true);
+    }catch(e){fail("输入不符合 "+gCur.label+" 的格式要求");}
+  }
+}
+
+function download(){
+  if(!gReady)return;
+  const a=document.createElement('a');
+  a.download=(gCur.label+"_"+ginInput.value.trim()).replace(/[^\w.\-]+/g,"_").slice(0,60)+".png";
+  a.href=canvas.toDataURL('image/png');
+  document.body.appendChild(a);a.click();a.remove();
+  toast("图片已开始下载");
+}
+function copyImg(){
+  if(!gReady)return;
+  if(!navigator.clipboard||!window.ClipboardItem){toast("当前浏览器不支持复制，请用下载");return;}
+  canvas.toBlob(async(blob)=>{
+    try{await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);toast("图片已复制到剪贴板");}
+    catch(e){toast("复制失败，请改用下载");}
+  },'image/png');
+}
+let toastTimer;
+function toast(msg){
+  let t=document.getElementById('toast');
+  if(!t){t=document.createElement('div');t.id='toast';t.className='toast';document.body.appendChild(t);}
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1900);
+}
+
+ginInput.addEventListener('input',draw);
+document.getElementById('ginEx').onclick=()=>{ginInput.value=gCur.ex;draw();};
+btnDl.onclick=download;
+btnCopy.onclick=copyImg;
+syncType();
+</script>
+</body>
+</html>

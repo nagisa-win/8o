@@ -1,0 +1,165 @@
+/* ---------- 开屏广告的固定件 ---------- */
+.sp-skip {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 12;
+  height: 30px;
+  padding: 0 4px 0 13px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.38);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: popIn 0.5s 0.35s var(--ease-spring) both;
+  cursor: pointer;
+}
+.sp-skip-n {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  background: conic-gradient(var(--lime) calc(var(--p, 0) * 1turn), rgba(255, 255, 255, 0.22) 0);
+}
+.sp-skip-n::before { content: ""; position: absolute; inset: 2px; border-radius: 50%; background: rgba(10, 15, 2, 0.88); }
+.sp-skip-n span { position: relative; }
+
+.sp-tag {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  z-index: 12;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  line-height: 14px;
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(0, 0, 0, 0.34);
+  box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.35);
+}
+
+.sp-cta {
+  position: absolute;
+  left: 50%;
+  bottom: 44px;
+  z-index: 11;
+  width: min(84%, 320px);
+  height: 54px;
+  padding: 0 18px 0 8px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.36);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.72), 0 10px 30px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transform: translateX(-50%);
+  animation: ctaIn 0.7s 0.45s var(--ease-spring) both;
+  overflow: hidden;
+  cursor: pointer;
+}
+.sp-cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  animation: sheen 2.6s 1.2s ease-in-out infinite;
+}
+.sp-cta-ico {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--lime);
+  color: var(--ink);
+  animation: tapHint 1.6s 1s ease-in-out infinite;
+}
+.sp-cta-ico svg { width: 20px; height: 20px; }
+.sp-cta-txt { flex: 1; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-cta-txt small { display: block; font-size: 11px; font-weight: 400; opacity: 0.7; margin-top: 1px; }
+.sp-cta-arrow { flex: 0 0 auto; font-size: 18px; opacity: 0.9; animation: nudge 1.2s ease-in-out infinite; }
+.sp-cta-ring {
+  position: absolute;
+  left: 50%;
+  bottom: 44px;
+  z-index: 10;
+  width: min(84%, 320px);
+  height: 54px;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
+  animation: ripple 2s 1.2s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes ctaIn { from { opacity: 0; transform: translate(-50%, 24px) scale(0.92); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes tapHint { 0%, 100% { transform: scale(1); } 15% { transform: scale(0.86); } 30% { transform: scale(1.06); } }
+@keyframes nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
+@keyframes ripple { 0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.45); } 100% { box-shadow: 0 0 0 16px rgba(255, 255, 255, 0); } }
+
+/* ---------- 底部品牌栏 ---------- */
+.brandbar {
+  position: relative;
+  z-index: 20;
+  flex: 0 0 auto;
+  height: var(--brand-h);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--ink);
+  transition: opacity 0.3s ease;
+}
+.brandbar.is-hidden { display: none; }
+.brandbar img { height: 22px; width: auto; display: block; }
+.brandbar-sep { width: 1px; height: 14px; background: rgba(255, 255, 255, 0.18); }
+.brandbar-txt { font-size: 12px; color: var(--t2); letter-spacing: 0.4px; }
+
+/* ---------- 过关方法 ---------- */
+.tipbar {
+  position: relative;
+  z-index: 30;
+  flex: 0 0 auto;
+  margin: 0 10px calc(var(--safe-b) + 10px);
+  padding: 10px 14px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 14px;
+  background: rgba(128, 132, 124, 0.38);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #fff;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.tipbar.is-hidden { display: none; }
+.tip-label { flex: 0 0 auto; padding: 2px 7px; border-radius: 6px; font-size: 11px; background: rgba(255, 255, 255, 0.18); }
+.tip-text { flex: 1 1 auto; }
+.tipbar.flash { animation: tipFlash 0.6s ease; }
+@keyframes tipFlash { 30% { background: rgba(184, 237, 110, 0.35); } }
+
+@media (max-height: 720px) {
+  :root { --brand-h: 46px; --hud-h: 44px; }
+  .brandbar img { height: 18px; }
+  .tipbar { min-height: 38px; padding: 8px 12px; margin-bottom: calc(var(--safe-b) + 8px); }
+}

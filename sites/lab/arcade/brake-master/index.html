@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>急刹挑战 · 100→0 刹停竞速</title>
+<style>
+  :root{
+    --bg:#0b0e14; --panel:#141a26; --panel2:#1b2332; --line:#273246;
+    --txt:#e8eef7; --muted:#8a97ad; --accent:#ffce3a; --danger:#ff4d4f;
+    --ok:#2fd27a; --speed:#39b6ff;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{
+    background:radial-gradient(1200px 700px at 50% -10%,#16202f 0%,var(--bg) 60%);
+    color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Segoe UI,Roboto,sans-serif;
+    display:flex;justify-content:center;padding:16px;min-height:100%;
+  }
+  .wrap{width:100%;max-width:960px;display:grid;grid-template-columns:1.3fr .9fr;gap:16px;align-items:start}
+  @media(max-width:760px){.wrap{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,var(--panel) 0%,var(--panel2) 100%);
+    border:1px solid var(--line);border-radius:18px;padding:18px}
+  .card.leader{display:flex;flex-direction:column;overflow:hidden}
+  header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  h1{font-size:20px;margin:0;letter-spacing:1px}
+  h1 .sub{display:block;font-size:12px;color:var(--muted);font-weight:400;letter-spacing:0;margin-top:3px}
+  .me{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+  .me img{width:30px;height:30px;border-radius:50%;object-fit:cover;background:#2a3346;border:1px solid var(--line)}
+  .gauges{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .speedo{position:relative;width:300px;max-width:88vw;aspect-ratio:1/0.62}
+  .speedo svg{width:100%;height:100%;overflow:visible}
+  .digi{position:absolute;left:0;right:0;bottom:4%;text-align:center}
+  .digi .v{font-size:46px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+  .digi .u{font-size:12px;color:var(--muted);letter-spacing:2px}
+  .state{font-size:14px;font-weight:600;height:20px;letter-spacing:1px}
+  .state.ok{color:var(--ok)} .state.bad{color:var(--danger)} .state.go{color:var(--accent)}
+  .meters{display:flex;gap:14px;width:100%;max-width:320px}
+  .meter{flex:1}
+  .meter label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
+  .bar{height:12px;border-radius:8px;background:#0d1420;border:1px solid var(--line);overflow:hidden;position:relative}
+  .bar > i{position:absolute;left:0;top:0;bottom:0;width:0%;border-radius:8px}
+  .bar.force > i{background:linear-gradient(90deg,#2fd27a,#ffce3a 70%,#ff4d4f)}
+  .bar.force .danger{position:absolute;right:0;top:0;bottom:0;width:12%;background:repeating-linear-gradient(45deg,rgba(255,77,79,.35),rgba(255,77,79,.35) 4px,transparent 4px,transparent 8px)}
+  .timebox{font-variant-numeric:tabular-nums;font-size:34px;font-weight:800;color:var(--accent);height:40px}
+  .timebox small{font-size:14px;color:var(--muted);font-weight:600}
+  .controls{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+  .pedal{user-select:none;cursor:pointer;width:100%;max-width:320px;height:120px;border-radius:16px;
+    border:1px solid var(--line);background:linear-gradient(180deg,#20304a,#16202f);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;
+    font-weight:800;font-size:20px;letter-spacing:2px;transition:transform .05s,box-shadow .1s,background .1s;
+    box-shadow:0 8px 0 #0c121c,0 10px 20px rgba(0,0,0,.4)}
+  .pedal small{font-size:12px;color:var(--muted);font-weight:500;letter-spacing:0}
+  .pedal.active{background:linear-gradient(180deg,#3a2a16,#2a1e10);transform:translateY(6px);box-shadow:0 2px 0 #0c121c,0 4px 10px rgba(0,0,0,.4);color:var(--accent)}
+  .pedal.disabled{opacity:.45;pointer-events:none}
+  .btn{appearance:none;border:none;cursor:pointer;border-radius:12px;padding:14px 26px;font-size:16px;font-weight:800;letter-spacing:1px;
+    background:var(--accent);color:#1a1300;transition:filter .1s,transform .05s;width:100%;max-width:320px}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt)}
+  .hint{font-size:12px;color:var(--muted);text-align:center;line-height:1.6;max-width:340px}
+  .tabs{display:flex;gap:8px;margin-bottom:12px;flex-shrink:0}
+  .tab{flex:1;text-align:center;padding:9px;border-radius:10px;border:1px solid var(--line);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer}
+  .tab.on{background:var(--accent);color:#1a1300;border-color:var(--accent)}
+  .board{display:flex;flex-direction:column;gap:6px;flex:1;min-height:120px;overflow-y:auto;padding-right:4px}
+  .board::-webkit-scrollbar{width:7px}
+  .board::-webkit-scrollbar-thumb{background:#2a3650;border-radius:4px}
+  .board::-webkit-scrollbar-track{background:transparent}
+  @media(max-width:760px){.card.leader{max-height:72vh}}
+  .row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:#0e1522;border:1px solid transparent}
+  .row.meRow{border-color:var(--accent);background:#1a1a10}
+  .row .rk{width:26px;text-align:center;font-weight:800;color:var(--muted)}
+  .row .rk.g{color:#ffce3a}.row .rk.s{color:#cdd6e4}.row .rk.b{color:#e0a05a}
+  .row img{width:28px;height:28px;border-radius:50%;object-fit:cover;background:#2a3346}
+  .row .nm{flex:1;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .row .tm{font-variant-numeric:tabular-nums;font-weight:800;color:var(--speed);font-size:14px}
+  .empty{color:var(--muted);text-align:center;padding:30px 0;font-size:13px}
+  .foot{grid-column:1/-1;text-align:center;color:var(--muted);font-size:11px}
+  .mybest{font-size:12px;color:var(--muted);margin-top:10px;text-align:center;flex-shrink:0}
+  .mybest b{color:var(--accent)}
+  .mask{position:fixed;inset:0;background:rgba(5,8,14,.72);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+  .modal{background:linear-gradient(180deg,#1b2332,#141a26);border:1px solid var(--line);border-radius:18px;padding:26px 24px;max-width:360px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .modal .mTitle{font-size:20px;font-weight:800;margin-bottom:14px;color:var(--accent)}
+  .modal .mBody{font-size:14px;color:var(--txt);line-height:1.7;margin-bottom:20px}
+  .modal .mBody b{color:var(--accent)}
+  .modal .btn{max-width:none}
+  .modal a.btn{display:block;text-decoration:none;margin-bottom:10px}
+</style>
+  <script src="/assets/popo-shim.js"></script>
+  <link rel="icon" href="/assets/favicon.svg">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>急刹挑战<span class="sub">把车从 100 km/h 刹停到 0，谁最快？</span></h1>
+    <div class="me" id="me"><img id="meAvatar" alt=""><span id="meName">加载身份中…</span></div>
+  </header>
+
+  <section class="card gauges">
+    <div class="state go" id="state">准备就绪</div>
+    <div class="speedo">
+      <svg viewBox="0 0 200 124" id="svg"></svg>
+      <div class="digi"><div class="v" id="spd">0</div><div class="u">KM / H</div></div>
+    </div>
+    <div class="timebox" id="timer">—<small> s</small></div>
+    <div class="meters">
+      <div class="meter">
+        <label><span>刹车力度</span><span id="forceVal">0 N</span></label>
+        <div class="bar force"><i id="forceBar"></i><span class="danger"></span></div>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="pedal disabled" id="pedal">制动踏板<small>按住不放 · 松开复位（空格也可）</small></div>
+      <button class="btn" id="startBtn">开始游戏</button>
+      <div class="hint" id="hint">点击开始，速度表会自动从 0 向上冲。超过 100 后踩住刹车，<b>力度越踩越大</b>，但一旦达到 <b>2000 N</b> 踏板会断裂判负。计时只统计从 100 掉到 0 的用时——越短越靠前。</div>
+    </div>
+  </section>
+
+  <section class="card leader">
+    <div class="tabs">
+      <div class="tab on" id="tabToday">今日榜</div>
+      <div class="tab" id="tabAll">总榜</div>
+    </div>
+    <div class="board" id="board"><div class="empty">加载中…</div></div>
+    <div class="mybest" id="mybest"></div>
+  </section>
+
+  <div class="foot">成绩与排名由 popo 身份实时记录 · 原创玩法实现</div>
+</div>
+<script>
+/* ====== 物理 / 玩法参数 ====== */
+// 发动机加速：ease-out（先快后慢）。a = ACCEL0 * (1 - speed/ACCEL_ASYMPTOTE)
+// 渐近线取 240(>极速)，所以车速能真正冲到 200 触发失败，而不是无限逼近
+const ACCEL_ASYMPTOTE=240;     // 加速度衰减参照速度（ease-out 形状用）
+const MAX_SPEED=200;           // 极速：到达即判定失败
+const BRAKE_MIN_SPEED=100;     // 低于此速度不允许制动
+// 刹车力度：踩下先缓后快（放慢了增长，让成绩落在 2~3 秒），松开先缓后快
+const PRESS_V0=180, PRESS_ACCEL=1400;      // 踩下：初始增长率 + 增长率的加速度（约 1.6s 顶到 2000N）
+const RELEASE_V0=400, RELEASE_ACCEL=9000;  // 松开：初始下降率 + 下降率的加速度
+const SNAP_FORCE=2000;     // 踏板断裂阈值
+const F_BAL=500;           // 平衡力度：刹车与加速持平，匀速；小于它车速上升，大于它才减速
+// 车速变化（解耦模型，F_BAL 处净加速度=0）：
+//   force < 500：净加速 = K_UP*(500-force)*accelShape(speed)，accelShape 为 ease-out（先快后慢）
+//   force > 500：净减速 = K_DOWN*(force-500)*brakeEff(speed)，brakeEff 低速更大（越慢刹停越猛）
+const K_UP=0.26;           // 加速系数：force=0 时低速加速度≈130 km/h/s
+const K_DOWN=0.04;         // 减速系数（调参以保证最优成绩≈2~3s）
+const DECEL_BASE=0.5;      // 高速段最低制动效能
+const DECEL_GAIN=1.0;      // 低速增益：越慢制动效能越高
+const DECEL_VREF=120;      // 效能参照速度（高于此速度按最低效能计）
+const START_SPEED=0;
+const GAME_VERSION='V1';   // 排行榜版本：改动加减速参数后升到 V2，与旧版本分开排名
+let TIMEOUT_MS=60000;      // 单局时限：60s 内未刹停/未断踏板/未超极速 → 终止并弹新游戏预告
+
+/* ====== 速度表绘制 ====== */
+const SVG="http://www.w3.org/2000/svg";
+const svg=document.getElementById('svg');
+const CX=100,CY=108,R=86,A0=180,A1=0; // 半圆，180°->0°
+function pol(cx,cy,r,deg){const a=deg*Math.PI/180;return[cx+r*Math.cos(a),cy-r*Math.sin(a)];}
+function val2deg(v){return A0-(A0-A1)*(Math.min(v,MAX_SPEED)/MAX_SPEED);}
+let labels=[];
+(function buildDial(){
+  // 弧背景
+  const [sx,sy]=pol(CX,CY,R,A0),[ex,ey]=pol(CX,CY,R,A1);
+  const arc=document.createElementNS(SVG,'path');
+  arc.setAttribute('d',`M ${sx} ${sy} A ${R} ${R} 0 0 1 ${ex} ${ey}`);
+  arc.setAttribute('fill','none');arc.setAttribute('stroke','#273246');arc.setAttribute('stroke-width','10');
+  arc.setAttribute('stroke-linecap','round');svg.appendChild(arc);
+  // 红区 (180~220)
+  const [rsx,rsy]=pol(CX,CY,R,val2deg(170)),[rex,rey]=pol(CX,CY,R,val2deg(MAX_SPEED));
+  const red=document.createElementNS(SVG,'path');
+  red.setAttribute('d',`M ${rsx} ${rsy} A ${R} ${R} 0 0 1 ${rex} ${rey}`);
+  red.setAttribute('fill','none');red.setAttribute('stroke','#ff4d4f');red.setAttribute('stroke-width','10');
+  red.setAttribute('stroke-linecap','round');svg.appendChild(red);
+  // 100 标记（计时起点）
+  const [hx,hy]=pol(CX,CY,R-10,val2deg(100)),[hx2,hy2]=pol(CX,CY,R+4,val2deg(100));
+  const mk=document.createElementNS(SVG,'line');
+  mk.setAttribute('x1',hx);mk.setAttribute('y1',hy);mk.setAttribute('x2',hx2);mk.setAttribute('y2',hy2);
+  mk.setAttribute('stroke','#ffce3a');mk.setAttribute('stroke-width','2.5');svg.appendChild(mk);
+  // 刻度：每 10 一根；40 最长最粗、20 居中、10 最短
+  for(let v=0;v<=MAX_SPEED;v+=10){
+    const major=v%40===0, mid=v%20===0;
+    const inner=R-(major?10:mid?7:4.5);
+    const [a,b]=pol(CX,CY,inner,val2deg(v)),[c,d]=pol(CX,CY,R,val2deg(v));
+    const t=document.createElementNS(SVG,'line');
+    t.setAttribute('x1',a);t.setAttribute('y1',b);t.setAttribute('x2',c);t.setAttribute('y2',d);
+    t.setAttribute('stroke',major?'#6b7a90':'#45515f');
+    t.setAttribute('stroke-width',major?'2':mid?'1.2':'0.7');
+    t.setAttribute('stroke-linecap','round');svg.appendChild(t);
+  }
+  // 数字：每 10 都显示，40 的倍数更大；指针靠近时放大（dock 放大效果）
+  for(let v=0;v<=MAX_SPEED;v+=10){
+    const major=v%40===0;const base=major?6.5:5;
+    const [lx,ly]=pol(CX,CY,R-21,val2deg(v));
+    const tx=document.createElementNS(SVG,'text');
+    tx.setAttribute('x',lx);tx.setAttribute('y',ly);
+    tx.setAttribute('text-anchor','middle');tx.setAttribute('dominant-baseline','central');
+    tx.setAttribute('fill','#8a97ad');tx.setAttribute('font-size',base);
+    tx.textContent=v;svg.appendChild(tx);
+    labels.push({value:v,el:tx,base});
+  }
+  // 指针
+  const needle=document.createElementNS(SVG,'line');
+  needle.setAttribute('id','needle');needle.setAttribute('x1',CX);needle.setAttribute('y1',CY);
+  const [nx,ny]=pol(CX,CY,R-14,A0);needle.setAttribute('x2',nx);needle.setAttribute('y2',ny);
+  needle.setAttribute('stroke','#39b6ff');needle.setAttribute('stroke-width','3');needle.setAttribute('stroke-linecap','round');
+  svg.appendChild(needle);
+  const hub=document.createElementNS(SVG,'circle');hub.setAttribute('cx',CX);hub.setAttribute('cy',CY);
+  hub.setAttribute('r','5');hub.setAttribute('fill','#39b6ff');svg.appendChild(hub);
+})();
+const DOCK_SIGMA=13, DOCK_BOOST=1.7;
+function updateLabels(v){
+  for(const L of labels){
+    const d=Math.abs(L.value-v);
+    const f=Math.exp(-(d*d)/(2*DOCK_SIGMA*DOCK_SIGMA));
+    L.el.setAttribute('font-size',(L.base*(1+DOCK_BOOST*f)).toFixed(2));
+    L.el.setAttribute('opacity',(0.3+0.7*f).toFixed(2));
+    L.el.setAttribute('fill',f>0.55?'#ffce3a':'#8a97ad');
+    L.el.setAttribute('font-weight',f>0.4?'800':'400');
+  }
+}
+function drawNeedle(v){const [nx,ny]=pol(CX,CY,R-14,val2deg(v));const n=document.getElementById('needle');
+  n.setAttribute('x2',nx);n.setAttribute('y2',ny);updateLabels(v);}
+
+/* ====== 游戏状态机 ====== */
+const el={state:q('state'),spd:q('spd'),timer:q('timer'),forceBar:q('forceBar'),forceVal:q('forceVal'),
+  pedal:q('pedal'),start:q('startBtn'),hint:q('hint')};
+function q(id){return document.getElementById(id);}
+
+let phase='idle';      // idle | run | done
+let speed=0, force=0, rampRate=0, dropRate=0, pressing=false, runMs=0;
+let timing=false, tStart=0, tElapsed=0, lastTs=0, armed=false;
+let resultMs=null;
+
+function setState(txt,cls){el.state.textContent=txt;el.state.className='state'+(cls?' '+cls:'');}
+function render(){
+  drawNeedle(speed);
+  el.spd.textContent=Math.round(speed);
+  el.spd.style.color = speed>170?'#ff4d4f':(speed>=100?'#ffce3a':'#39b6ff');
+  const pct=Math.min(force/SNAP_FORCE,1)*100;
+  el.forceBar.style.width=pct+'%';
+  el.forceVal.textContent=Math.round(force)+' N';
+  if(timing){el.timer.innerHTML=(tElapsed/1000).toFixed(3)+'<small> s</small>';}
+}
+
+function startGame(){
+  phase='run';speed=START_SPEED;force=0;rampRate=0;dropRate=0;pressing=false;timing=false;armed=false;
+  tElapsed=0;resultMs=null;lastTs=0;runMs=0;
+  el.pedal.classList.remove('disabled','active');
+  el.start.style.display='none';
+  el.timer.innerHTML='0.000<small> s</small>';
+  setState('加速中…速度到 100 后踩刹车','go');
+  requestAnimationFrame(loop);
+}
+
+function fail(reason){
+  phase='done';pressing=false;timing=false;
+  el.pedal.classList.add('disabled');el.pedal.classList.remove('active');
+  setState('失败：'+reason,'bad');
+  el.start.textContent='再来一次';el.start.style.display='';
+  render();
+}
+
+function succeed(){
+  phase='done';pressing=false;timing=false;
+  speed=0;resultMs=Math.round(tElapsed);
+  el.pedal.classList.add('disabled');el.pedal.classList.remove('active');
+  el.timer.innerHTML=(resultMs/1000).toFixed(3)+'<small> s</small>';
+  setState('刹停成功！用时 '+(resultMs/1000).toFixed(3)+' s','ok');
+  el.start.textContent='再来一次';el.start.style.display='';
+  render();
+  submitScore(resultMs);
+}
+
+function loop(ts){
+  if(phase!=='run'){render();return;}
+  if(!lastTs)lastTs=ts;
+  let dt=(ts-lastTs)/1000;lastTs=ts;
+  if(dt>0.1)dt=0.1; // 防止切后台后大跳
+  runMs+=dt*1000;
+  if(runMs>=TIMEOUT_MS){return timeout();} // 60s 时限：拖到底 → 终止并弹新游戏预告
+
+  const brakeEnabled = speed>=BRAKE_MIN_SPEED || armed; // 速度到 100 前（且未计时）不允许制动
+  const braking = pressing && brakeEnabled;
+
+  if(braking){
+    rampRate+=PRESS_ACCEL*dt;      // 增长率越来越大 → 力度先缓后快上升
+    force+=rampRate*dt;
+    if(force>=SNAP_FORCE){force=SNAP_FORCE;render();return fail('踏板断裂（力度超 2000 N）');}
+    el.pedal.classList.add('active');
+  }else{
+    el.pedal.classList.remove('active');
+    if(force>0){
+      dropRate+=RELEASE_ACCEL*dt;  // 下降率越来越大 → 松开后力度先缓后快回落
+      force-=dropRate*dt;
+      if(force<0)force=0;
+    }
+  }
+
+  // 车速变化：F_BAL(500N) 处刹车与发动机持平；低于它继续加速，高于它才减速
+  if(force<F_BAL){
+    const accelShape=Math.max(0,1-speed/ACCEL_ASYMPTOTE); // ease-out：先快后慢
+    const a=K_UP*(F_BAL-force)*accelShape;
+    speed+=a*dt;
+    if(speed>=MAX_SPEED){speed=MAX_SPEED;render();return fail('到达极速，车辆失控');}
+  }else{
+    const eff=DECEL_BASE+DECEL_GAIN*Math.max(0,1-speed/DECEL_VREF); // 非线性：越慢刹停越猛
+    const decel=K_DOWN*(force-F_BAL)*eff;
+    speed-=decel*dt;
+    if(speed<0)speed=0;
+  }
+
+  // 计时：制动使车速掉到 100 时开始，到 0 结束
+  if(!armed&&force>F_BAL&&speed<=BRAKE_MIN_SPEED){armed=true;timing=true;setState('计时中…','go');}
+  if(timing){tElapsed+=dt*1000;}
+  if(armed&&speed<=0){return succeed();} // 仅在计时开始后，刹停到 0 才算成功
+
+  render();
+  requestAnimationFrame(loop);
+}
+
+function timeout(){
+  phase='done';pressing=false;timing=false;
+  el.pedal.classList.add('disabled');el.pedal.classList.remove('active');
+  setState('本局已达 60 秒上限','go');
+  el.start.textContent='再来一次';el.start.style.display='';
+  render();
+  showDevDialog(); // 不记成绩，弹出新游戏预告
+}
+
+function showDevDialog(){
+  let mask=document.getElementById('devMask');
+  if(!mask){
+    mask=document.createElement('div');mask.id='devMask';mask.className='mask';
+    mask.innerHTML='<div class="modal">'+
+      '<div class="mTitle">🏁 新游戏上线啦</div>'+
+      '<div class="mBody">你坚持了整整 60 秒还没刹停——简直是「车速保持」大师！<br><br>'+
+      '快去体验新游戏 <b>《车速保持挑战》</b>：盯着限速牌把车速稳在范围内，难度逐级递增，坚持越久排名越高！</div>'+
+      '<a class="btn" href="https://speed-keeper.popo.baidu-int.com" target="_blank" rel="noopener">立即体验 →</a>'+
+      '<button class="btn ghost" id="devClose">继续急刹</button></div>';
+    document.body.appendChild(mask);
+    mask.addEventListener('click',e=>{if(e.target===mask)mask.remove();});
+    mask.querySelector('#devClose').addEventListener('click',()=>mask.remove());
+  }
+}
+
+/* 踏板按压 */
+function pressDown(){
+  if(phase!=='run')return;
+  // 防作弊：车速到 100 之前不监听制动输入。即便提前按住，越过 100 时也不会生效，
+  // 必须松开后在 100 以上重新按下才算一次有效制动。
+  if(!(speed>=BRAKE_MIN_SPEED||armed)){
+    setState('车速未到 100，制动踏板未响应','bad');
+    return;
+  }
+  pressing=true;rampRate=PRESS_V0;
+  if(!armed)setState('制动中…','');
+}
+function pressUp(){
+  if(phase!=='run')return;
+  pressing=false;dropRate=RELEASE_V0;el.pedal.classList.remove('active');
+}
+el.pedal.addEventListener('mousedown',e=>{e.preventDefault();pressDown();});
+window.addEventListener('mouseup',pressUp);
+el.pedal.addEventListener('touchstart',e=>{e.preventDefault();pressDown();},{passive:false});
+window.addEventListener('touchend',pressUp);
+window.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();if(!e.repeat)pressDown();}});
+window.addEventListener('keyup',e=>{if(e.code==='Space'){e.preventDefault();pressUp();}});
+el.start.addEventListener('click',startGame);
+render();
+</script>
+<script>
+/* ====== popo 身份 + 排行榜 ====== */
+const OBJ='score';
+const SDK=window.PopSDK||null;
+let myId=null;        // {userName,nickname,avatar}
+let allScores=[];     // 已加载的全部成绩记录
+let myRec=null;
+let curTab='today';
+
+function todayStr(){const d=new Date();const p=n=>String(n).padStart(2,'0');
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
+
+async function initIdentity(){
+  try{
+    if(SDK&&SDK.user&&SDK.user.info){
+      const me=await SDK.user.info();
+      myId={userName:me.userName||'anonymous',
+            nickname:me.nickname||me.userName||'匿名用户',
+            avatar:me.avatar||''};
+    }else{
+      // 本地预览回退（线上使用真实 popo 身份）
+      myId={userName:'preview',nickname:'本地预览',avatar:''};
+    }
+  }catch(e){myId={userName:'anonymous',nickname:'匿名用户',avatar:''};}
+  const av=document.getElementById('meAvatar');
+  if(myId.avatar){av.src=myId.avatar;}else{av.style.display='none';}
+  document.getElementById('meName').textContent='你好，'+myId.nickname;
+}
+
+async function loadScores(){
+  allScores=[];
+  if(SDK&&SDK.data&&SDK.data.find){
+    let page=1;
+    while(true){
+      let recs;
+      try{recs=await SDK.data.find(OBJ,{filter:{jsonPath:'$.state == "active"'},
+        order:[{expression:'created_at DESC'}],page,pageSize:100});}catch(e){break;}
+      if(!recs||!recs.length)break;
+      allScores=allScores.concat(recs);
+      if(recs.length<100)break;
+      page++;if(page>20)break;
+    }
+  }else{
+    try{allScores=JSON.parse(localStorage.getItem('bb_scores')||'[]');}catch(e){allScores=[];}
+  }
+  myRec=allScores.find(r=>r.data&&r.data.user_name===myId.userName&&r.data.version===GAME_VERSION)||null;
+  renderBoard();
+}
+
+function medal(i){return i===0?'g':i===1?'s':i===2?'b':'';}
+function renderBoard(){
+  const board=document.getElementById('board');
+  const today=todayStr();
+  // 只取当前版本的成绩，V1/V2 分开排名，不混排
+  let rows=allScores.map(r=>r.data).filter(d=>d&&d.version===GAME_VERSION);
+  let list;
+  if(curTab==='today'){
+    list=rows.filter(d=>d.day===today&&d.today_ms!=null)
+             .map(d=>({...d,_ms:d.today_ms}));
+  }else{
+    list=rows.filter(d=>d.best_ms!=null).map(d=>({...d,_ms:d.best_ms}));
+  }
+  list.sort((a,b)=>a._ms-b._ms);
+  if(!list.length){board.innerHTML='<div class="empty">还没有成绩，来当第一个刹停高手！</div>';}
+  else{
+    board.innerHTML=list.map((d,i)=>{
+      const me=d.user_name===myId.userName?' meRow':'';
+      const av=d.avatar?`<img src="${d.avatar}" alt="">`:`<img alt="">`;
+      return `<div class="row${me}"><div class="rk ${medal(i)}">${i+1}</div>${av}`+
+        `<div class="nm">${escapeHtml(d.nickname||d.user_name)}</div>`+
+        `<div class="tm">${(d._ms/1000).toFixed(3)} s</div></div>`;
+    }).join('');
+  }
+  const mb=document.getElementById('mybest');
+  if(myRec&&myRec.data){
+    const b=myRec.data.best_ms;const t=myRec.data.day===today?myRec.data.today_ms:null;
+    mb.innerHTML='我的最好成绩：<b>'+(b!=null?(b/1000).toFixed(3)+' s':'—')+'</b>'+
+      (t!=null?'　今日最好：<b>'+(t/1000).toFixed(3)+' s</b>':'');
+  }else{mb.textContent='';}
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+async function submitScore(ms){
+  const today=todayStr();
+  const base={user_name:myId.userName,nickname:myId.nickname,avatar:myId.avatar,version:GAME_VERSION};
+  try{
+    if(SDK&&SDK.data){
+      if(!myRec){
+        const rec=await SDK.data.create(OBJ,{...base,best_ms:ms,today_ms:ms,day:today,plays:1,state:'active'});
+        myRec=rec;allScores.push(rec);
+      }else{
+        const d=myRec.data;const patch={...base,plays:(d.plays||0)+1};
+        if(d.best_ms==null||ms<d.best_ms)patch.best_ms=ms;
+        if(d.day!==today){patch.day=today;patch.today_ms=ms;}
+        else if(d.today_ms==null||ms<d.today_ms)patch.today_ms=ms;
+        const rec=await SDK.data.update(OBJ,myRec.id,patch);
+        myRec=rec;const i=allScores.findIndex(r=>r.id===rec.id);if(i>=0)allScores[i]=rec;
+      }
+    }else{
+      // 本地回退
+      if(!myRec){myRec={id:Date.now(),data:{...base,best_ms:ms,today_ms:ms,day:today,plays:1,state:'active'}};allScores.push(myRec);}
+      else{const d=myRec.data;d.plays=(d.plays||0)+1;Object.assign(d,base);
+        if(d.best_ms==null||ms<d.best_ms)d.best_ms=ms;
+        if(d.day!==today){d.day=today;d.today_ms=ms;}else if(ms<d.today_ms)d.today_ms=ms;}
+      localStorage.setItem('bb_scores',JSON.stringify(allScores));
+    }
+  }catch(e){console.warn('提交成绩失败',e);}
+  renderBoard();
+}
+
+/* tab 切换 */
+document.getElementById('tabToday').addEventListener('click',()=>{curTab='today';
+  document.getElementById('tabToday').classList.add('on');document.getElementById('tabAll').classList.remove('on');renderBoard();});
+document.getElementById('tabAll').addEventListener('click',()=>{curTab='all';
+  document.getElementById('tabAll').classList.add('on');document.getElementById('tabToday').classList.remove('on');renderBoard();});
+
+/* 让排行榜卡片高度对齐左侧游戏卡片，内部滚动，不把页面撑高 */
+function syncBoardHeight(){
+  const left=document.querySelector('.card.gauges');
+  const right=document.querySelector('.card.leader');
+  if(!left||!right)return;
+  if(window.innerWidth>760){right.style.height=left.offsetHeight+'px';}else{right.style.height='';}
+}
+window.addEventListener('resize',syncBoardHeight);
+(async function(){await initIdentity();await loadScores();syncBoardHeight();setTimeout(syncBoardHeight,250);})();
+</script>
+</body>
+</html>

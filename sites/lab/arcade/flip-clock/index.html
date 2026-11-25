@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#080b11" id="themeColor" />
+<title>翻页时钟</title>
+<style>
+  @font-face {
+    font-family: "FlipDigits";
+    src: url(data:font/woff2;base64,d09GMgABAAAAAAUQAA0AAAAACIgAAATBAAIAxQAAAAAAAAAAAAAAAAAAAAAAAAAAGyAcNgZgADQRCAqHWIYnATYCJAMaCxgABCAFhA4HIBvaBlGUTU4O4COhuu1FU4YkTVE45vqWV/n846Z/X0gtwc4ORTQ1o2jNDfGKjWwOX8yFh8/b+3+z+W6gAx92aWBJkEQUeNf/f+/03zb27GtjiUWe2P/tS42xqWgNCngS72mdgDoeRxogZztJzWow8qXr6/mXQQAMLT2y7W19iEcD8P//AADkyCxs6Enqa8PvROrtn3dc+pkOuruhAIfpnC0HEAPUSw0BWu9GcrJEG1CNoegYmjoSAAQfGxuPzkZSxaS45v33NstN0vLKqUk9BThIAlAgsMgYiRIaBzQQLO7JbGLH/y/GsgBBxAGJILtA3iwFsgDydW+4AQqxDAG1SYD6kFgoNuSzrEEvitO4b9SJAuFXXmEirxH+9dfZ6KtT4VfZ6OuEf42JvCJiBDx/seaUM2R9A4OsREgGX379esLfxUSeKRu4GmJ7FRWKXqkqk7EOx2FDkClJl5A7Xy27n/DXPcUwxMPnsaEn7pDtRz0MGCIkiyzFzvAXn0+YM85Q9rGLVcNMZKDEpueYyC2pA6MiMH2nXz7KH0bLHk3DZY8xkVdAyeufZ6M7+9pr/dHrhbpu/jUIX3glOykkIow5MsJNV77YGzOrvfWup4r+yBUIX5t4OrBw1VD4XrZCyVVy+RX3BGoeeCydXHorG339dQNzxjVPfCRmaOvAO8w3euabY5suuko06zde7Bgc40MPXhP0rnEOjoZXH0y+dlm8otOJl1dWxA75uznw5AvTjE0S/9+rh5trnZvfPn4f4n/ce8H1Gfa6fDWXI9PeetCz9U29dYpraFiwFA0WGdXNlvq6zlMS6C/9bLRmN9UatwSdCcM9bSWl0zvFsw3DshsvuH1Enlp+OFlp4QtTT0yr+zJJt6LUd/ctdIYfruKG91QuhQbBHW2IPBUhx4lvvOeGBkmPRBpHYk59JmAO9qL8Zfuw3T7fsn5o7zHr7ennmeY0mTnf5maJTKq7EpuSVetHL3wvdvyjS6HPK5duZDu6enbzx2S3JJ+eIssabpqk+2Kpvbah6XXPevigrzlYU3P0H6v8PEtWu1p9vE7FT2LszSzhBZ/5PxyE6mXHRv9QVUWv6qGHsuryi/NHXNbxEZfZNFzSUtNTemxJf8XAzsByRBpVKvr+ffpBrTLacUBPa1N+1Mlrj85fIY93B9L/neufvZG70HKm9eTUxnaroVsTc/sjicbO8U3/2t4DvsZgWd2hv7JVx1qzeIWuT6vxdgAAQACUR/869da/JiVlv8bHCb4AeNOz708A3mFPXP3X+986cxc9B4hFAZL9eb3YniH690gfEOZ3UalCaxrB0RHSk8pmkE3PgABYz2GEEoloS7w9DsQZIUBqAoAJ8BWE0YSCInaMQqDKWb10niLGDd76jFjZEUEtD68NfssWLQniWJiY2XEaeXgscprHaeY2y4hTzcmJ04PEQOTZeQHz/FbNm2PUwSPIg9NrmjuT1Fku9nKatsFY4wVmOWoEFoViPj8LWUxW06pUo85Io9KqBukm2nkw8K1fwDIPN458nKAtLJgWYrJkmZlfnGnVLJsUMUIW5k2LRR74A3YmhUbKYlBYD5jZCOqYTgJB7hgsoJtwnmC64BPgExgaV7Lk6RwCRtf/57AA) format("woff2");
+    font-weight: 900;
+    font-style: normal;
+    font-display: block;
+  }
+  :root {
+    --card-w: clamp(28px, 13.4vw, 98px);
+    --card-h: calc(var(--card-w) * 1.42);
+    --radius: clamp(5px, 0.95vw, 12px);
+    --gap: clamp(3px, 0.85vw, 11px);
+    --digit: calc(var(--card-w) * 0.76);
+    --font: "Helvetica Neue", Helvetica, Arial, "Segoe UI", "PingFang SC",
+            "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans", sans-serif;
+  }
+
+  [data-theme="dark"] {
+    --bg: #080b11;
+    --bg-glow: radial-gradient(60% 45% at 50% 18%, rgba(84, 118, 255, 0.20), transparent 70%),
+               radial-gradient(45% 40% at 80% 95%, rgba(120, 90, 255, 0.12), transparent 70%);
+    --card-top: linear-gradient(180deg, #262e3d 0%, #1b212c 100%);
+    --card-bottom: linear-gradient(180deg, #171c26 0%, #0f131b 100%);
+    --num: #f3f6fb;
+    --num-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+    --divider: rgba(255, 255, 255, 0.07);
+    --card-bevel: rgba(255, 255, 255, 0.07);
+    --text-dim: rgba(222, 231, 250, 0.42);
+    --text-soft: rgba(222, 231, 250, 0.66);
+    --drop: 0 20px 45px rgba(0, 0, 0, 0.55);
+    --shade-top: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, 0.16));
+    --shade-bottom: linear-gradient(180deg, rgba(0, 0, 0, 0.20), rgba(0, 0, 0, 0.03));
+    --btn-bg: rgba(255, 255, 255, 0.06);
+    --btn-border: rgba(255, 255, 255, 0.12);
+    --accent: #7b95ff;
+    color-scheme: dark;
+  }
+
+  [data-theme="light"] {
+    --bg: #e9edf5;
+    --bg-glow: radial-gradient(60% 45% at 50% 14%, rgba(255, 255, 255, 0.95), transparent 72%),
+               radial-gradient(50% 40% at 85% 100%, rgba(146, 168, 255, 0.22), transparent 70%);
+    --card-top: linear-gradient(180deg, #ffffff 0%, #f6f9fe 100%);
+    --card-bottom: linear-gradient(180deg, #dfe6f2 0%, #c8d2e4 100%);
+    --num: #111722;
+    --num-shadow: 0 1px 0 rgba(255, 255, 255, 0.75);
+    --divider: rgba(20, 30, 50, 0.18);
+    --card-bevel: rgba(255, 255, 255, 0.95);
+    --text-dim: rgba(32, 44, 68, 0.5);
+    --text-soft: rgba(32, 44, 68, 0.74);
+    --drop: 0 12px 22px rgba(35, 51, 84, 0.14);
+    --shade-top: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 60%, rgba(20, 32, 56, 0.10));
+    --shade-bottom: linear-gradient(180deg, rgba(20, 32, 56, 0.09), rgba(20, 32, 56, 0.02));
+    --btn-bg: rgba(255, 255, 255, 0.72);
+    --btn-border: rgba(30, 44, 70, 0.12);
+    --accent: #3d5bd9;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { height: 100%; margin: 0; }
+
+  body {
+    font-family: var(--font);
+    background-color: var(--bg);
+    background-image: var(--bg-glow);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: var(--num);
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(18px, 4vw, 56px);
+    transition: background-color 0.6s ease, color 0.6s ease;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .stage {
+    width: 100%;
+    max-width: 1120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(26px, 5vh, 62px);
+    animation: rise 0.85s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .topbar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand {
+    font-size: clamp(10px, 1vw, 12px);
+    font-weight: 600;
+    letter-spacing: 0.36em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .theme-toggle {
+    width: clamp(38px, 4vw, 44px);
+    height: clamp(38px, 4vw, 44px);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid var(--btn-border);
+    background: var(--btn-bg);
+    color: var(--text-soft);
+    cursor: pointer;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease, border-color 0.3s ease, color 0.3s ease, background 0.3s ease;
+  }
+
+  .theme-toggle:hover {
+    transform: translateY(-2px) scale(1.04);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .theme-toggle:active { transform: translateY(0) scale(0.96); }
+
+  .theme-toggle svg { width: 19px; height: 19px; display: block; }
+
+  .icon-sun { display: none !important; }
+  [data-theme="dark"] .icon-sun { display: block !important; }
+  [data-theme="dark"] .icon-moon { display: none !important; }
+
+  .clock-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(18px, 3.5vw, 34px);
+  }
+
+  .clock {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap);
+  }
+
+  .group {
+    position: relative;
+    display: flex;
+    gap: var(--gap);
+  }
+
+  .units {
+    display: flex;
+    gap: var(--gap);
+  }
+
+  .label {
+    position: absolute;
+    top: calc(100% + clamp(9px, 1.3vw, 16px));
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: clamp(9px, 0.82vw, 12px);
+    font-weight: 500;
+    letter-spacing: 0.34em;
+    text-indent: 0.34em;
+    color: var(--text-dim);
+  }
+
+  .colon {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: calc(var(--card-w) * 0.19);
+    padding: 0 calc(var(--card-w) * 0.02);
+  }
+
+  .colon i {
+    display: block;
+    width: calc(var(--card-w) * 0.095);
+    height: calc(var(--card-w) * 0.095);
+    border-radius: 50%;
+    background: var(--text-soft);
+    animation: blink 2s steps(1, end) infinite;
+  }
+
+  @keyframes blink {
+    0%, 49% { opacity: 0.85; }
+    50%, 100% { opacity: 0.28; }
+  }
+
+  .flip-unit {
+    position: relative;
+    width: var(--card-w);
+    height: var(--card-h);
+    perspective: calc(var(--card-w) * 11);
+    filter: drop-shadow(var(--drop));
+  }
+
+  .card {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: transform;
+  }
+
+  .card .num {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: var(--card-h);
+    line-height: var(--card-h);
+    text-align: center;
+    font-size: var(--digit);
+    font-family: "FlipDigits", "Helvetica Neue", Helvetica, Arial, "Noto Sans", sans-serif;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    color: var(--num);
+    text-shadow: var(--num-shadow);
+    user-select: none;
+  }
+
+  .card.top,
+  .card.flip-top {
+    top: 0;
+    height: 50%;
+    border-radius: var(--radius) var(--radius) 0 0;
+    background: var(--card-top);
+    box-shadow: inset 0 1px 0 var(--card-bevel), inset 0 0 0 1px rgba(0, 0, 0, 0.02);
+  }
+
+  .card.bottom,
+  .card.flip-bottom {
+    bottom: 0;
+    height: 50%;
+    border-radius: 0 0 var(--radius) var(--radius);
+    background: var(--card-bottom);
+    box-shadow: inset 0 1px 0 var(--divider);
+  }
+
+  .card.top::after,
+  .card.flip-top::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--shade-top);
+    pointer-events: none;
+  }
+
+  .card.bottom::after,
+  .card.flip-bottom::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--shade-bottom);
+    pointer-events: none;
+  }
+
+  .card.top { z-index: 1; }
+  .card.bottom { z-index: 1; }
+
+  .card.flip-top {
+    transform-origin: 50% 100%;
+    z-index: 3;
+  }
+
+  .card.flip-bottom {
+    transform-origin: 50% 0%;
+    transform: rotateX(90deg);
+    z-index: 2;
+  }
+
+  .card.top .num,
+  .card.flip-top .num { top: 0; }
+
+  .card.bottom .num,
+  .card.flip-bottom .num { bottom: 0; }
+
+  .flip-unit.flipping .flip-top {
+    animation: flip-top 280ms cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+  }
+
+  .flip-unit.flipping .flip-bottom {
+    animation: flip-bottom 300ms cubic-bezier(0.22, 0.61, 0.36, 1) 270ms forwards;
+  }
+
+  @keyframes flip-top {
+    from { transform: rotateX(0deg); }
+    to { transform: rotateX(-90deg); }
+  }
+
+  @keyframes flip-bottom {
+    from { transform: rotateX(90deg); }
+    to { transform: rotateX(0deg); }
+  }
+
+  .date {
+    margin: 0;
+    margin-top: clamp(26px, 4vw, 42px);
+    font-size: clamp(12px, 1.15vw, 16px);
+    letter-spacing: 0.12em;
+    color: var(--text-soft);
+    transition: color 0.6s ease;
+  }
+
+  .hint {
+    font-size: clamp(10px, 0.92vw, 12px);
+    letter-spacing: 0.14em;
+    color: var(--text-dim);
+    transition: color 0.6s ease;
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stage { animation: none; }
+    .colon i { animation: none; opacity: 0.7; }
+    .flip-unit.flipping .flip-top,
+    .flip-unit.flipping .flip-bottom { animation-duration: 1ms; }
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 16px 12px; }
+    .stage { gap: clamp(22px, 6vh, 42px); }
+  }
+
+  @media (max-width: 420px) {
+    :root { --gap: 3px; }
+    .label { letter-spacing: 0.2em; text-indent: 0.2em; }
+    .brand { letter-spacing: 0.24em; }
+    .date { letter-spacing: 0.06em; }
+  }
+</style>
+  <link rel="icon" href="/assets/favicon.svg">
+</head>
+<body>
+  <main class="stage">
+    <header class="topbar">
+      <span class="brand">Flip Clock</span>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="切换亮色 / 暗色主题" title="切换主题（快捷键 T）">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="12" cy="12" r="4.2"></circle>
+          <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"></path>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.4 14.2A8.6 8.6 0 0 1 9.8 3.6a8.7 8.7 0 1 0 10.6 10.6Z"></path>
+        </svg>
+      </button>
+    </header>
+
+    <section class="clock-wrap">
+      <div class="clock" id="clock" role="timer" aria-label="当前时间">
+        <div class="group">
+          <div class="units" id="hours"></div>
+          <span class="label">时</span>
+        </div>
+        <div class="colon" aria-hidden="true"><i></i><i></i></div>
+        <div class="group">
+          <div class="units" id="minutes"></div>
+          <span class="label">分</span>
+        </div>
+        <div class="colon" aria-hidden="true"><i></i><i></i></div>
+        <div class="group">
+          <div class="units" id="seconds"></div>
+          <span class="label">秒</span>
+        </div>
+      </div>
+      <p class="date" id="date"></p>
+    </section>
+
+    <footer class="hint">点击右上角切换亮色 / 暗色主题</footer>
+  </main>
+
+<script>
+(function () {
+  "use strict";
+
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var root = document.documentElement;
+
+  /* ---------- 主题 ---------- */
+  var THEME_KEY = "flip-clock-theme";
+  var themeToggle = document.getElementById("themeToggle");
+  var themeColor = document.getElementById("themeColor");
+  var THEME_COLORS = { dark: "#080b11", light: "#eef1f7" };
+
+  function applyTheme(theme) {
+    root.setAttribute("data-theme", theme);
+    if (themeColor) themeColor.setAttribute("content", THEME_COLORS[theme]);
+    if (themeToggle) {
+      themeToggle.setAttribute("aria-label", theme === "dark" ? "切换到亮色主题" : "切换到暗色主题");
+    }
+  }
+
+  var storedTheme = null;
+  try { storedTheme = localStorage.getItem(THEME_KEY); } catch (e) {}
+  var prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+  applyTheme(storedTheme === "light" || storedTheme === "dark" ? storedTheme : (prefersLight ? "light" : "dark"));
+
+  function toggleTheme() {
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    applyTheme(next);
+    try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+  }
+
+  themeToggle.addEventListener("click", toggleTheme);
+
+  window.addEventListener("keydown", function (e) {
+    if (e.key === "t" || e.key === "T") toggleTheme();
+  });
+
+  /* ---------- 翻页数字 ---------- */
+  function createUnit() {
+    var el = document.createElement("div");
+    el.className = "flip-unit";
+    el.innerHTML =
+      '<div class="card top"><span class="num">0</span></div>' +
+      '<div class="card bottom"><span class="num">0</span></div>' +
+      '<div class="card flip-top"><span class="num">0</span></div>' +
+      '<div class="card flip-bottom"><span class="num">0</span></div>';
+
+    return {
+      el: el,
+      top: el.querySelector(".card.top .num"),
+      bottom: el.querySelector(".card.bottom .num"),
+      flipTop: el.querySelector(".card.flip-top .num"),
+      flipBottom: el.querySelector(".card.flip-bottom .num"),
+      value: null,
+      timer: null
+    };
+  }
+
+  function buildGroup(container) {
+    var a = createUnit();
+    var b = createUnit();
+    container.appendChild(a.el);
+    container.appendChild(b.el);
+    return [a, b];
+  }
+
+  function setDigit(unit, next) {
+    if (unit.value === next) return;
+
+    var prev = unit.value;
+    unit.value = next;
+
+    if (prev === null || reduceMotion) {
+      clearTimeout(unit.timer);
+      unit.el.classList.remove("flipping");
+      unit.top.textContent = next;
+      unit.bottom.textContent = next;
+      unit.flipTop.textContent = next;
+      unit.flipBottom.textContent = next;
+      return;
+    }
+
+    clearTimeout(unit.timer);
+    unit.el.classList.remove("flipping");
+
+    unit.top.textContent = next;        // 被翻起后露出的新上半页
+    unit.flipTop.textContent = prev;    // 正在翻走的旧上半页
+    unit.flipBottom.textContent = next; // 从下方翻下来的新下半页
+    unit.bottom.textContent = prev;     // 翻下来之前仍显示旧下半页
+
+    void unit.el.offsetWidth;           // 强制重排，保证动画可以重新触发
+    unit.el.classList.add("flipping");
+
+    unit.timer = setTimeout(function () {
+      unit.bottom.textContent = next;
+      unit.flipTop.textContent = next;
+      unit.el.classList.remove("flipping");
+    }, 590);
+  }
+
+  var groups = {
+    h: buildGroup(document.getElementById("hours")),
+    m: buildGroup(document.getElementById("minutes")),
+    s: buildGroup(document.getElementById("seconds"))
+  };
+
+  var dateEl = document.getElementById("date");
+  var dateFormatter = new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric", month: "long", day: "numeric", weekday: "long"
+  });
+
+  function pad(n) { return n < 10 ? "0" + n : String(n); }
+
+  var lastKey = "";
+  var lastDate = "";
+
+  function tick() {
+    var now = new Date();
+    var hh = pad(now.getHours());
+    var mm = pad(now.getMinutes());
+    var ss = pad(now.getSeconds());
+    var key = hh + mm + ss;
+
+    var dateText = dateFormatter.format(now);
+    if (dateText !== lastDate) {
+      dateEl.textContent = dateText;
+      lastDate = dateText;
+    }
+
+    if (key === lastKey) return;
+    lastKey = key;
+
+    setDigit(groups.h[0], hh.charAt(0));
+    setDigit(groups.h[1], hh.charAt(1));
+    setDigit(groups.m[0], mm.charAt(0));
+    setDigit(groups.m[1], mm.charAt(1));
+    setDigit(groups.s[0], ss.charAt(0));
+    setDigit(groups.s[1], ss.charAt(1));
+  }
+
+  tick();
+  setInterval(tick, 200);
+
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) tick();
+  });
+})();
+</script>
+</body>
+</html>
