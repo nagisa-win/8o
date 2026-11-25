@@ -512,7 +512,7 @@ function initPalette({ sites, projects }) {
     ...projects.map((p) => ({ kind: "REPO", label: p.repo, meta: p.language || "—", url: p.url })),
     { kind: "LINK", label: "GitHub", meta: "nagisa-win", url: "https://github.com/nagisa-win" },
     { kind: "LINK", label: "RyzenX 博客", meta: "ryzenx.com", url: "https://ryzenx.com" },
-    { kind: "LINK", label: "V88 笔记", meta: "v88to.me", url: "https://v88to.me" },
+    { kind: "LINK", label: "笔记站", meta: "v.8o.nz", url: "https://v.8o.nz" },
     { kind: "LINK", label: "Telegram", meta: "@IrisXe", url: "https://t.me/IrisXe" },
   ];
 
