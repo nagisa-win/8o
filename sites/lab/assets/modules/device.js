@@ -38,19 +38,17 @@ const esc = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 let cleanup = null;
+let host = null;
+let mode = "tools";
 
-export async function mount(root) {
+/** 协议模式：手写 ADB 报文，用来展示协议细节 */
+async function mountProtocol(root) {
   const supported = "usb" in navigator;
 
   root.innerHTML = `
-    <div class="module__head">
-      <div>
-        <p class="label">// BAY-03 · DEVICE</p>
-        <h2>设备舱</h2>
-        <p>WebUSB 直连安卓设备，自己实现 ADB 握手：CNXN → AUTH（浏览器现场生成 RSA 密钥）→ shell。不经过任何本地 adb server。</p>
-      </div>
+    <div class="protocol-head">
       <div class="row">
-        <button class="btn-sm" id="connect" type="button" ${supported ? "" : "disabled"}>连接设备</button>
+        <button class="btn-sm" id="connect" type="button" ${supported ? "" : "disabled"}>连接设备（手写协议）</button>
       </div>
     </div>
 
@@ -363,7 +361,69 @@ export async function mount(root) {
   };
 }
 
+/** 工具模式：基于公开库 @yume-chan/adb 的完整功能面板（预编译产物） */
+async function mountTools(el) {
+  try {
+    const mod = await import("/assets/vendor/advanced-device.js");
+    await mod.mount(el);
+    cleanup = () => mod.unmount?.();
+  } catch (err) {
+    el.innerHTML = `<p class="hint" style="color:var(--rose)">工具模式加载失败：${String(err.message || err)}</p>
+      <p class="hint">可以先切到「协议模式」，它不依赖任何第三方包。</p>`;
+  }
+}
+
+export async function mount(root) {
+  root.innerHTML = `
+    <div class="module__head">
+      <div>
+        <p class="label">// BAY-03 · DEVICE</p>
+        <h2>设备舱</h2>
+        <p>WebUSB 直连安卓设备。工具模式基于公开库 ya-webadb，能截屏、看应用、传文件；协议模式是手写的 ADB 报文，用来把握手过程看清楚。</p>
+      </div>
+    </div>
+
+    <div class="mode-bar" role="tablist" aria-label="设备舱模式">
+      <button class="mode-btn" data-mode="tools" role="tab" type="button">
+        工具模式<span class="mode-hint">完整功能 · ya-webadb</span>
+      </button>
+      <button class="mode-btn" data-mode="protocol" role="tab" type="button">
+        协议模式<span class="mode-hint">手写报文 · 看握手细节</span>
+      </button>
+    </div>
+    <div id="mode-host"></div>
+  `;
+
+  host = root.querySelector("#mode-host");
+
+  async function show(next) {
+    if (cleanup) cleanup();
+    cleanup = null;
+    mode = next;
+    root.querySelectorAll("[data-mode]").forEach((b) => {
+      const active = b.dataset.mode === next;
+      if (active) b.setAttribute("aria-selected", "true");
+      else b.removeAttribute("aria-selected");
+    });
+    host.replaceChildren();
+    if (next === "tools") await mountTools(host);
+    else await mountProtocol(host);
+  }
+
+  root.querySelectorAll("[data-mode]").forEach((b) => {
+    b.addEventListener("click", () => show(b.dataset.mode));
+  });
+
+  await show(mode);
+  cleanupHook = () => {
+    if (cleanup) cleanup();
+    cleanup = null;
+  };
+}
+
+let cleanupHook = null;
+
 export function unmount() {
-  if (cleanup) cleanup();
-  cleanup = null;
+  if (cleanupHook) cleanupHook();
+  cleanupHook = null;
 }

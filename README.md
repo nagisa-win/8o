@@ -75,8 +75,11 @@ npm run deploy:lab
 | 模型舱 | 画布上自建数据集，手写反向传播训练两层感知机，决策边界与损失曲线实时刷新 | 无（纯 JS） |
 | 安全舱 | JWT 解析验签、WebCrypto 哈希与 PBKDF2、HIBP k-匿名、DoH / CT / 受限端口探测 | WebCrypto + `api.8o.nz` |
 | 数据舱 | 拖入 `.heapsnapshot` 在 Worker 里解析：按类型聚合自占用、Top 节点、detached、重复字符串 | Web Worker |
-| 设备舱 | WebUSB 直连安卓：CNXN 握手、现场生成 RSA 密钥完成 AUTH、执行 shell 命令 | WebUSB（Chrome / Edge 桌面端） |
+| 设备舱 · 工具模式 | 基于公开库 ya-webadb：设备属性、shell、第三方应用列表、目录浏览与文件拉取/推送、截屏 | `@yume-chan/adb` 系列（MIT） |
+| 设备舱 · 协议模式 | 手写 ADB 报文：CNXN 握手、现场生成 RSA 密钥完成 AUTH、执行 shell 命令 | WebUSB（Chrome / Edge 桌面端） |
 | 连接舱 | WebRTC DataChannel 点对点传文件，信令手动复制粘贴；含本机回环自检 | WebRTC |
+
+工具模式依赖第三方包，构建时会用 vite 预编译成 `dist/lab/assets/vendor/advanced-device.js`；没装依赖时自动跳过，页面退化为协议模式。
 
 ADB 协议层（`sites/lab/assets/adb.js`）与 DOM 无关，可单测：
 

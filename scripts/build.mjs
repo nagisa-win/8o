@@ -4,6 +4,7 @@
  * 用法：node scripts/build.mjs [hub|all]
  */
 import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { existsSync as exists } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -112,4 +113,17 @@ await mkdir(dist, { recursive: true });
 
 if (target === "hub" || target === "all") await buildHub();
 if (target === "skills" || target === "all") await buildSkills();
-if (target === "lab" || target === "all") await buildLab();
+if (target === "lab" || target === "all") {
+  await buildLab();
+  // 设备舱的「工具模式」依赖第三方包，用 vite 预编译成单文件；缺依赖时降级跳过
+  if (exists(join(root, "node_modules/vite"))) {
+    const { spawnSync } = await import("node:child_process");
+    const run = spawnSync(process.execPath, [join(root, "node_modules/vite/bin/vite.js"), "build", "--config", "scripts/vite.advanced.config.mjs"], {
+      cwd: root,
+      stdio: "inherit",
+    });
+    if (run.status !== 0) console.warn("! 工具模式预编译失败，设备舱会退化为协议模式");
+  } else {
+    console.warn("! 未安装 vite，跳过设备舱工具模式的预编译");
+  }
+}

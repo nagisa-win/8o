@@ -65,7 +65,7 @@ async function route() {
 
   const label = { model: "模型舱", security: "安全舱", heap: "数据舱", device: "设备舱", link: "连接舱" }[key] || "实验室";
   document.title = `${label} · ${HOST}`;
-  footStat.textContent = `${label} · ${HOST} · 渲染在本地`;
+  footStat.textContent = `${label} · 渲染在本地`;
 }
 
 addEventListener("hashchange", route);
