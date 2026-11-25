@@ -166,7 +166,7 @@
       "id": "cljs",
       "host": "cljs.8o.nz",
       "title": "ClojureScript 自学站",
-      "desc": "分八章的 ClojureScript 中文教程，每段代码都能在页面里直接运行；解释器走本地 SCI，代码不离开浏览器。",
+      "desc": "分十二章的 ClojureScript 中文教程，每段代码都能在页面里直接运行；解释器走本地 SCI，代码不离开浏览器。",
       "kind": "learn",
       "accent": "mint",
       "tags": [
@@ -177,7 +177,7 @@
       "url": "https://cljs.8o.nz/",
       "status": "live",
       "title_en": "ClojureScript Course",
-      "desc_en": "An eight-chapter ClojureScript tutorial where every snippet runs in the page on a local Clojure interpreter. Code never leaves the browser.",
+      "desc_en": "A twelve-chapter ClojureScript tutorial where every snippet runs in the page on a local Clojure interpreter. Code never leaves the browser.",
       "tags_en": [
         "ClojureScript",
         "SCI",

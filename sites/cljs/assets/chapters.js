@@ -172,4 +172,198 @@ export default [
         body: `(def orders [{:id 1 :amount 80} {:id 2 :amount 260} {:id 3 :amount 45} {:id 4 :amount 300}])\n\n(defn bucket [n]\n  (cond (< n 100) :small (< n 250) :medium :else :large))\n\n(->> orders\n     (group-by #(bucket (:amount %)))\n     (map (fn [[k v]] [k (count v) (reduce + (map :amount v))]))\n     (into {}))` },
     ],
   },
+  {
+    id: "macros",
+    title: "宏：在编译期改写代码",
+    summary: "宏拿到的不是值，而是还没求值的代码。",
+    blocks: [
+      {
+        type: "text",
+        body: `函数接收<strong>值</strong>，宏接收<strong>代码本身</strong>。所以宏能做的事函数做不到：
+把 <code>(unless 条件 表达式)</code> 展开成 <code>(when (not 条件) 表达式)</code>、给一段代码加上打点计时、把重复的样板结构折叠起来。
+代价是宏在编译期运行，读起来比函数隐晦，所以要克制。`,
+      },
+      {
+        type: "text",
+        body: `先看清楚它的写法：反引号里的 <code>~</code> 是「把这里的值塞进来」，<code>~@</code> 是「把这里的序列摊平塞进来」。
+点「运行」会返回类似 <code>#'lab.playground/unless</code> 的 var，意思是宏已经定义好了。`,
+      },
+      {
+        type: "code",
+        runnable: true,
+        body: `(defmacro unless [pred & body]\n  \`(when (not ~pred)\n     ~@body))`,
+      },
+      {
+        type: "text",
+        body: `定义完再点这一段——Playground 会保留之前的状态，所以宏可以直接用。
+这就是 REPL 的工作方式：定义一次，之后一直可用。`,
+      },
+      {
+        type: "code",
+        runnable: true,
+        body: `[(unless false (+ 1 2))\n (unless true (+ 1 2))]`,
+      },
+      {
+        type: "text",
+        body: `<code>macroexpand</code> 能看宏到底把代码变成了什么。调试宏的时候它比打印更管用。`,
+      },
+      {
+        type: "code",
+        runnable: true,
+        body: `(macroexpand '(unless false (+ 1 2)))`,
+      },
+      {
+        type: "text",
+        body: `宏也能收可变数量的参数。下面这个 <code>sum-of</code> 把任意个表达式拼成一个加法——
+注意它展开后仍然是一个普通的 <code>+</code> 调用，宏只是帮你写了那行代码。`,
+      },
+      {
+        type: "code",
+        runnable: true,
+        body: `(defmacro sum-of [& xs]\n  \`(+ ~@xs))`,
+      },
+      {
+        type: "code",
+        runnable: true,
+        body: `(sum-of 1 2 3 4)`,
+      },
+      {
+        type: "text",
+        body: `两点经验：<br />
+1）宏里引入的局部名字要用自动生成的（反引号里的 <code>x#</code>），否则可能和调用方的变量撞名；<br />
+2）如果一个函数能表达清楚，就别写宏——宏的错误信息通常更难读，而且不能被当作值传出去。`,
+      },
+    ],
+  },
+  {
+    id: "async",
+    title: "异步：单线程里的并发",
+    summary: "ClojureScript 跑在 JS 事件循环上，原子状态是同步的，等待要用 Promise。",
+    blocks: [
+      {
+        type: "text",
+        body: `ClojureScript 编译成 JS，所以只有<strong>一个线程</strong>。
+<code>swap!</code> 改 atom 是同步的、立刻生效；而网络请求、定时器这类等待，本质是把回调排进事件循环。
+理解这一点，很多「为什么这里是空值」的困惑就消失了。`,
+      },
+      {
+        type: "text",
+        body: `下面的打印顺序值得盯一下：<code>1</code> 和 <code>2</code> 同步执行，<code>3</code> 要等这一轮跑完才轮到。`,
+      },
+      {
+        type: "code",
+        runnable: true,
+        body: `(println "1 同步开始")\n(-> (js/Promise.resolve 2)\n    (.then (fn [v] (println "3 异步回调，" v))))\n(println "2 同步结束")`,
+      },
+      {
+        type: "text",
+        body: `多个异步任务并行等待用 <code>Promise.all</code>，再把结果当成普通序列处理——
+拿到值以后，前面学的 <code>map</code>、<code>reduce</code> 全都能用。`,
+      },
+      {
+        type: "code",
+        runnable: true,
+        body: `(defn later [v ms]\n  (js/Promise. (fn [resolve] (js/setTimeout #(resolve v) ms))))\n\n(-> (js/Promise.all #js [(later 10 10) (later 20 20) (later 30 30)])\n    (.then (fn [xs]\n             (println "全部回来了" (js->clj xs))\n             (reduce + (js->clj xs)))))`,
+      },
+      {
+        type: "text",
+        body: `真实项目里更常用 <code>core.async</code> 的 <code>go</code> 块，让异步代码看起来像同步的。
+不过它是独立库，本站 Playground 没有打包，下面只是示意——真要用得在工程里加依赖。`,
+      },
+      {
+        type: "code",
+        runnable: false,
+        body: `;; 需要 (:require [clojure.core.async :as a :refer [go <! >!]])\n(go\n  (let [v (<! some-channel)]\n    (println "收到" v)\n    (>! reply-channel (* v 2))))`,
+      },
+    ],
+  },
+  {
+    id: "tooling",
+    title: "工程化：从 Playground 到真实项目",
+    summary: "浏览器里练手之后，正式项目长什么样。",
+    blocks: [
+      {
+        type: "text",
+        body: `本站用的是解释器，不产出文件。真正交付时一般走两条路：
+<strong>cljs.main</strong>（官方，配置少）或 <strong>shadow-cljs</strong>（生态好，热更新强）。两者都用 <code>deps.edn</code> 管依赖。`,
+      },
+      {
+        type: "text",
+        body: `<code>deps.edn</code> 声明依赖和编译选项。这一段是配置，不在浏览器执行。`,
+      },
+      {
+        type: "code",
+        runnable: false,
+        body: `{:paths ["src"]\n :deps  {org.clojure/clojurescript {:mvn/version "1.11.132"}}\n :aliases\n {:dev {:main-opts ["-m" "cljs.main" "--repl"]}}}`,
+      },
+      {
+        type: "text",
+        body: `用 shadow-cljs 的话，构建目标写在 <code>shadow-cljs.edn</code>：<code>:app</code> 适合普通应用，
+<code>:browser-test</code> 跑测试，<code>:node-script</code> 出命令行工具。`,
+      },
+      {
+        type: "code",
+        runnable: false,
+        body: `{:source-paths ["src"]\n :dependencies [[thheller/shadow-cljs "2.28.20"]]\n :builds {:app {:target :browser\n                :output-dir "public/js"\n                :modules {:main {:init-fn app.core/init}}}}}`,
+      },
+      {
+        type: "text",
+        body: `日常命令就三个：<code>shadow-cljs watch app</code> 起热更新、<code>compile</code> 出产物、<code>release</code> 做压缩优化。
+跟 npm 生态也不冲突——CLJS 能直接 require npm 包，反过来 JS 也能调用编译出来的函数。`,
+      },
+      {
+        type: "code",
+        runnable: false,
+        body: `{\n  "scripts": {\n    "dev": "shadow-cljs watch app",\n    "build": "shadow-cljs release app"\n  },\n  "devDependencies": {\n    "shadow-cljs": "2.28.20"\n  }\n}`,
+      },
+      {
+        type: "text",
+        body: `学习路径建议：先用本站把<strong>数据变换</strong>（map / filter / reduce / assoc）练到顺手，
+再啃<strong>状态</strong>（atom、swap!），最后才碰宏与异步。前两层熟了，写起来其实比 JS 更省心。`,
+      },
+    ],
+  },
+  {
+    id: "practice",
+    title: "综合练习：把学过的东西串起来",
+    summary: "一个购物车，用上 atom、序列函数、不可变更新和异步。",
+    blocks: [
+      {
+        type: "text",
+        body: `先用 atom 存状态，用纯函数算派生数据。这是 ClojureScript 里最常见的一对搭配：
+<strong>atom 管「现在是什么」，纯函数管「怎么算」。</strong>`,
+      },
+      {
+        type: "code",
+        runnable: true,
+        body: `(def cart (atom []))\n\n(defn add-item [sku qty price]\n  (swap! cart conj {:sku sku :qty qty :price price}))\n\n(add-item "coffee" 2 39)\n(add-item "rice" 5 12)\n(add-item "moto-oil" 1 180)\n\n(let [items @cart\n      total (->> items (map #(* (:qty %) (:price %))) (reduce +))]\n  {:count (count items) :total total})`,
+      },
+      {
+        type: "text",
+        body: `同一份数据换个角度再看一次：按商品聚合数量、按金额排序。注意这里没有改 <code>cart</code>，
+全部是派生出来的新值。`,
+      },
+      {
+        type: "code",
+        runnable: true,
+        body: `(->> @cart\n     (group-by :sku)\n     (map (fn [[sku items]]\n            [sku (reduce + (map :qty items))]))\n     (into {})\n     (sort-by val >))`,
+      },
+      {
+        type: "text",
+        body: `最后把「下单」写成异步流程：模拟一个请求，回来后用前面写好的纯函数算结果。
+关键点是<strong>异步只负责拿数据，计算仍然是纯函数</strong>——所以每段都能单独测。`,
+      },
+      {
+        type: "code",
+        runnable: true,
+        body: `(defn fake-request [items]\n  (js/Promise.\n    (fn [resolve]\n      (js/setTimeout #(resolve (clj->js items)) 30))))\n\n(-> (fake-request @cart)\n    (.then (fn [raw]\n             (let [items (js->clj raw :keywordize-keys true)\n                   total (->> items (map #(* (:qty %) (:price %))) (reduce +))]\n               (println "下单成功，合计" total)\n               total))))`,
+      },
+      {
+        type: "text",
+        body: `自测清单：把上面三段依次跑一遍，确认 <code>total</code> 是 318、聚合结果是
+<code>(["rice" 5] ["coffee" 2] ["moto-oil" 1])</code>、下单合计同样是 318。
+如果对不上，多半是某次 <code>add-item</code> 没执行——atom 的状态在 Playground 里是累积的。`,
+      },
+    ],
+  },
 ];

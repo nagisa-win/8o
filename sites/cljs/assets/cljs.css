@@ -350,14 +350,37 @@ body {
 
   .sidebar ol {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
   }
 
+  /* 之前用 max-height 限高会把最后两章截掉，窄屏直接让页面滚动 */
   .sidebar {
-    max-height: 40vh;
-    overflow-y: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .sidebar li button {
+    padding: 7px 8px;
+    font-size: 12px;
+    line-height: 1.45;
   }
 
   #code {
     min-height: 140px;
   }
+}
+
+/* 不可执行的块（配置、示意代码） */
+.btn-sm--static,
+.btn-sm[disabled] {
+  border-color: var(--line);
+  background: transparent;
+  color: var(--ink-dim);
+  cursor: default;
+  opacity: 0.8;
+}
+
+.codeblock--static {
+  border-style: dashed;
+  opacity: 0.92;
 }

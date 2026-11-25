@@ -84,10 +84,13 @@ function renderChapter() {
   const blocks = ch.blocks
     .map((b) => {
       if (b.type === "text") return `<p class="prose">${b.body}</p>`;
-      return `<div class="codeblock">
-        <div class="codeblock__head"><span>CLOJURESCRIPT</span>
-          <button class="btn-sm" type="button" data-run>运行</button>
-        </div>
+      // runnable: false 的块是配置或示意代码，本浏览器解释器跑不了
+      const canRun = b.runnable !== false;
+      const action = canRun
+        ? '<button class="btn-sm" type="button" data-run>运行</button>'
+        : '<span class="btn-sm btn-sm--static">仅示意</span>';
+      return `<div class="codeblock${canRun ? "" : " codeblock--static"}">
+        <div class="codeblock__head"><span>${canRun ? "CLOJURESCRIPT" : "CONFIG"}</span>${action}</div>
         <pre>${escapeHtml(b.body)}</pre>
       </div>`;
     })
@@ -105,9 +108,10 @@ function renderChapter() {
   `;
 
   // 每段代码都能一键送进 Playground 并立即执行
-  content.querySelectorAll(".codeblock").forEach((block, i) => {
-    const code = ch.blocks.filter((b) => b.type === "code")[i].body;
-    block.querySelector("[data-run]").addEventListener("click", () => {
+  const runnableBlocks = ch.blocks.filter((b) => b.type === "code" && b.runnable !== false);
+  content.querySelectorAll(".codeblock [data-run]").forEach((btn, i) => {
+    const code = runnableBlocks[i].body;
+    btn.addEventListener("click", () => {
       $("#code").value = code;
       execute(code);
     });
