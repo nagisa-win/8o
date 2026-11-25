@@ -465,6 +465,24 @@ select:focus {
   font-size: 11px;
 }
 
+/* ---------- 连接舱 ---------- */
+
+.link-bar {
+  height: 6px;
+  margin: 12px 0 6px;
+  border-radius: 3px;
+  background: rgba(124, 170, 255, 0.12);
+  overflow: hidden;
+}
+
+.link-bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(to right, var(--accent), var(--violet));
+  transition: width 120ms linear;
+}
+
 /* ---------- 安全舱 ---------- */
 
 .sec-grid {

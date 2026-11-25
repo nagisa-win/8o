@@ -7,6 +7,8 @@ const routes = {
   model: () => import("./modules/model.js"),
   security: () => import("./modules/security.js"),
   heap: () => import("./modules/heap.js"),
+  device: () => import("./modules/device.js"),
+  link: () => import("./modules/link.js"),
 };
 
 // 同一份产物挂两个域名：8o.nz 是主站，steven.run 是境内镜像（已备案）
@@ -61,7 +63,7 @@ async function route() {
   current = mod;
   await mod.mount(host);
 
-  const label = { model: "模型舱", security: "安全舱", heap: "数据舱" }[key] || "实验室";
+  const label = { model: "模型舱", security: "安全舱", heap: "数据舱", device: "设备舱", link: "连接舱" }[key] || "实验室";
   document.title = `${label} · ${HOST}`;
   footStat.textContent = `${label} · ${HOST} · 渲染在本地`;
 }

@@ -67,3 +67,19 @@ npm run deploy:lab
 ## 许可
 
 代码 MIT。第三方素材、字体与数据版权归各自权利人。
+
+## 实验室舱段
+
+| 舱段 | 能力 | 依赖 |
+| --- | --- | --- |
+| 模型舱 | 画布上自建数据集，手写反向传播训练两层感知机，决策边界与损失曲线实时刷新 | 无（纯 JS） |
+| 安全舱 | JWT 解析验签、WebCrypto 哈希与 PBKDF2、HIBP k-匿名、DoH / CT / 受限端口探测 | WebCrypto + `api.8o.nz` |
+| 数据舱 | 拖入 `.heapsnapshot` 在 Worker 里解析：按类型聚合自占用、Top 节点、detached、重复字符串 | Web Worker |
+| 设备舱 | WebUSB 直连安卓：CNXN 握手、现场生成 RSA 密钥完成 AUTH、执行 shell 命令 | WebUSB（Chrome / Edge 桌面端） |
+| 连接舱 | WebRTC DataChannel 点对点传文件，信令手动复制粘贴；含本机回环自检 | WebRTC |
+
+ADB 协议层（`sites/lab/assets/adb.js`）与 DOM 无关，可单测：
+
+```bash
+node tools/test-adb.mjs   # 包编解码 / adbkey.pub 结构 / 签名长度与验签
+```

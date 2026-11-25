@@ -26,6 +26,8 @@
           <a href="#/model" data-nav="model">模型舱</a>
           <a href="#/security" data-nav="security">安全舱</a>
           <a href="#/heap" data-nav="heap">数据舱</a>
+          <a href="#/device" data-nav="device">设备舱</a>
+          <a href="#/link" data-nav="link">连接舱</a>
         </nav>
         <a class="back mono" href="https://8o.nz/">← 观测站</a>
       </div>
@@ -58,18 +60,24 @@
             <ul class="bay__tags mono"><li>WebCrypto</li><li>HIBP k-匿名</li><li>DoH / CT</li></ul>
           </a>
 
-          <div class="bay bay--soon">
-            <div class="bay__top mono"><span>BAY-03</span><span class="bay__state todo">开发中</span></div>
+          <a class="bay" href="#/device">
+            <div class="bay__top mono"><span>BAY-03</span><span class="bay__state ok">可用</span></div>
             <h2>设备舱</h2>
-            <p>通过 WebUSB 直连安卓设备：设备信息、应用列表、截屏与 logcat 流。</p>
-            <ul class="bay__tags mono"><li>WebUSB</li><li>ADB</li><li>v1.1</li></ul>
-          </div>
+            <p>WebUSB 直连安卓机，自己实现 ADB：CNXN 握手、现场生成 RSA 密钥完成 AUTH、跑 shell 命令。不装 adb、不转服务器。</p>
+            <ul class="bay__tags mono"><li>WebUSB</li><li>ADB 协议</li><li>WebCrypto</li></ul>
+          </a>
 
           <a class="bay" href="#/heap">
             <div class="bay__top mono"><span>BAY-04</span><span class="bay__state ok">可用</span></div>
             <h2>数据舱</h2>
             <p>拖入 Chrome 的 .heapsnapshot，在 Worker 里本地解析：按类型聚合自占用、Top 节点、detached 计数与重复长字符串。</p>
             <ul class="bay__tags mono"><li>Web Worker</li><li>零上传</li><li>v1.0</li></ul>
+          </a>
+          <a class="bay" href="#/link">
+            <div class="bay__top mono"><span>BAY-05</span><span class="bay__state ok">可用</span></div>
+            <h2>连接舱</h2>
+            <p>WebRTC 点对点传文件，信令靠手动复制粘贴，文件不经过服务器；带一个本机回环自检。</p>
+            <ul class="bay__tags mono"><li>WebRTC</li><li>DataChannel</li><li>零中转</li></ul>
           </a>
         </div>
       </section>
