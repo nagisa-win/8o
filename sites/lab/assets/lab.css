@@ -520,6 +520,20 @@ select:focus {
   overflow: auto;
 }
 
+.pkg-item {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+.pkg-item:hover {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+}
+
 .adv-file {
   display: flex;
   align-items: center;

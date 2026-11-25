@@ -379,7 +379,7 @@ export async function mount(root) {
       <div>
         <p class="label">// BAY-03 · DEVICE</p>
         <h2>设备舱</h2>
-        <p>WebUSB 直连安卓设备。工具模式基于公开库 ya-webadb，能截屏、看应用、传文件；协议模式是手写的 ADB 报文，用来把握手过程看清楚。</p>
+        <p>WebUSB 直连安卓设备。工具模式基于公开库 ya-webadb：交互终端、应用管理、APK 安装、系统控制、文件传输、截屏；协议模式是手写的 ADB 报文，用来把握手过程看清楚。</p>
       </div>
     </div>
 
