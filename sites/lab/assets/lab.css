@@ -101,6 +101,18 @@ h1 {
   color: var(--ink);
 }
 
+.mirror-note {
+  margin: var(--gap-5) 0 0;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--ink-dim);
+}
+
+.mirror-note a {
+  color: var(--accent);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
 .bays {
   display: grid;
   gap: var(--gap-4);
@@ -461,7 +473,19 @@ select:focus {
 }
 
 @media (min-width: 820px) {
-  .bays {
+  .mirror-note {
+  margin: var(--gap-5) 0 0;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--ink-dim);
+}
+
+.mirror-note a {
+  color: var(--accent);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.bays {
     grid-template-columns: 1fr 1fr;
   }
 

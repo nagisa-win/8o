@@ -9,7 +9,20 @@ const routes = {
   heap: () => import("./modules/heap.js"),
 };
 
+// 同一份产物挂两个域名：8o.nz 是主站，steven.run 是境内镜像（已备案）
+const HOST = location.hostname.endsWith("steven.run") ? "lab.steven.run" : "lab.8o.nz";
+
 const landing = document.querySelector("#landing");
+
+/** 两个域名互为镜像，互相指一下，境内访客少绕路 */
+(() => {
+  const note = document.querySelector("#mirror-note");
+  if (!note) return;
+  note.innerHTML =
+    HOST === "lab.steven.run"
+      ? '这是境内镜像（成都机房，已备案）。主站：<a href="https://lab.8o.nz/">lab.8o.nz</a>'
+      : '境内访问较慢时可用镜像：<a href="https://lab.steven.run/">lab.steven.run</a>';
+})();
 const host = document.querySelector("#module");
 const footStat = document.querySelector("#foot-stat");
 
@@ -36,7 +49,7 @@ async function route() {
     await unmount();
     landing.hidden = false;
     host.hidden = true;
-    document.title = "实验室 · lab.8o.nz";
+    document.title = `实验室 · ${HOST}`;
     return;
   }
 
@@ -49,8 +62,8 @@ async function route() {
   await mod.mount(host);
 
   const label = { model: "模型舱", security: "安全舱", heap: "数据舱" }[key] || "实验室";
-  document.title = `${label} · lab.8o.nz`;
-  footStat.textContent = `${label} · 渲染在本地`;
+  document.title = `${label} · ${HOST}`;
+  footStat.textContent = `${label} · ${HOST} · 渲染在本地`;
 }
 
 addEventListener("hashchange", route);

@@ -113,4 +113,3 @@ await mkdir(dist, { recursive: true });
 if (target === "hub" || target === "all") await buildHub();
 if (target === "skills" || target === "all") await buildSkills();
 if (target === "lab" || target === "all") await buildLab();
-if (target === "lab") console.log("lab: 尚未接入构建（第二批交付）");
