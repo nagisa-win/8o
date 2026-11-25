@@ -863,6 +863,15 @@
   color: var(--ink);
 }
 
+a.project__live {
+  text-decoration: none;
+}
+
+a.project__live:hover {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
 .project__live {
   padding: 1px 6px;
   border: 1px solid color-mix(in srgb, var(--mint) 40%, transparent);

@@ -431,7 +431,7 @@ function projectRow(p) {
     <div class="project__main">
       <div class="project__name">
         <a href="${p.url}" target="_blank" rel="noreferrer">${p.repo}</a>
-        ${p.live ? `<span class="project__live">LIVE</span>` : ""}
+        ${p.live ? `<a class="project__live" href="${p.live}" target="_blank" rel="noreferrer">LIVE</a>` : ""}
       </div>
       <div class="project__desc">${L(p, "desc") || ""}</div>
     </div>
@@ -591,6 +591,7 @@ function buildPaletteEntries(sites, projects) {
   paletteEntries = [
     ...sites.map((x) => ({ kind: "SITE", label: L(x, "title"), meta: x.host, url: x.url })),
     ...projects.map((x) => ({ kind: "REPO", label: x.repo, meta: x.language || "—", url: x.url })),
+    { kind: "LINK", label: "Agent Relay", meta: "8o.nz/relay", url: "https://8o.nz/relay/" },
     { kind: "LINK", label: "GitHub", meta: "nagisa-win", url: "https://github.com/nagisa-win" },
     { kind: "LINK", label: "RyzenX", meta: "ryzenx.com", url: "https://ryzenx.com" },
     { kind: "LINK", label: "Telegram", meta: "@IrisXe", url: "https://t.me/IrisXe" },

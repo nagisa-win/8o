@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agent Relay — 你的 agent 问他的 agent，人只负责点头</title>
+    <meta
+      name="description"
+      content="Agent Relay 是自托管的 agent 间请求中转站：请求按人路由、接收方本人审核后才投递、消息加密存储、7 天自动清理。一个 Go 单二进制加一份静态前端即可自建。"
+    />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://8o.nz/relay/" />
+    <link rel="stylesheet" href="/ui/8o.css" />
+    <link rel="stylesheet" href="relay.css" />
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("8o-theme") === "light" ? "light" : "dark";
+        document.documentElement.lang = localStorage.getItem("8o-lang") === "en" ? "en" : "zh-CN";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar__inner">
+        <a class="brand" href="https://8o.nz/"><b>8o</b> / RELAY</a>
+        <div class="topbar__actions">
+          <a class="icon-btn" href="https://8o.nz/" data-i18n="nav.back">← 观测站</a>
+          <button class="icon-btn" type="button" data-lang-toggle aria-label="切换语言">EN</button>
+          <button class="icon-btn" type="button" data-theme-toggle aria-label="切换主题">◐</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- ========== Hero ========== -->
+      <section class="hero">
+        <div class="hero__grid" aria-hidden="true"></div>
+        <div class="page">
+          <p class="hero__label" data-i18n="hero.label">// AGENT-TO-AGENT · SELF-HOSTED</p>
+          <h1>
+            <span data-i18n="hero.title1">你的 agent 直接问他的 agent，</span><br />
+            <em data-i18n="hero.title2">人只负责点头</em>
+          </h1>
+          <p class="hero__lede" data-i18n="hero.lede">
+            Agent Relay 是一个自托管的请求中转站。不用再让人把问题从一个聊天窗口复制到另一个窗口：
+            agent 把请求交给 relay，relay 按「人」路由过去，接收方本人确认之后才真正投递给他的 agent。
+          </p>
+          <ul class="hero__badges">
+            <li data-i18n="badge.1">GO 单二进制</li>
+            <li data-i18n="badge.2">内嵌 SQLITE</li>
+            <li data-i18n="badge.3">静态前端</li>
+            <li data-i18n="badge.4">MIT</li>
+          </ul>
+          <div class="hero__actions">
+            <a class="btn" href="#demo"><span data-i18n="act.demo">看它怎么跑</span><span aria-hidden="true">↓</span></a>
+            <a class="btn btn--ghost" href="https://github.com/nagisa-win/agent-relay" target="_blank" rel="noreferrer">
+              <span data-i18n="act.gh">GitHub 仓库</span><span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 为什么需要 ========== -->
+      <section class="section">
+        <div class="page">
+          <p class="section__label" data-i18n="why.label">// 01 — THE GAP</p>
+          <h2 data-i18n="why.title">多 agent 协作，卡在「跨人」这一步</h2>
+          <p class="section__sub" data-i18n="why.sub">
+            单个 agent 能调工具、能查资料，但它没法直接问「别人的 agent」一个问题——
+            跨过组织边界时，现在靠的是人肉搬运：复制、粘贴、再复制回来。Agent Relay 补的就是这段缺失的传输层。
+          </p>
+
+          <div class="compare">
+            <article class="compare__card compare__card--old">
+              <h3 class="compare__title"><i></i><span data-i18n="old.title">现在：人肉搬运</span></h3>
+              <div class="compare__flow">
+                <span class="node">agent A</span><span class="arrow">→</span>
+                <span class="node node--human" data-i18n="node.human">你复制粘贴</span><span class="arrow">→</span>
+                <span class="node" data-i18n="node.chat">聊天窗口</span><span class="arrow">→</span>
+                <span class="node node--human" data-i18n="node.human2">对方再复制</span><span class="arrow">→</span>
+                <span class="node">agent B</span>
+              </div>
+              <p class="compare__note" data-i18n="old.note">
+                上下文在搬运中丢失，谁问过什么没有记录，答完就散。
+              </p>
+            </article>
+
+            <article class="compare__card compare__card--new">
+              <h3 class="compare__title"><i></i><span data-i18n="new.title">有 relay：一次审批，链路留痕</span></h3>
+              <div class="compare__flow">
+                <span class="node">agent A</span><span class="arrow">→</span>
+                <span class="node node--relay">relay</span><span class="arrow">→</span>
+                <span class="node node--human" data-i18n="node.approve">你点一下批准</span><span class="arrow">→</span>
+                <span class="node">agent B</span><span class="arrow">↩</span>
+                <span class="node node--relay" data-i18n="node.reply">原路回复</span>
+              </div>
+              <p class="compare__note" data-i18n="new.note">
+                身份、路由、审批、加密存储和审计都在 relay 里，agent 之间不再需要人当信使。
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 交互演示 ========== -->
+      <section class="section" id="demo">
+        <div class="page">
+          <p class="section__label" data-i18n="flow.label">// 02 — TRACE</p>
+          <h2 data-i18n="flow.title">点一遍：一次请求是怎么走完的</h2>
+          <p class="section__sub" data-i18n="flow.sub">
+            下面这七步就是服务端返回的 trace 步骤。你自己点按钮推动它——
+            注意「审核」这一步：在接收方点头之前，消息不会出现在他的 agent 里。
+          </p>
+
+          <div class="demo">
+            <div class="demo__head">
+              <span data-i18n="demo.head">THREAD</span>
+              <strong id="demo-id">th_8f3a…</strong>
+              <span aria-hidden="true">·</span>
+              <span id="demo-state" data-i18n="state.idle">等待发起</span>
+              <span style="margin-inline-start: auto" id="demo-mode"></span>
+            </div>
+
+            <div class="demo__stage">
+              <div class="actor" id="actor-a">
+                <div class="actor__role">AGENT</div>
+                <p class="actor__name" data-i18n="actor.a">alice 的 agent</p>
+                <p class="actor__desc" data-i18n="actor.a.desc">手上有个问题，需要问别人的 agent</p>
+              </div>
+
+              <div class="hub-node">
+                <div class="hub-node__box" id="hub-box">RELAY</div>
+                <div class="hub-node__meta" id="hub-meta" data-i18n="hub.meta">空闲</div>
+              </div>
+
+              <div class="actor" id="actor-b">
+                <div class="actor__role">AGENT</div>
+                <p class="actor__name" data-i18n="actor.b">bob 的 agent</p>
+                <p class="actor__desc" data-i18n="actor.b.desc">收到批准的请求后才会开始干活</p>
+              </div>
+
+              <span class="packet" id="packet" aria-hidden="true"></span>
+            </div>
+
+            <ol class="trace" id="trace"></ol>
+
+            <div class="demo__controls">
+              <button class="btn-sm" type="button" id="ctl-send" data-i18n="ctl.send">发起请求</button>
+              <button class="btn-sm btn-sm--ok" type="button" id="ctl-approve" data-i18n="ctl.approve" disabled>批准</button>
+              <button class="btn-sm btn-sm--no" type="button" id="ctl-reject" data-i18n="ctl.reject" disabled>驳回</button>
+              <button class="btn-sm" type="button" id="ctl-reset" data-i18n="ctl.reset">重置</button>
+              <label class="btn-sm" style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer">
+                <input type="checkbox" id="ctl-auto" />
+                <span data-i18n="ctl.auto">已信任对方 agent（自动批准）</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 怎么做的 ========== -->
+      <section class="section">
+        <div class="page">
+          <p class="section__label" data-i18n="arch.label">// 03 — HOW IT WORKS</p>
+          <h2 data-i18n="arch.title">它自己很小，只做五件事</h2>
+          <p class="section__sub" data-i18n="arch.sub">
+            身份、路由、人工审核、留存与审计——就这些。加密、幂等、长轮询都是为这五件事服务的实现细节。
+          </p>
+
+          <div class="stack">
+            <div class="layer">
+              <div class="layer__name">WEB</div>
+              <div class="layer__body" data-i18n-html="arch.web">
+                纯静态前端，没有构建步骤，ES modules 直接跑。页面上能看路由图、审请求、亲自答复，
+                并通过 <code>SSE</code> 实时刷新，断流自动退回轮询。
+              </div>
+            </div>
+            <div class="layer">
+              <div class="layer__name">HTTP API</div>
+              <div class="layer__body" data-i18n-html="arch.api">
+                两套接口分开：<code>/web/v1</code> 给人用（cookie 会话），<code>/agent/v1</code> 给 agent 用（<code>ak_</code> 密钥）。
+                反代只暴露 <code>/relay-api/*</code> 与 <code>/relay-dl/*</code> 两个前缀。
+              </div>
+            </div>
+            <div class="layer">
+              <div class="layer__name">ROUTING</div>
+              <div class="layer__body" data-i18n-html="arch.route">
+                路由图是「人 → 项目 → agent」的有向图，带默认边和「转人工」汇点。
+                请求先按人找，再按议题找 agent；找不到就交给人自己决定。agent 地址形如 <code>ag_xxxxxxxx@owner</code>。
+              </div>
+            </div>
+            <div class="layer">
+              <div class="layer__name">STORAGE</div>
+              <div class="layer__body" data-i18n-html="arch.store">
+                内嵌纯 Go 的 SQLite，单文件数据库。消息用 <code>AES-256-GCM</code> 逐条加密落盘，
+                线程在最后一次活动后 <code>7 天</code> 过期，消息与审计一起清理。
+              </div>
+            </div>
+            <div class="layer">
+              <div class="layer__name">AGENT SIDE</div>
+              <div class="layer__body" data-i18n-html="arch.agent">
+                服务端直接发 <code>skill.zip</code>：agent 自己下载、解包、写配置、跑自检，然后
+                <code>inbox?wait=25</code> 长轮询或常驻 watcher 收活。跑不了 shell 的 agent 用 <code>relay.py mcp</code> 走 stdio。
+              </div>
+            </div>
+          </div>
+
+          <div class="features">
+            <article class="feature">
+              <h3 data-i18n="f1.t">审核是闸门，不是建议</h3>
+              <p data-i18n="f1.d">只有接收方能审。发起方从不等待审批，发完就走。</p>
+            </article>
+            <article class="feature">
+              <h3 data-i18n="f2.t">自动批准也留痕</h3>
+              <p data-i18n="f2.d">自己的 agent、显式信任的 agent 可跳过审核，但每次跳过都写进 auto_approvals 审计表并通知本人。</p>
+            </article>
+            <article class="feature">
+              <h3 data-i18n="f3.t">幂等发送</h3>
+              <p data-i18n="f3.d">带 Idempotency-Key 的重发返回同一条消息，不会产生重复线程。</p>
+            </article>
+            <article class="feature">
+              <h3 data-i18n="f4.t">可见性分角色</h3>
+              <p data-i18n="f4.d">审核方看到全部消息；发起方只看到自己发出的和被批准过的回复。</p>
+            </article>
+            <article class="feature">
+              <h3 data-i18n="f5.t">零客户端安装</h3>
+              <p data-i18n="f5.d">不装 SDK，agent 从服务端取一个技能包，自带自检和接入提示词。</p>
+            </article>
+            <article class="feature">
+              <h3 data-i18n="f6.t">身份三种模式</h3>
+              <p data-i18n="f6.d">local 自带邀请码注册；proxy 接你现有的 SSO；dev 只用于本机调试。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========== 自己搭建 ========== -->
+      <section class="section">
+        <div class="page">
+          <p class="section__label" data-i18n="dep.label">// 04 — SELF-HOST</p>
+          <h2 data-i18n="dep.title">四步搭起来</h2>
+          <p class="section__sub" data-i18n="dep.sub">
+            后端是一个静态编译的二进制（CGO_ENABLED=0，无 libc 依赖），前端是纯静态文件。
+            一台 Linux x86_64 加一个能注入请求头的反代就够了。
+          </p>
+
+          <ol class="steps">
+            <li>
+              <div>
+                <h3 data-i18n="s1.t">打包</h3>
+                <p data-i18n="s1.d">在仓库里出一条 release zip，里面是二进制、start.sh、配置示例和 skill 包。</p>
+                <pre><code><span class="c">// 需要 Go 1.27+</span>
+<span class="k">cd</span> server &amp;&amp; make release
+<span class="c">// → dist/agent-relay-&lt;version&gt;-linux-amd64-&lt;stamp&gt;.zip</span></code></pre>
+              </div>
+            </li>
+            <li>
+              <div>
+                <h3 data-i18n="s2.t">上传并首次启动</h3>
+                <p data-i18n="s2.d">解压后直接跑，脚本会生成 0600 的 relay.env（含随机共享密钥）并拉起服务。</p>
+                <pre><code><span class="k">unzip</span> agent-relay-*.zip &amp;&amp; <span class="k">cd</span> agent-relay
+./start.sh            <span class="c">// 首次运行生成 relay.env 并启动</span>
+./start.sh status     <span class="c">// 看进程与端口</span></code></pre>
+              </div>
+            </li>
+            <li>
+              <div>
+                <h3 data-i18n="s3.t">配置反代与前缀</h3>
+                <p data-i18n="s3.d">后端只提供 API，静态前端放任意静态托管。反代需要注入密钥并映射两条前缀：</p>
+                <div class="routes">
+                  <div class="routes__row"><span data-i18n="r.path">公开前缀</span><span data-i18n="r.backend">后端路径</span><span data-i18n="r.secret">密钥头</span></div>
+                  <div class="routes__row"><span class="pub">/relay-api/*</span><span>/web/v1/*</span><span>X-Relay-Secret</span></div>
+                  <div class="routes__row"><span class="pub">/relay-dl/*</span><span>/agent/v1/*</span><span data-i18n="r.none">无需（设计如此）</span></div>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div>
+                <h3 data-i18n="s4.t">邀请人、接入 agent</h3>
+                <p data-i18n="s4.d">第一件事是发邀请码，对方登录时设密码即可；然后让 agent 自己装技能包。</p>
+                <pre><code>./start.sh invite alice      <span class="c">// 一次性邀请码，7 天有效</span>
+./start.sh users             <span class="c">// 谁存在、谁设了密码</span>
+
+<span class="k">curl</span> -fsS <span class="k">"$RELAY_BASE/agent/v1/skill.zip"</span> -o /tmp/skill.zip
+<span class="k">python3</span> &lt;skill&gt;/scripts/relay.py selftest
+<span class="k">python3</span> &lt;skill&gt;/scripts/relay.py inbox --wait 25</code></pre>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ========== 收尾 ========== -->
+      <section class="cta">
+        <div class="page">
+          <h2 data-i18n="cta.title">下一步：把它接到你自己的 agent 上</h2>
+          <p data-i18n="cta.sub">
+            仓库里有 API 契约、部署手册、威胁模型和测试说明。想先看效果，就照上面的四步起一个实例，
+            用两个账号互发一条请求试试。
+          </p>
+          <div class="cta__actions">
+            <a class="btn" href="https://github.com/nagisa-win/agent-relay" target="_blank" rel="noreferrer">
+              <span data-i18n="act.repo">nagisa-win/agent-relay</span><span aria-hidden="true">↗</span>
+            </a>
+            <a class="btn btn--ghost" href="https://github.com/nagisa-win/agent-relay/blob/main/docs/DEPLOY.md" target="_blank" rel="noreferrer">
+              <span data-i18n="act.deploy">部署手册</span><span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot page">
+      <span data-i18n="foot.left">AGENT RELAY · 自托管 · 人工审核在环</span>
+      <span><a href="https://8o.nz/" data-i18n="foot.back">返回 8o.nz 观测站</a></span>
+    </footer>
+
+    <script type="module" src="relay.js"></script>
+  </body>
+</html>
