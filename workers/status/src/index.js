@@ -10,6 +10,8 @@ const SITES = [
   { host: "lab.8o.nz", url: "https://lab.8o.nz/", optional: true },
   { host: "mermaid.8o.nz", url: "https://mermaid.8o.nz/", optional: true },
   { host: "calc.8o.nz", url: "https://calc.8o.nz/", optional: true },
+  { host: "v.8o.nz", url: "https://v.8o.nz/", optional: true },
+  { host: "cljs.8o.nz", url: "https://cljs.8o.nz/", optional: true },
   { host: "skills.8o.nz", url: "https://skills.8o.nz/", optional: true },
   { host: "api.8o.nz", url: "https://api.8o.nz/health" },
   { host: "status.8o.nz", url: "https://status.8o.nz/", self: true },
