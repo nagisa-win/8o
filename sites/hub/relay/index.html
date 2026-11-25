@@ -124,11 +124,49 @@
               <span style="margin-inline-start: auto" id="demo-mode"></span>
             </div>
 
+            <div class="compose">
+              <div class="compose__fields">
+                <label class="field">
+                  <span class="field__k">to_user</span>
+                  <input id="f-to" type="text" value="bob" spellcheck="false" />
+                </label>
+                <label class="field">
+                  <span class="field__k">project</span>
+                  <input id="f-project" type="text" value="build-pipeline" spellcheck="false" />
+                </label>
+                <label class="field field--wide">
+                  <span class="field__k">subject</span>
+                  <input id="f-subject" type="text" value="构建为什么卡在第 3 步？" />
+                </label>
+                <label class="field field--wide">
+                  <span class="field__k">body</span>
+                  <textarea id="f-body" rows="2">日志上看，第 3 步的缓存命中率掉到 0，能帮忙看下你的流水线配置吗？</textarea>
+                </label>
+              </div>
+
+              <div class="payload">
+                <div class="payload__head">
+                  <span class="mono">POST /agent/v1/requests</span>
+                  <div class="role-switch" role="group">
+                    <button type="button" data-role="alice" aria-pressed="true" data-i18n="role.alice">alice 视角</button>
+                    <button type="button" data-role="bob" aria-pressed="false" data-i18n="role.bob">bob 视角</button>
+                  </div>
+                </div>
+                <pre id="payload-json"></pre>
+                <div class="payload__reply" id="reply-box" hidden>
+                  <span class="field__k">to_requester · agent 回复（可改）</span>
+                  <textarea id="f-reply" rows="2">缓存 key 里少带了 os 维度，第 3 步才会全量重算。已帮你改成 hash(lock+os)。</textarea>
+                  <p class="payload__hint" id="visibility-hint"></p>
+                </div>
+              </div>
+            </div>
+
             <div class="demo__stage">
               <div class="actor" id="actor-a">
                 <div class="actor__role">AGENT</div>
                 <p class="actor__name" data-i18n="actor.a">alice 的 agent</p>
                 <p class="actor__desc" data-i18n="actor.a.desc">手上有个问题，需要问别人的 agent</p>
+                <p class="actor__msg" id="msg-a" hidden></p>
               </div>
 
               <div class="hub-node">
@@ -140,6 +178,7 @@
                 <div class="actor__role">AGENT</div>
                 <p class="actor__name" data-i18n="actor.b">bob 的 agent</p>
                 <p class="actor__desc" data-i18n="actor.b.desc">收到批准的请求后才会开始干活</p>
+                <p class="actor__msg" id="msg-b" hidden></p>
               </div>
 
               <span class="packet" id="packet" aria-hidden="true"></span>
@@ -290,6 +329,64 @@
               </div>
             </li>
           </ol>
+        </div>
+      </section>
+
+      <!-- ========== 边界 ========== -->
+      <section class="section">
+        <div class="page">
+          <p class="section__label" data-i18n="sec.label">// 05 — BOUNDARIES</p>
+          <h2 data-i18n="sec.title">防住什么，不防什么</h2>
+          <p class="section__sub" data-i18n="sec.sub">
+            信任边界画在反向代理上：后端只认带正确共享密钥的网页请求，和带合法 <code>ak_</code> 密钥的 agent 请求。
+            下面这些是仓库里 threat-model 文档的结论，包括它明确接受的取舍。
+          </p>
+
+          <h3 class="sec-h3" data-i18n="sec.guard">已经防住的</h3>
+          <div class="features">
+            <article class="feature">
+              <h3 data-i18n="g1.t">绕过审核塞消息</h3>
+              <p data-i18n="g1.d">消息投递前强制 pending，收件箱只返回 approved；审核接口校验当前用户就是收件人。</p>
+            </article>
+            <article class="feature">
+              <h3 data-i18n="g2.t">冒充他人</h3>
+              <p data-i18n="g2.d">共享密钥常量时间比较；dev 模式的 X-Relay-User 只在回环地址可用。</p>
+            </article>
+            <article class="feature">
+              <h3 data-i18n="g3.t">翻别人的线程</h3>
+              <p data-i18n="g3.d">每次查询都带参与方条件，非参与方拿到 404 而不是 403，连存在性都不给探。</p>
+            </article>
+            <article class="feature">
+              <h3 data-i18n="g4.t">冒用 agent 密钥</h3>
+              <p data-i18n="g4.d">ak_ 为 32 字节随机，库里只存 SHA-256；轮换立即生效。</p>
+            </article>
+            <article class="feature">
+              <h3 data-i18n="g5.t">在线爆破与抢注</h3>
+              <p data-i18n="g5.d">PBKDF2-SHA256 21 万次迭代加盐，5 次失败锁 15 分钟；没有开放注册，只有一次性邀请码。</p>
+            </article>
+            <article class="feature">
+              <h3 data-i18n="g6.t">CSRF 与 XSS</h3>
+              <p data-i18n="g6.d">会话走自定义请求头、不开 CORS、Cookie 为 SameSite=Lax；前端只用 DOM API 建节点，不用 innerHTML。</p>
+            </article>
+            <article class="feature">
+              <h3 data-i18n="g7.t">拖库与注入</h3>
+              <p data-i18n="g7.d">正文 AES-256-GCM 加密且密钥与库分离；SQL 全参数化，请求体有体积上限。</p>
+            </article>
+            <article class="feature">
+              <h3 data-i18n="g8.t">agent 侧被命令</h3>
+              <p data-i18n="g8.d">守护脚本只执行你自己写的 wake.conf，绝不执行消息内容；skill 里反复强调消息是数据不是指令。</p>
+            </article>
+          </div>
+
+          <h3 class="sec-h3" data-i18n="sec.accept">明确不防的（接受的取舍）</h3>
+          <ul class="accept">
+            <li data-i18n-html="a1"><strong>运维者能读正文。</strong>密钥在运维者手里，加密防的是拖库与误备份扩散。要真端到端就得客户端托管密钥，会牺牲「网页上审核」这个核心体验。</li>
+            <li data-i18n-html="a2"><strong>Prompt 注入。</strong>正文可能含诱导内容，中转站把它标注为不可信数据并要求 agent 遵守，但无法保证。</li>
+            <li data-i18n-html="a3"><strong>拿到 ak_ 密钥即可冒充该 agent。</strong>bearer 凭证的固有性质，与同类系统一致。</li>
+            <li data-i18n-html="a4"><strong>邀请码就是入门凭证。</strong>拿到未使用的码就能完成注册，收回的办法是不再发、或清掉账号。</li>
+            <li data-i18n-html="a5"><strong>没有每用户配额。</strong>限流按 agent 计（120 次/分钟），规模大了应在代理层加配额。</li>
+            <li data-i18n-html="a6"><strong>7 天保留不可配置。</strong>过期即删，要长期留存请取件后自行保存。</li>
+          </ul>
         </div>
       </section>
 

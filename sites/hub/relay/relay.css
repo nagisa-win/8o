@@ -867,3 +867,228 @@ pre .k {
     padding: var(--gap-3);
   }
 }
+
+/* ---------- 报文集编辑器 ---------- */
+
+.compose {
+  display: grid;
+  gap: var(--gap-3);
+  padding: var(--gap-4);
+  border-bottom: 1px solid var(--line);
+}
+
+@media (min-width: 900px) {
+  .compose {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.compose__fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-2) var(--gap-3);
+}
+
+.field {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.field--wide {
+  grid-column: 1 / -1;
+}
+
+.field__k {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--ink-dim);
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--bg) 70%, #000);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+[data-theme="light"] .field input,
+[data-theme="light"] .field textarea {
+  background: #f7f9fe;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.payload {
+  display: grid;
+  gap: var(--gap-2);
+  padding: var(--gap-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+}
+
+.payload__head {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-3);
+  flex-wrap: wrap;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--ink-dim);
+}
+
+.payload pre {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.role-switch {
+  display: inline-flex;
+  margin-inline-start: auto;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.role-switch button {
+  padding: 4px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-dim);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.role-switch button[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+}
+
+.payload__reply {
+  display: grid;
+  gap: 6px;
+  padding-top: var(--gap-2);
+  border-top: 1px dashed var(--line);
+}
+
+.payload__reply textarea {
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--bg) 70%, #000);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  resize: vertical;
+  transition: filter 240ms var(--ease), opacity 240ms var(--ease);
+}
+
+[data-theme="light"] .payload__reply textarea {
+  background: #f7f9fe;
+}
+
+.payload__reply textarea:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.payload__hint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--ink-dim);
+}
+
+/* 演员卡上的报文摘要 */
+.actor__msg {
+  margin: 8px 0 0;
+  padding: 6px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  word-break: break-word;
+}
+
+.actor__msg[data-kind="pending"] {
+  border-color: color-mix(in srgb, var(--amber) 55%, transparent);
+  color: var(--amber);
+}
+
+.actor__msg[data-kind="delivered"] {
+  border-color: color-mix(in srgb, var(--mint) 55%, transparent);
+  color: var(--mint);
+}
+
+.actor__msg[data-kind="rejected"] {
+  border-color: color-mix(in srgb, var(--rose) 55%, transparent);
+  color: var(--rose);
+}
+
+/* ---------- 边界章节 ---------- */
+
+.sec-h3 {
+  margin: var(--gap-6) 0 var(--gap-3);
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+.accept {
+  display: grid;
+  gap: var(--gap-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: acc;
+}
+
+.accept li {
+  position: relative;
+  padding: 12px var(--gap-4) 12px 42px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--ink-soft);
+}
+
+.accept li::before {
+  counter-increment: acc;
+  content: "×" counter(acc);
+  position: absolute;
+  left: var(--gap-4);
+  top: 13px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--rose);
+}
+
+.accept strong {
+  color: var(--ink);
+  font-weight: 600;
+}

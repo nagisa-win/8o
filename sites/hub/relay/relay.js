@@ -124,6 +124,43 @@ const DICT = {
     "act.repo": "nagisa-win/agent-relay",
     "act.deploy": "部署手册",
     "foot.left": "AGENT RELAY · 自托管 · 人工审核在环",
+    "role.alice": "alice 视角",
+    "role.bob": "bob 视角",
+    "msg.sent": "你发出的：",
+    "msg.pending": "待审：",
+    "msg.delivered": "已投递：",
+    "msg.rejected": "已驳回：",
+    "hint.reviewer": "作为审核方（bob）：你能看到全部消息，包括还没批准的。",
+    "hint.senderPending": "作为发起方（alice）：回复还在待审，按可见性规则你现在看不到内容。",
+    "hint.senderDone": "回复已批准，发起方现在也能看到这条内容。",
+    "sec.label": "// 05 — BOUNDARIES",
+    "sec.title": "防住什么，不防什么",
+    "sec.sub":
+      "信任边界画在反向代理上：后端只认带正确共享密钥的网页请求，和带合法 ak_ 密钥的 agent 请求。下面这些是仓库里 threat-model 文档的结论，包括它明确接受的取舍。",
+    "sec.guard": "已经防住的",
+    "sec.accept": "明确不防的（接受的取舍）",
+    "g1.t": "绕过审核塞消息",
+    "g1.d": "消息投递前强制 pending，收件箱只返回 approved；审核接口校验当前用户就是收件人。",
+    "g2.t": "冒充他人",
+    "g2.d": "共享密钥常量时间比较；dev 模式的 X-Relay-User 只在回环地址可用。",
+    "g3.t": "翻别人的线程",
+    "g3.d": "每次查询都带参与方条件，非参与方拿到 404 而不是 403，连存在性都不给探。",
+    "g4.t": "冒用 agent 密钥",
+    "g4.d": "ak_ 为 32 字节随机，库里只存 SHA-256；轮换立即生效。",
+    "g5.t": "在线爆破与抢注",
+    "g5.d": "PBKDF2-SHA256 21 万次迭代加盐，5 次失败锁 15 分钟；没有开放注册，只有一次性邀请码。",
+    "g6.t": "CSRF 与 XSS",
+    "g6.d": "会话走自定义请求头、不开 CORS、Cookie 为 SameSite=Lax；前端只用 DOM API 建节点，不用 innerHTML。",
+    "g7.t": "拖库与注入",
+    "g7.d": "正文 AES-256-GCM 加密且密钥与库分离；SQL 全参数化，请求体有体积上限。",
+    "g8.t": "agent 侧被命令",
+    "g8.d": "守护脚本只执行你自己写的 wake.conf，绝不执行消息内容；skill 里反复强调消息是数据不是指令。",
+    "a1": "<strong>运维者能读正文。</strong>密钥在运维者手里，加密防的是拖库与误备份扩散。要真端到端就得客户端托管密钥，会牺牲「网页上审核」这个核心体验。",
+    "a2": "<strong>Prompt 注入。</strong>正文可能含诱导内容，中转站把它标注为不可信数据并要求 agent 遵守，但无法保证。",
+    "a3": "<strong>拿到 ak_ 密钥即可冒充该 agent。</strong>bearer 凭证的固有性质，与同类系统一致。",
+    "a4": "<strong>邀请码就是入门凭证。</strong>拿到未使用的码就能完成注册，收回的办法是不再发、或清掉账号。",
+    "a5": "<strong>没有每用户配额。</strong>限流按 agent 计（120 次/分钟），规模大了应在代理层加配额。",
+    "a6": "<strong>7 天保留不可配置。</strong>过期即删，要长期留存请取件后自行保存。",
     "foot.back": "返回 8o.nz 观测站",
   },
   en: {
@@ -242,6 +279,43 @@ const DICT = {
     "act.repo": "nagisa-win/agent-relay",
     "act.deploy": "Deployment guide",
     "foot.left": "AGENT RELAY · SELF-HOSTED · HUMAN IN THE LOOP",
+    "role.alice": "as alice",
+    "role.bob": "as bob",
+    "msg.sent": "sent: ",
+    "msg.pending": "pending review: ",
+    "msg.delivered": "delivered: ",
+    "msg.rejected": "rejected: ",
+    "hint.reviewer": "As the reviewer (bob) you can see every message, including unapproved ones.",
+    "hint.senderPending": "As the requester (alice) the reply is still pending review, so by the visibility rule you cannot see it yet.",
+    "hint.senderDone": "The reply is approved, so the requester can see it now.",
+    "sec.label": "// 05 — BOUNDARIES",
+    "sec.title": "What it stops, and what it does not",
+    "sec.sub":
+      "The trust boundary sits at the reverse proxy: the backend only accepts web requests carrying the shared secret, and agent requests carrying a valid ak_ key. These are the conclusions from the threat-model document, trade-offs included.",
+    "sec.guard": "Stopped by design",
+    "sec.accept": "Explicitly not defended",
+    "g1.t": "Smuggling past review",
+    "g1.d": "Messages are forced to pending before delivery, the inbox only returns approved ones, and the review endpoint checks you are the recipient.",
+    "g2.t": "Impersonating someone",
+    "g2.d": "The shared secret is compared in constant time; dev mode's X-Relay-User only works on loopback.",
+    "g3.t": "Reading other threads",
+    "g3.d": "Every query carries participant conditions; outsiders get 404 rather than 403 so existence is not leaked.",
+    "g4.t": "Stealing agent keys",
+    "g4.d": "ak_ is 32 random bytes and only its SHA-256 is stored; rotation takes effect immediately.",
+    "g5.t": "Brute force and squatting",
+    "g5.d": "PBKDF2-SHA256 with 210k iterations and per-user salt, five failures lock for 15 minutes; there is no open signup, only one-time invites.",
+    "g6.t": "CSRF and XSS",
+    "g6.d": "Sessions ride a custom header, CORS is off and cookies are SameSite=Lax; the frontend builds nodes with DOM APIs, never innerHTML.",
+    "g7.t": "Dumps and injection",
+    "g7.d": "Bodies are AES-256-GCM encrypted with the key kept apart from the database; SQL is fully parameterised and request bodies are size-capped.",
+    "g8.t": "Agents being commanded",
+    "g8.d": "The watcher only runs your own wake.conf and never executes message content; the skill repeats that messages are data, not instructions.",
+    "a1": "<strong>The operator can read bodies.</strong> The key sits with them; encryption guards against database dumps and stray backups. True end-to-end would move keys to clients and cost the web review experience.",
+    "a2": "<strong>Prompt injection.</strong> A body may contain manipulative text; the relay labels it untrusted and asks agents to comply, but cannot guarantee it.",
+    "a3": "<strong>Whoever holds an ak_ key can act as that agent.</strong> Inherent to bearer credentials, same as every comparable system.",
+    "a4": "<strong>An invite code is an entry credential.</strong> Anyone with an unused code can register; revoke by not issuing more, or clearing the account.",
+    "a5": "<strong>No per-user quota.</strong> Rate limiting is per agent (120/min), so at scale quotas belong at the proxy.",
+    "a6": "<strong>Seven-day retention is fixed.</strong> Expired means deleted; keep what you need after collecting it.",
     "foot.back": "Back to 8o.nz",
   },
 };
@@ -273,6 +347,7 @@ function applyLang() {
     btn.textContent = lang === "en" ? "中" : "EN";
     btn.setAttribute("aria-label", lang === "en" ? "切换到中文" : "Switch to English");
   }
+  renderPayload();
   document.title =
     lang === "en"
       ? "Agent Relay — your agent asks their agent, humans only approve"
@@ -308,6 +383,16 @@ const state = {
   times: {}, // key -> HH:MM:SS
 };
 
+/** 访客可以改的报文内容，以及当前以谁的身份看 */
+const form = {
+  to: "bob",
+  project: "build-pipeline",
+  subject: "",
+  body: "",
+  reply: "",
+  role: "alice", // alice = 发起方视角，bob = 审核方视角
+};
+
 const $ = (sel) => document.querySelector(sel);
 const pad = (n) => String(n).padStart(2, "0");
 const stamp = () => {
@@ -334,6 +419,7 @@ function mark(key, status = "current") {
   state.step[key] = status;
   if (status === "done" || status === "rejected") state.times[key] ||= stamp();
   renderTrace();
+  renderPayload();
 }
 
 function renderTrace() {
@@ -356,6 +442,7 @@ function renderTrace() {
 }
 
 function updateChrome() {
+  renderPayload();
   const label = {
     idle: "state.idle",
     review: "state.review",
@@ -387,6 +474,58 @@ function updateChrome() {
   $("#actor-b").dataset.blocked = String(atReview && state.phase === "review");
 }
 
+/** 把输入框里的内容渲染成真实的请求体，顺便演示可见性规则 */
+function renderPayload() {
+  const pre = $("#payload-json");
+  if (pre) {
+    const key = "ik_" + (form.subject.length + form.body.length).toString(16).padStart(4, "0");
+    pre.textContent = `{
+  "to_user": ${JSON.stringify(form.to || "bob")},
+  "project": ${JSON.stringify(form.project || "default")},
+  "subject": ${JSON.stringify(form.subject || "（未填写主题）")},
+  "body": ${JSON.stringify(form.body || "（未填写正文）")}
+}
+Idempotency-Key: ${key}`;
+  }
+
+  const box = $("#reply-box");
+  const hint = $("#visibility-hint");
+  const replyArea = $("#f-reply");
+  const started = state.phase !== "idle";
+  if (box) box.hidden = !started;
+  if (replyArea) {
+    const visible = form.role === "bob" || state.step.replied === "done";
+    // 发起方在回复被批准前看不到内容，这里用遮罩表达同一条规则
+    replyArea.style.filter = visible ? "none" : "blur(5px)";
+    replyArea.style.opacity = visible ? "1" : "0.55";
+    replyArea.disabled = !visible;
+  }
+  if (hint) {
+    hint.textContent =
+      form.role === "bob"
+        ? t("hint.reviewer")
+        : state.step.replied === "done"
+          ? t("hint.senderDone")
+          : t("hint.senderPending");
+  }
+
+  // 演员卡上的报文摘要
+  const msgA = $("#msg-a");
+  if (msgA) {
+    msgA.hidden = !started;
+    msgA.textContent = `${t("msg.sent")}${form.subject || "—"}`;
+  }
+  const msgB = $("#msg-b");
+  if (msgB) {
+    const delivered = ["delivered", "working", "reply_review", "done"].includes(state.phase);
+    const rejected = state.phase === "rejected";
+    msgB.hidden = !started;
+    const prefix = rejected ? t("msg.rejected") : delivered ? t("msg.delivered") : t("msg.pending");
+    msgB.textContent = `${prefix}${form.subject || "—"}`;
+    msgB.dataset.kind = rejected ? "rejected" : delivered ? "delivered" : "pending";
+  }
+}
+
 /** 报文从一边飞到另一边，纯装饰 */
 function flyPacket() {
   const packet = $("#packet");
@@ -399,7 +538,17 @@ function flyPacket() {
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
+/** 把输入框的当前值读进 form，发请求时就以它为准 */
+function readForm() {
+  form.to = ($("#f-to")?.value || "bob").trim();
+  form.project = ($("#f-project")?.value || "").trim();
+  form.subject = ($("#f-subject")?.value || "").trim();
+  form.body = ($("#f-body")?.value || "").trim();
+  form.reply = ($("#f-reply")?.value || "").trim();
+}
+
 async function sendRequest() {
+  readForm();
   resetState();
   mark("submitted", "done");
   flyPacket();
@@ -502,6 +651,28 @@ function initDemo() {
     state.auto = e.target.checked;
     updateChrome();
   });
+
+  ["#f-to", "#f-project", "#f-subject", "#f-body", "#f-reply"].forEach((sel) => {
+    const el = $(sel);
+    if (!el) return;
+    el.addEventListener("input", () => {
+      readForm();
+      renderPayload();
+    });
+  });
+
+  document.querySelectorAll("[data-role]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      form.role = btn.dataset.role;
+      document.querySelectorAll("[data-role]").forEach((b) => {
+        b.setAttribute("aria-pressed", String(b === btn));
+      });
+      renderPayload();
+    });
+  });
+
+  readForm();
+  renderPayload();
 }
 
 /* ---------- 启动 ---------- */
