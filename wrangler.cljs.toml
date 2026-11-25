@@ -1,0 +1,14 @@
+# 8O Observatory · ClojureScript 自学站
+# 部署：npm run deploy:cljs
+name = "cljs"
+main = "workers/static/src/index.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+
+[assets]
+directory = "./dist/cljs"
+binding = "ASSETS"
+
+[[routes]]
+pattern = "cljs.8o.nz"
+custom_domain = true

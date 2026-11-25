@@ -107,12 +107,23 @@ async function buildLab() {
   console.log("built lab → dist/lab");
 }
 
+/** ClojureScript 自学站：静态外壳 + 本地 vendor 的 scittle 解释器 */
+async function buildCljs() {
+  const out = join(dist, "cljs");
+  await cp(join(root, "sites/cljs"), out, { recursive: true });
+  await mkdir(join(out, "ui"), { recursive: true });
+  await cp(join(root, "packages/tokens/8o.css"), join(out, "ui/8o.css"));
+  console.log("built cljs → dist/cljs");
+}
+
 const target = process.argv[2] || "all";
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 
 if (target === "hub" || target === "all") await buildHub();
 if (target === "skills" || target === "all") await buildSkills();
+if (target === "cljs" || target === "all") await buildCljs();
+
 if (target === "lab" || target === "all") {
   await buildLab();
   // 设备舱的「工具模式」依赖第三方包，用 vite 预编译成单文件；缺依赖时降级跳过

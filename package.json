@@ -15,7 +15,8 @@
     "check": "node scripts/check.mjs",
     "deploy:skills": "npm run build && wrangler deploy --config wrangler.skills.toml",
     "deploy:lab": "npm run build && wrangler deploy --config wrangler.lab.toml",
-    "deploy:mirror": "sh scripts/deploy-mirror.sh"
+    "deploy:mirror": "sh scripts/deploy-mirror.sh",
+    "deploy:cljs": "npm run build && wrangler deploy --config wrangler.cljs.toml"
   },
   "devDependencies": {
     "vite": "^6.0.0",

@@ -121,6 +121,35 @@
       ],
       "url": "https://api.8o.nz/health",
       "status": "live"
+    },
+    {
+      "id": "cljs",
+      "host": "cljs.8o.nz",
+      "title": "ClojureScript 自学站",
+      "desc": "分八章的 ClojureScript 中文教程，每段代码都能在页面里直接运行；解释器走本地 SCI，代码不离开浏览器。",
+      "kind": "learn",
+      "accent": "mint",
+      "tags": [
+        "ClojureScript",
+        "SCI",
+        "Playground"
+      ],
+      "url": "https://cljs.8o.nz/",
+      "status": "live"
+    },
+    {
+      "id": "notes",
+      "host": "v.8o.nz",
+      "title": "笔记与实验",
+      "desc": "原来的 v88to.me 迁到这里：docsify 驱动的笔记站，含 Web Router 等长期维护的条目。",
+      "kind": "notes",
+      "accent": "violet",
+      "tags": [
+        "docsify",
+        "GitHub Pages"
+      ],
+      "url": "https://v.8o.nz/",
+      "status": "live"
     }
   ]
 }
