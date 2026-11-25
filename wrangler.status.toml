@@ -1,0 +1,17 @@
+# 8O Observatory · 状态巡检
+# 部署：npm run deploy:status
+name = "status"
+main = "workers/status/src/index.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+
+[[kv_namespaces]]
+binding = "STATUS"
+id = "b6dae22cace04cebb7abdb44076c9ae5"
+
+[[routes]]
+pattern = "status.8o.nz"
+custom_domain = true
+
+[triggers]
+crons = ["*/15 * * * *"]

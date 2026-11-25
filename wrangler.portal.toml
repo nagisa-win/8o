@@ -1,0 +1,35 @@
+# 8O Observatory · 门户与边缘接口
+# 部署：npm run deploy:portal
+name = "portal"
+main = "workers/portal/src/index.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+
+# 静态资源来自 scripts/build.mjs 生成的 dist/hub
+[assets]
+directory = "./dist/hub"
+binding = "ASSETS"
+not_found_handling = "404-page"
+run_worker_first = true
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "a751c7825ff140c7a58457c349041538"
+
+[[kv_namespaces]]
+binding = "RL"
+id = "47807e9097494580b47371a9d5aeecc5"
+
+[[kv_namespaces]]
+binding = "STATUS"
+id = "b6dae22cace04cebb7abdb44076c9ae5"
+
+# 门户：apex 主域
+[[routes]]
+pattern = "8o.nz"
+custom_domain = true
+
+# API：给子站跨域调用
+[[routes]]
+pattern = "api.8o.nz"
+custom_domain = true

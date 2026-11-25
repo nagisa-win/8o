@@ -1,0 +1,14 @@
+# 8O Observatory · Web 实验室
+# 部署：npm run deploy:lab
+name = "lab"
+main = "workers/static/src/index.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+
+[assets]
+directory = "./dist/lab"
+binding = "ASSETS"
+
+[[routes]]
+pattern = "lab.8o.nz"
+custom_domain = true

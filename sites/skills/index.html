@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>技能包 · skills.8o.nz</title>
+    <meta
+      name="description"
+      content="给 AI coding agent 用的技能包与技能管理器：一处安装，软链接分发到各个 agent，升一处、处处生效。"
+    />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="https://8o.nz/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://skills.8o.nz/" />
+    <meta property="og:title" content="技能包 · skills.8o.nz" />
+    <meta property="og:description" content="跨 agent 的 skill 包管理器 skkill，以及可以直接复用的技能包。" />
+    <meta property="og:url" content="https://skills.8o.nz/" />
+    <link rel="stylesheet" href="/ui/8o.css" />
+    <link rel="stylesheet" href="assets/skills.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="wrap topbar__inner">
+        <a class="brand mono" href="https://8o.nz/"><span>8o</span> / SKILLS</a>
+        <span class="label">AGENT SKILL RACK</span>
+        <a class="back mono" href="https://8o.nz/">← 返回观测站</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero wrap">
+        <p class="label">// SKILL RACK</p>
+        <h1>技能包</h1>
+        <p class="lede">
+          写 agent 的 skill 和写 shell 别名一样，攒着攒着就散了。<strong>skkill</strong> 把它们收进
+          <code>~/.skkill/skills</code>，再用软链接分发到你常用的每个 agent——一处升级，处处生效。
+        </p>
+
+        <div class="install panel">
+          <div class="install__head">
+            <span class="label">INSTALL</span>
+            <button class="copy mono" data-copy="npm i -g @steven-y/skkill" type="button">复制</button>
+          </div>
+          <pre class="install__cmd mono"><span class="prompt">$</span> npm i -g @steven-y/skkill</pre>
+        </div>
+
+        <ol class="steps">
+          <li>
+            <span class="step-no mono">01</span>
+            <div>
+              <h3>装一个技能</h3>
+              <pre class="mono">skkill install owner/repo -a claudecode</pre>
+              <p>支持 <code>owner/repo</code> 简写与任意 git URL，自动识别仓库里的 SKILL.md。</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-no mono">02</span>
+            <div>
+              <h3>链到所有 agent</h3>
+              <pre class="mono">skkill link all</pre>
+              <p>目标包括 claudecode、codex、comate、opencode、dsh，也可以单独指定。</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-no mono">03</span>
+            <div>
+              <h3>自己写一个</h3>
+              <pre class="mono">skkill init my-skill -d "一句话用途"</pre>
+              <p>生成骨架后交给 coding agent 填内容，再用 <code>skkill validate</code> 做本地校验。</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="projects wrap">
+        <div class="sec-head">
+          <p class="label">// 仓库</p>
+          <h2>两个可以直接用的项目</h2>
+        </div>
+
+        <div class="cards">
+          <a class="card" href="https://github.com/nagisa-win/skkill">
+            <div class="card__top mono"><span>skkill</span><span class="tag">CLI</span></div>
+            <p>跨 agent 的 skill 包管理器：安装、校验、迁移、分发一条龙，用 package.json 当版本控制。</p>
+            <div class="card__foot mono">TypeScript · MIT · npm ↗</div>
+          </a>
+          <a class="card" href="https://github.com/nagisa-win/fanzha-skill">
+            <div class="card__top mono"><span>fanzha-skill</span><span class="tag">SKILL</span></div>
+            <p>反诈技能包：把常见骗术的识别线索、追问话术和判断流程整理成 agent 能直接套用的知识。</p>
+            <div class="card__foot mono">Skill · MIT · GitHub ↗</div>
+          </a>
+        </div>
+
+        <p class="note mono">
+          技能内容与 agent 环境强相关，装之前建议先看一眼仓库里的 SKILL.md，别把不认识的命令直接跑起来。
+        </p>
+      </section>
+    </main>
+
+    <footer class="footer wrap mono">
+      <span>skills.8o.nz</span><span>·</span><span>跑在 Cloudflare Workers</span>
+    </footer>
+
+    <script type="module" src="assets/skills.js"></script>
+  </body>
+</html>

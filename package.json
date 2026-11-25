@@ -1,0 +1,23 @@
+{
+  "name": "8o-observatory",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "8o.nz 站点矩阵：门户、实验室、工具站与边缘服务",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs all",
+    "dev": "node scripts/dev.mjs",
+    "deploy:portal": "npm run build && wrangler deploy --config wrangler.portal.toml",
+    "deploy:status": "wrangler deploy --config wrangler.status.toml",
+    "check": "node scripts/check.mjs",
+    "deploy:skills": "npm run build && wrangler deploy --config wrangler.skills.toml",
+    "deploy:lab": "npm run build && wrangler deploy --config wrangler.lab.toml"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0",
+    "wrangler": "^4.0.0"
+  }
+}

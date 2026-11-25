@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>实验室 · lab.8o.nz</title>
+    <meta
+      name="description"
+      content="纯前端优先的实验场：在浏览器里训练神经网络、做密码学与网络侦察、分析 V8 内存快照，全程不上传数据。"
+    />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://lab.8o.nz/" />
+    <meta property="og:title" content="实验室 · lab.8o.nz" />
+    <meta property="og:description" content="浏览器里训练模型、跑安全工具、分析内存快照——数据不出本机。" />
+    <meta property="og:url" content="https://lab.8o.nz/" />
+    <link rel="stylesheet" href="/ui/8o.css" />
+    <link rel="stylesheet" href="assets/lab.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="wrap topbar__inner">
+        <a class="brand mono" href="https://8o.nz/"><span>8o</span> / LAB</a>
+        <nav class="topnav" aria-label="模块">
+          <a href="#/" data-nav="home">总览</a>
+          <a href="#/model" data-nav="model">模型舱</a>
+          <a href="#/security" data-nav="security">安全舱</a>
+        </nav>
+        <a class="back mono" href="https://8o.nz/">← 观测站</a>
+      </div>
+    </header>
+
+    <main class="wrap" id="view">
+      <!-- 首屏：模块目录 -->
+      <section class="landing" id="landing">
+        <p class="label">// WEB LAB</p>
+        <h1>实验室</h1>
+        <p class="lede">
+          能塞进浏览器的，就不放到服务器上。<strong>数据不出本机</strong>是这里的默认设定，
+          除了明确标注"经边缘代理"的侦察功能，其余计算全部在你自己的 CPU / GPU 上跑。
+        </p>
+
+        <div class="bays">
+          <a class="bay" href="#/model">
+            <div class="bay__top mono"><span>BAY-01</span><span class="bay__state ok">可用</span></div>
+            <h2>模型舱</h2>
+            <p>在画布上点出自己的数据集，现场训练一个多层感知机：反向传播、决策边界与损失曲线全都实时可见。</p>
+            <ul class="bay__tags mono"><li>WebGPU 可选</li><li>手写反向传播</li><li>零上传</li></ul>
+          </a>
+
+          <a class="bay" href="#/security">
+            <div class="bay__top mono"><span>BAY-02</span><span class="bay__state ok">可用</span></div>
+            <h2>安全舱</h2>
+            <p>JWT 解析与验签、WebCrypto 哈希与派生、编码互转，外加经边缘代理的 DNS / 证书 / 响应头侦察。</p>
+            <ul class="bay__tags mono"><li>WebCrypto</li><li>HIBP k-匿名</li><li>DoH / CT</li></ul>
+          </a>
+
+          <div class="bay bay--soon">
+            <div class="bay__top mono"><span>BAY-03</span><span class="bay__state todo">开发中</span></div>
+            <h2>设备舱</h2>
+            <p>通过 WebUSB 直连安卓设备：设备信息、应用列表、截屏与 logcat 流。</p>
+            <ul class="bay__tags mono"><li>WebUSB</li><li>ADB</li><li>v1.1</li></ul>
+          </div>
+
+          <div class="bay bay--soon">
+            <div class="bay__top mono"><span>BAY-04</span><span class="bay__state todo">开发中</span></div>
+            <h2>数据舱</h2>
+            <p>拖入 V8 heapsnapshot 在本地解析：支配树、retained size 排行与疑似泄漏点。</p>
+            <ul class="bay__tags mono"><li>Worker</li><li>Dominator</li><li>v1.1</li></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 模块挂载点 -->
+      <section class="module" id="module" hidden></section>
+    </main>
+
+    <footer class="footer wrap mono">
+      <span>lab.8o.nz</span><span>·</span><span id="foot-stat">纯前端</span>
+    </footer>
+
+    <script type="module" src="assets/lab.js"></script>
+  </body>
+</html>

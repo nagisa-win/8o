@@ -1,0 +1,126 @@
+{
+  "updated": "2026-11-25",
+  "sites": [
+    {
+      "id": "hub",
+      "host": "8o.nz",
+      "title": "观测站",
+      "desc": "你现在站的地方。所有子域、项目与实时状态的入口，工作在 Cloudflare 边缘。",
+      "kind": "entry",
+      "accent": "cyan",
+      "tags": [
+        "Workers",
+        "Edge",
+        "Vanilla JS"
+      ],
+      "url": "https://8o.nz/",
+      "status": "live"
+    },
+    {
+      "id": "profile",
+      "host": "www.8o.nz",
+      "title": "个人说明书",
+      "desc": "Cyberpunk 2077 风格的个人主页：属性面板、任务日志、超梦回放。同一份源码构建公开版与内网版。",
+      "kind": "profile",
+      "accent": "rose",
+      "tags": [
+        "2077 UI",
+        "Vanilla",
+        "GitHub Pages"
+      ],
+      "url": "https://www.8o.nz/",
+      "status": "live"
+    },
+    {
+      "id": "lab",
+      "host": "lab.8o.nz",
+      "title": "Web 实验室",
+      "desc": "纯前端优先的实验场：浏览器内训练与加载模型、WebADB 连真机、安全工具、V8 快照分析、点对点传文件。",
+      "kind": "lab",
+      "accent": "violet",
+      "tags": [
+        "WebGPU",
+        "WASM",
+        "WebUSB",
+        "WebRTC"
+      ],
+      "url": "https://lab.8o.nz/",
+      "status": "live"
+    },
+    {
+      "id": "mermaid",
+      "host": "mermaid.8o.nz",
+      "title": "Mermaid 渲染器",
+      "desc": "Monaco 编辑 + 实时预览，把文本画成图并导出 PNG / JPG。本地保存草稿，打开即用。",
+      "kind": "tool",
+      "accent": "mint",
+      "tags": [
+        "Monaco",
+        "Mermaid",
+        "Vite"
+      ],
+      "url": "https://mermaid.8o.nz/",
+      "status": "live"
+    },
+    {
+      "id": "calc",
+      "host": "calc.8o.nz",
+      "title": "演算台",
+      "desc": "把表达式拆开给你看：词法 token 流、AST、求值过程逐步可视化，基于 Jison 手写文法。",
+      "kind": "tool",
+      "accent": "amber",
+      "tags": [
+        "Jison",
+        "AST",
+        "Parser"
+      ],
+      "url": "https://calc.8o.nz/",
+      "status": "live"
+    },
+    {
+      "id": "skills",
+      "host": "skills.8o.nz",
+      "title": "技能包",
+      "desc": "给 coding agent 用的技能管理器与技能库：用 package.json 当版本控制，一行命令装到全局。",
+      "kind": "tool",
+      "accent": "steel",
+      "tags": [
+        "CLI",
+        "npm",
+        "Agents"
+      ],
+      "url": "https://skills.8o.nz/",
+      "status": "live"
+    },
+    {
+      "id": "status",
+      "host": "status.8o.nz",
+      "title": "站点状态",
+      "desc": "每 15 分钟巡检所有子域的响应码、往返延迟与证书状态，历史曲线公开可查。",
+      "kind": "service",
+      "accent": "mint",
+      "tags": [
+        "Cron",
+        "KV",
+        "Observability"
+      ],
+      "url": "https://status.8o.nz/",
+      "status": "live"
+    },
+    {
+      "id": "api",
+      "host": "api.8o.nz",
+      "title": "边缘接口",
+      "desc": "门户背后的轻服务：仓库数据缓存、动态流聚合、DNS 与证书查询、受限的端口探测。",
+      "kind": "service",
+      "accent": "steel",
+      "tags": [
+        "REST",
+        "Cache",
+        "DoH"
+      ],
+      "url": "https://api.8o.nz/health",
+      "status": "live"
+    }
+  ]
+}

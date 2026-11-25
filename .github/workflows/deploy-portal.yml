@@ -1,0 +1,30 @@
+name: Deploy 门户与 api
+
+on:
+  push:
+    branches: [main]
+    paths: ["sites/hub/**" "workers/portal/**" "packages/tokens/**" "scripts/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-portal
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: node scripts/check.mjs
+      - run: npm run build
+      - run: npx wrangler deploy --config wrangler.portal.toml
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
