@@ -51,7 +51,7 @@ export function showAd(layer) {
           </div>
         </div>
         <div class="ad-tags">${card.tags.map((t) => `<span>${t}</span>`).join('')}</div>
-        <a class="ad-go" href="https://home.popo.baidu-int.com" target="_blank" rel="noopener">立即体验 POPO</a>
+        <a class="ad-go" href="https://8o.nz/" target="_blank" rel="noopener">逛逛 8o.nz</a>
       </div>`);
     layer.appendChild(screen);
 

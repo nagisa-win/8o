@@ -108,21 +108,6 @@
       "status": "live"
     },
     {
-      "id": "api",
-      "host": "api.8o.nz",
-      "title": "边缘接口",
-      "desc": "门户背后的轻服务：仓库数据缓存、动态流聚合、DNS 与证书查询、受限的端口探测。",
-      "kind": "service",
-      "accent": "steel",
-      "tags": [
-        "REST",
-        "Cache",
-        "DoH"
-      ],
-      "url": "https://api.8o.nz/health",
-      "status": "live"
-    },
-    {
       "id": "cljs",
       "host": "cljs.8o.nz",
       "title": "ClojureScript 自学站",
