@@ -35,14 +35,13 @@
       "id": "lab",
       "host": "lab.8o.nz",
       "title": "Web 实验室",
-      "desc": "纯前端优先的实验场：浏览器内训练与加载模型、WebADB 连真机、安全工具、V8 快照分析、点对点传文件。",
+      "desc": "纯前端优先的实验场：浏览器内训练神经网络、安全工具箱（JWT / 密码学 / DNS 与证书侦察）、V8 快照本地解析；WebADB 与点对点传文件在路上。",
       "kind": "lab",
       "accent": "violet",
       "tags": [
-        "WebGPU",
-        "WASM",
-        "WebUSB",
-        "WebRTC"
+        "手写反向传播",
+        "WebCrypto",
+        "Web Worker"
       ],
       "url": "https://lab.8o.nz/",
       "status": "live"
