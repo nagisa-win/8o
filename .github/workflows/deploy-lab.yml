@@ -3,7 +3,11 @@ name: Deploy 实验室
 on:
   push:
     branches: [main]
-    paths: ["sites/lab/**" "packages/tokens/**" "scripts/**"]
+    paths:
+      - "sites/lab/**"
+      - "packages/tokens/**"
+      - "scripts/**"
+      - ".github/workflows/deploy-lab.yml"
   workflow_dispatch:
 
 permissions:

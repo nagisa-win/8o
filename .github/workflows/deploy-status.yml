@@ -3,7 +3,9 @@ name: Deploy 状态巡检
 on:
   push:
     branches: [main]
-    paths: ["workers/status/**"]
+    paths:
+      - "workers/status/**"
+      - ".github/workflows/deploy-status.yml"
   workflow_dispatch:
 
 permissions:

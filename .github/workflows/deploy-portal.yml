@@ -3,7 +3,12 @@ name: Deploy 门户与 api
 on:
   push:
     branches: [main]
-    paths: ["sites/hub/**" "workers/portal/**" "packages/tokens/**" "scripts/**"]
+    paths:
+      - "sites/hub/**"
+      - "workers/portal/**"
+      - "packages/tokens/**"
+      - "scripts/**"
+      - ".github/workflows/deploy-portal.yml"
   workflow_dispatch:
 
 permissions:

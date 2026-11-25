@@ -3,7 +3,11 @@ name: Deploy 技能包站点
 on:
   push:
     branches: [main]
-    paths: ["sites/skills/**" "packages/tokens/**" "scripts/**"]
+    paths:
+      - "sites/skills/**"
+      - "packages/tokens/**"
+      - "scripts/**"
+      - ".github/workflows/deploy-skills.yml"
   workflow_dispatch:
 
 permissions:
