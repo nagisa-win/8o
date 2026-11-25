@@ -1,0 +1,19 @@
+#!/bin/sh
+# 提交前拦截：内网域名、真实姓名、本机绝对路径、疑似密钥。
+# 启用一次即可：npm run setup（等价于 git config core.hooksPath .githooks）
+# 确实需要绕过：git commit --no-verify
+
+ROOT=$(git rev-parse --show-toplevel) || exit 1
+cd "$ROOT" || exit 1
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "✗ 找不到 node，跳过隐私检查（请先装 Node 22+）" >&2
+  exit 1
+fi
+
+if ! node scripts/check.mjs; then
+  echo ""
+  echo "✗ 提交被拦下：先处理上面列出的文件。"
+  echo "  这些规则是防止内网信息与个人身份被推到公开仓库。"
+  exit 1
+fi

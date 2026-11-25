@@ -46,6 +46,23 @@ npm run deploy:lab
 
 发布需要 `CLOUDFLARE_API_TOKEN` 与 `CLOUDFLARE_ACCOUNT_ID` 两个环境变量，CI 里用仓库 secrets 注入。
 
+## 提交前检查
+
+公开仓库最怕的是把内网信息或身份信息推上去，所以装了本地钩子：
+
+```bash
+npm run setup    # 等价于 git config core.hooksPath .githooks，克隆后执行一次
+```
+
+之后每次 `git commit` 都会先跑 `scripts/check.mjs`，命中下面任一规则即拦下提交：
+
+- 公司域名与内网域名（如 `*-int` 一类）
+- 真实姓名
+- 内网 IP 段、本机绝对路径
+- 疑似密钥的长字符串
+
+确实需要绕过时用 `git commit --no-verify`，但推送前请自己再看一眼 diff。CI 里 `npm run check` 会再跑一遍，绕过钩子也躲不过 CI。
+
 ## 边缘接口
 
 | 路径 | 说明 |

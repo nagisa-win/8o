@@ -16,7 +16,8 @@
     "deploy:skills": "npm run build && wrangler deploy --config wrangler.skills.toml",
     "deploy:lab": "npm run build && wrangler deploy --config wrangler.lab.toml",
     "deploy:mirror": "sh scripts/deploy-mirror.sh",
-    "deploy:cljs": "npm run build && wrangler deploy --config wrangler.cljs.toml"
+    "deploy:cljs": "npm run build && wrangler deploy --config wrangler.cljs.toml",
+    "setup": "git config core.hooksPath .githooks"
   },
   "devDependencies": {
     "vite": "^6.0.0",
