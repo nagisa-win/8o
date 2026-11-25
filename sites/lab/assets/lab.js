@@ -6,6 +6,7 @@
 const routes = {
   model: () => import("./modules/model.js"),
   security: () => import("./modules/security.js"),
+  heap: () => import("./modules/heap.js"),
 };
 
 const landing = document.querySelector("#landing");
@@ -47,7 +48,7 @@ async function route() {
   current = mod;
   await mod.mount(host);
 
-  const label = key === "model" ? "模型舱" : "安全舱";
+  const label = { model: "模型舱", security: "安全舱", heap: "数据舱" }[key] || "实验室";
   document.title = `${label} · lab.8o.nz`;
   footStat.textContent = `${label} · 渲染在本地`;
 }

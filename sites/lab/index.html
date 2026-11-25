@@ -25,6 +25,7 @@
           <a href="#/" data-nav="home">总览</a>
           <a href="#/model" data-nav="model">模型舱</a>
           <a href="#/security" data-nav="security">安全舱</a>
+          <a href="#/heap" data-nav="heap">数据舱</a>
         </nav>
         <a class="back mono" href="https://8o.nz/">← 观测站</a>
       </div>
@@ -62,12 +63,12 @@
             <ul class="bay__tags mono"><li>WebUSB</li><li>ADB</li><li>v1.1</li></ul>
           </div>
 
-          <div class="bay bay--soon">
-            <div class="bay__top mono"><span>BAY-04</span><span class="bay__state todo">开发中</span></div>
+          <a class="bay" href="#/heap">
+            <div class="bay__top mono"><span>BAY-04</span><span class="bay__state ok">可用</span></div>
             <h2>数据舱</h2>
-            <p>拖入 V8 heapsnapshot 在本地解析：支配树、retained size 排行与疑似泄漏点。</p>
-            <ul class="bay__tags mono"><li>Worker</li><li>Dominator</li><li>v1.1</li></ul>
-          </div>
+            <p>拖入 Chrome 的 .heapsnapshot，在 Worker 里本地解析：按类型聚合自占用、Top 节点、detached 计数与重复长字符串。</p>
+            <ul class="bay__tags mono"><li>Web Worker</li><li>零上传</li><li>v1.0</li></ul>
+          </a>
         </div>
       </section>
 

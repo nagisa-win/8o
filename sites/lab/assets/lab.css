@@ -412,6 +412,47 @@ select:focus {
   margin-inline-end: 5px;
 }
 
+/* ---------- 数据舱 ---------- */
+
+.heap-types {
+  display: grid;
+  gap: 8px;
+}
+
+.heap-row {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.heap-row__name {
+  color: var(--ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.heap-row__bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(124, 170, 255, 0.12);
+  overflow: hidden;
+}
+
+.heap-row__bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(to right, var(--accent), var(--violet));
+}
+
+.heap-row__num {
+  color: var(--ink-dim);
+  white-space: nowrap;
+  font-size: 11px;
+}
+
 /* ---------- 安全舱 ---------- */
 
 .sec-grid {
